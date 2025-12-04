@@ -8,6 +8,7 @@ import Testimonials from "./components/sections/Testimonials";
 import Footer from "./layouts/Footer";
 import AuthCallback from "./components/AuthCallback";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import ProfilePage from "./pages/ProfilePage";
 
 function HomePage() {
   return (
@@ -31,6 +32,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
     </>
   );
