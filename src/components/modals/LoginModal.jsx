@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { X, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { toast } from "../ui/Toast";
+import { useAuth } from "../../context/AuthContext";
+import { useLogin } from "../../hooks/useLoginTan";
 
 export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
   const [formData, setFormData] = useState({
@@ -8,6 +11,9 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
     rememberMe: false,
   });
   const [showPassword, setShowPassword] = useState(false);
+
+  const { signIn } = useAuth();
+  const { mutate: login, isPending, isError, error } = useLogin();
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -31,13 +37,25 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log("Login submitted:", formData);
+    const { email, password } = formData;
+    login(
+      { email, password },
+      {
+        onSuccess: (data) => {
+          signIn(data.data.user, data.token);
+          toast.success(`Welcome back, ${data.data.user.firstName}!`);
+          onClose();
+        },
+        onError: (err) => {
+          toast.error(err || "Login failed. Please try again.");
+        },
+      }
+    );
   };
 
   const handleGoogleLogin = () => {
-    // Handle Google login logic here
-    console.log("Google login clicked");
+    const backendUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
+    window.location.href = `${backendUrl}/auth/google`;
   };
 
   if (!isOpen) return null;
@@ -153,12 +171,18 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
               </a>
             </div>
 
+            {/* Error Message */}
+            {isError && (
+              <p className="text-red-500 text-sm font-lato">{error}</p>
+            )}
+
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full py-3 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-lato"
+              disabled={isPending}
+              className="w-full py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-lato"
             >
-              Sign In
+              {isPending ? "Signing in..." : "Sign In"}
             </button>
           </form>
 

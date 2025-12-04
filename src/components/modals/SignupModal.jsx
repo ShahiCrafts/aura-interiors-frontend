@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { X, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { toast } from "../ui/Toast";
+import { useAuth } from "../../context/AuthContext";
 import { useSignup } from "../../hooks/useSignupTan";
+import EmailVerificationModal from "./EmailVerificationModal";
 
 export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
   const [formData, setFormData] = useState({
@@ -11,8 +14,11 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
     agreeToTerms: false,
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [signupData, setSignupData] = useState(null);
 
-  const { mutate: signup, isPending, isError, error, isSuccess } = useSignup();
+  const { signIn } = useAuth();
+  const { mutate: signup, isPending, isError, error } = useSignup();
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -37,15 +43,48 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     const { firstName, lastName, email, password } = formData;
-    signup({ firstName, lastName, email, password });
+    signup(
+      { firstName, lastName, email, password },
+      {
+        onSuccess: (data) => {
+          setSignupData(data);
+          toast.success("Account created! Please verify your email.");
+          setShowVerificationModal(true);
+        },
+        onError: (err) => {
+          toast.error(err || "Signup failed. Please try again.");
+        },
+      }
+    );
+  };
+
+  const handleVerificationSuccess = () => {
+    if (signupData) {
+      signIn(signupData.data.user, signupData.token);
+    }
+    setShowVerificationModal(false);
+    toast.success("Email verified! Welcome to Aura Interiors.");
+    onClose();
   };
 
   const handleGoogleSignup = () => {
-    // Handle Google signup logic here
-    console.log("Google signup clicked");
+    const backendUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
+    window.location.href = `${backendUrl}/auth/google`;
   };
 
   if (!isOpen) return null;
+
+  // Show only verification modal after signup success
+  if (showVerificationModal) {
+    return (
+      <EmailVerificationModal
+        isOpen={showVerificationModal}
+        onClose={() => setShowVerificationModal(false)}
+        email={formData.email}
+        onSuccess={handleVerificationSuccess}
+      />
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-[100] overflow-y-auto">

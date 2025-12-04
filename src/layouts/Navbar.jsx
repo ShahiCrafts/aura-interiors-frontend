@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Bell,
   ShoppingBag,
@@ -15,7 +15,9 @@ import {
   Box,
   Phone,
   FileText,
+  LogOut,
 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 import MegaMenuDropdown from "../components/MegaMenuDropdown";
 import SignupModal from "../components/modals/SignupModal";
 import LoginModal from "../components/modals/LoginModal";
@@ -28,7 +30,10 @@ export default function Navbar() {
   const [mobileCollectionsOpen, setMobileCollectionsOpen] = useState(false);
   const [signupModalOpen, setSignupModalOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
+  const { user, isAuthenticated, signOut } = useAuth();
   const cartCount = 3;
 
   useEffect(() => {
@@ -47,6 +52,27 @@ export default function Navbar() {
       document.body.style.overflow = "";
     };
   }, [mobileMenuOpen]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setUserDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const getInitials = (firstName, lastName) => {
+    return `${firstName?.charAt(0) || ""}${lastName?.charAt(0) || ""}`.toUpperCase();
+  };
+
+  const handleSignOut = () => {
+    signOut();
+    setUserDropdownOpen(false);
+    closeMobileMenu();
+  };
 
   const navLinks = [
     {
@@ -203,14 +229,57 @@ export default function Navbar() {
               </button>
             </div>
 
-            {/* Desktop Login Button */}
-            <button
-              onClick={() => setLoginModalOpen(true)}
-              className="hidden lg:flex items-center gap-2 px-5 py-2.5 rounded-full bg-teal-700 hover:bg-teal-800 text-sm font-semibold text-white transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 hover:scale-105 active:scale-95 ml-2 font-lato"
-            >
-              <User size={18} />
-              <span>Login</span>
-            </button>
+            {/* Desktop Login Button / User Profile */}
+            {isAuthenticated ? (
+              <div className="hidden lg:block relative ml-4" ref={dropdownRef}>
+                <button
+                  onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                  className="flex items-center gap-3"
+                >
+                  <div className="text-right">
+                    <p className="text-sm font-medium text-neutral-900 font-lato">
+                      {user?.firstName} {user?.lastName}
+                    </p>
+                    <p className="text-xs text-neutral-500 font-lato">
+                      {user?.email}
+                    </p>
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-teal-700 flex items-center justify-center text-white text-sm font-semibold font-lato ring-2 ring-teal-700/20">
+                    {getInitials(user?.firstName, user?.lastName)}
+                  </div>
+                </button>
+
+                {/* User Dropdown */}
+                {userDropdownOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-44 bg-white rounded-xl shadow-lg border border-neutral-100 py-1">
+                    <a
+                      href="/profile"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-neutral-700 hover:bg-neutral-50 transition-colors font-lato text-sm"
+                    >
+                      <User size={16} className="text-neutral-400" />
+                      My Profile
+                    </a>
+                    <hr className="my-1 border-neutral-100" />
+                    <button
+                      onClick={handleSignOut}
+                      className="w-full flex items-center gap-2.5 px-4 py-2.5 text-neutral-700 hover:bg-neutral-50 transition-colors font-lato text-sm"
+                    >
+                      <LogOut size={16} className="text-neutral-400" />
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={() => setLoginModalOpen(true)}
+                className="hidden lg:flex items-center gap-2 px-5 py-2.5 rounded-full bg-teal-700 hover:bg-teal-800 text-sm font-semibold text-white transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 hover:scale-105 active:scale-95 ml-2 font-lato"
+              >
+                <User size={18} />
+                <span>Login</span>
+              </button>
+            )}
 
             {/* Mobile/Tablet Menu Toggle */}
             <button
@@ -257,22 +326,36 @@ export default function Navbar() {
                 <X size={18} className="text-neutral-600" />
               </button>
             </div>
-            <button
-              onClick={() => {
-                closeMobileMenu();
-                setLoginModalOpen(true);
-              }}
-              className="w-full flex items-center gap-3 p-3 bg-neutral-50 rounded-xl hover:bg-neutral-100 transition-colors"
-            >
-              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
-                <User size={24} className="text-neutral-400" />
+            {isAuthenticated ? (
+              <div className="w-full flex items-center gap-3 p-3 bg-neutral-50 rounded-xl">
+                <div className="w-11 h-11 rounded-full bg-teal-700 flex items-center justify-center text-white font-semibold font-lato">
+                  {getInitials(user?.firstName, user?.lastName)}
+                </div>
+                <div className="flex-1 text-left min-w-0">
+                  <p className="text-neutral-900 font-semibold font-lato truncate">
+                    {user?.firstName} {user?.lastName}
+                  </p>
+                  <p className="text-neutral-500 text-sm font-lato truncate">{user?.email}</p>
+                </div>
               </div>
-              <div className="flex-1 text-left">
-                <p className="text-neutral-900 font-semibold font-playfair">Welcome!</p>
-                <p className="text-neutral-500 text-sm font-lato">Sign in to continue</p>
-              </div>
-              <ChevronRight size={20} className="text-neutral-400" />
-            </button>
+            ) : (
+              <button
+                onClick={() => {
+                  closeMobileMenu();
+                  setLoginModalOpen(true);
+                }}
+                className="w-full flex items-center gap-3 p-3 bg-neutral-50 rounded-xl hover:bg-neutral-100 transition-colors"
+              >
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
+                  <User size={24} className="text-neutral-400" />
+                </div>
+                <div className="flex-1 text-left">
+                  <p className="text-neutral-900 font-semibold font-playfair">Welcome!</p>
+                  <p className="text-neutral-500 text-sm font-lato">Sign in to continue</p>
+                </div>
+                <ChevronRight size={20} className="text-neutral-400" />
+              </button>
+            )}
           </div>
 
           {/* Menu Content */}
@@ -359,6 +442,37 @@ export default function Navbar() {
                   </div>
                 ))}
               </div>
+
+              {/* Account Section for Authenticated Users */}
+              {isAuthenticated && (
+                <div className="px-4 py-3 border-t border-neutral-100">
+                  <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wider px-2 mb-2 font-lato">
+                    Account
+                  </p>
+                  <div className="space-y-1">
+                    <a
+                      href="/profile"
+                      onClick={closeMobileMenu}
+                      className="flex items-center gap-3 px-3 py-3 text-neutral-700 hover:bg-neutral-50 rounded-xl transition-colors"
+                    >
+                      <div className="w-9 h-9 bg-neutral-100 rounded-lg flex items-center justify-center">
+                        <User size={18} className="text-neutral-500" />
+                      </div>
+                      <span className="flex-1 font-medium font-lato">My Profile</span>
+                      <ChevronRight size={18} className="text-neutral-400" />
+                    </a>
+                    <button
+                      onClick={handleSignOut}
+                      className="w-full flex items-center gap-3 px-3 py-3 text-neutral-700 hover:bg-neutral-50 rounded-xl transition-colors"
+                    >
+                      <div className="w-9 h-9 bg-neutral-100 rounded-lg flex items-center justify-center">
+                        <LogOut size={18} className="text-neutral-500" />
+                      </div>
+                      <span className="flex-1 text-left font-medium font-lato">Logout</span>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
