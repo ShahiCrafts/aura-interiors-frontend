@@ -1,4 +1,4 @@
-import { signup, verifyEmail, resendVerificationCode } from '../api/authApi';
+import { signup, login, verifyEmail, resendVerificationCode } from '../api/authApi';
 
 export const signupService = async (data) => {
   try {
@@ -6,6 +6,15 @@ export const signupService = async (data) => {
     return response.data;
   } catch (error) {
     throw error.response?.data?.message || 'Signup failed';
+  }
+};
+
+export const loginService = async (data) => {
+  try {
+    const response = await login(data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data?.message || 'Login failed';
   }
 };
 
