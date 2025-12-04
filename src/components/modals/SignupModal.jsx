@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { X, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { useSignup } from "../../hooks/useSignupTan";
 
 export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
   const [formData, setFormData] = useState({
@@ -10,6 +11,8 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
     agreeToTerms: false,
   });
   const [showPassword, setShowPassword] = useState(false);
+
+  const { mutate: signup, isPending, isError, error, isSuccess } = useSignup();
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -33,8 +36,8 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle signup logic here
-    console.log("Signup submitted:", formData);
+    const { firstName, lastName, email, password } = formData;
+    signup({ firstName, lastName, email, password });
   };
 
   const handleGoogleSignup = () => {
@@ -188,12 +191,18 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
               </label>
             </div>
 
+            {/* Error Message */}
+            {isError && (
+              <p className="text-red-500 text-sm font-lato">{error}</p>
+            )}
+
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full py-3 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-lato"
+              disabled={isPending}
+              className="w-full py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-lato"
             >
-              Sign Up
+              {isPending ? "Signing up..." : "Sign Up"}
             </button>
           </form>
 
