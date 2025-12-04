@@ -1,4 +1,11 @@
-import { signup, login, verifyEmail, resendVerificationCode } from '../api/authApi';
+import {
+  signup,
+  login,
+  verifyEmail,
+  resendVerificationCode,
+  forgotPassword,
+  resetPassword,
+} from '../api/authApi';
 
 export const signupService = async (data) => {
   try {
@@ -33,5 +40,23 @@ export const resendVerificationCodeService = async (email) => {
     return response.data;
   } catch (error) {
     throw error.response?.data?.message || 'Failed to resend verification code';
+  }
+};
+
+export const forgotPasswordService = async (email) => {
+  try {
+    const response = await forgotPassword(email);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data?.message || 'Failed to send reset link';
+  }
+};
+
+export const resetPasswordService = async (token, password) => {
+  try {
+    const response = await resetPassword(token, password);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data?.message || 'Failed to reset password';
   }
 };

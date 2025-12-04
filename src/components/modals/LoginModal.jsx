@@ -3,6 +3,7 @@ import { X, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { toast } from "../ui/Toast";
 import { useAuth } from "../../context/AuthContext";
 import { useLogin } from "../../hooks/useLoginTan";
+import ForgotPasswordModal from "./ForgotPasswordModal";
 
 export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
   const [formData, setFormData] = useState({
@@ -11,6 +12,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
     rememberMe: false,
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const { signIn } = useAuth();
   const { mutate: login, isPending, isError, error } = useLogin();
@@ -163,12 +165,13 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
                   Remember me
                 </label>
               </div>
-              <a
-                href="/forgot-password"
+              <button
+                type="button"
+                onClick={() => setShowForgotPassword(true)}
                 className="text-sm text-teal-700 font-semibold hover:underline font-lato"
               >
                 Forgot password?
-              </a>
+              </button>
             </div>
 
             {/* Error Message */}
@@ -251,6 +254,13 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
           }
         }
       `}</style>
+
+      {/* Forgot Password Modal */}
+      <ForgotPasswordModal
+        isOpen={showForgotPassword}
+        onClose={() => setShowForgotPassword(false)}
+        onBackToLogin={() => setShowForgotPassword(false)}
+      />
     </div>
   );
 }
