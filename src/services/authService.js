@@ -5,6 +5,7 @@ import {
   resendVerificationCode,
   forgotPassword,
   resetPassword,
+  updatePassword,
 } from '../api/authApi';
 
 export const signupService = async (data) => {
@@ -58,5 +59,14 @@ export const resetPasswordService = async (token, password) => {
     return response.data;
   } catch (error) {
     throw error.response?.data?.message || 'Failed to reset password';
+  }
+};
+
+export const updatePasswordService = async (currentPassword, newPassword) => {
+  try {
+    const response = await updatePassword(currentPassword, newPassword);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data?.message || 'Failed to update password';
   }
 };

@@ -7,6 +7,7 @@ import Philosophy from "./components/sections/Philosophy";
 import Testimonials from "./components/sections/Testimonials";
 import Footer from "./layouts/Footer";
 import AuthCallback from "./components/AuthCallback";
+import ProtectedRoute from "./components/ProtectedRoute";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ProfilePage from "./pages/ProfilePage";
 
@@ -32,7 +33,14 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </>
   );

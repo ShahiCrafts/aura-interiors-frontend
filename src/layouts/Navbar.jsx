@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Bell,
   ShoppingBag,
@@ -34,6 +35,7 @@ export default function Navbar() {
   const dropdownRef = useRef(null);
 
   const { user, isAuthenticated, signOut } = useAuth();
+  const navigate = useNavigate();
   const cartCount = 3;
 
   useEffect(() => {
@@ -68,10 +70,20 @@ export default function Navbar() {
     return `${firstName?.charAt(0) || ""}${lastName?.charAt(0) || ""}`.toUpperCase();
   };
 
+  const getAvatarUrl = () => {
+    if (user?.avatar) {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
+      const serverUrl = baseUrl.split("/api")[0];
+      return `${serverUrl}/uploads/avatars/${user.avatar}`;
+    }
+    return null;
+  };
+
   const handleSignOut = () => {
     signOut();
     setUserDropdownOpen(false);
     closeMobileMenu();
+    navigate("/");
   };
 
   const navLinks = [
@@ -244,9 +256,18 @@ export default function Navbar() {
                       {user?.email}
                     </p>
                   </div>
-                  <div className="w-10 h-10 rounded-full bg-teal-700 flex items-center justify-center text-white text-sm font-semibold font-lato ring-2 ring-teal-700/20">
-                    {getInitials(user?.firstName, user?.lastName)}
-                  </div>
+                  {getAvatarUrl() ? (
+                    <img
+                      src={getAvatarUrl()}
+                      alt="Profile"
+                      crossOrigin="anonymous"
+                      className="w-10 h-10 rounded-full object-cover ring-2 ring-teal-700/20"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-teal-700 flex items-center justify-center text-white text-sm font-semibold font-lato ring-2 ring-teal-700/20">
+                      {getInitials(user?.firstName, user?.lastName)}
+                    </div>
+                  )}
                 </button>
 
                 {/* User Dropdown */}
@@ -328,9 +349,18 @@ export default function Navbar() {
             </div>
             {isAuthenticated ? (
               <div className="w-full flex items-center gap-3 p-3 bg-neutral-50 rounded-xl">
-                <div className="w-11 h-11 rounded-full bg-teal-700 flex items-center justify-center text-white font-semibold font-lato">
-                  {getInitials(user?.firstName, user?.lastName)}
-                </div>
+                {getAvatarUrl() ? (
+                  <img
+                    src={getAvatarUrl()}
+                    alt="Profile"
+                    crossOrigin="anonymous"
+                    className="w-11 h-11 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-11 h-11 rounded-full bg-teal-700 flex items-center justify-center text-white font-semibold font-lato">
+                    {getInitials(user?.firstName, user?.lastName)}
+                  </div>
+                )}
                 <div className="flex-1 text-left min-w-0">
                   <p className="text-neutral-900 font-semibold font-lato truncate">
                     {user?.firstName} {user?.lastName}
