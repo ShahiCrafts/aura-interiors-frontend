@@ -17,6 +17,8 @@ import {
   FileText,
 } from "lucide-react";
 import MegaMenuDropdown from "../components/MegaMenuDropdown";
+import SignupModal from "../components/modals/SignupModal";
+import LoginModal from "../components/modals/LoginModal";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -24,6 +26,8 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [mobileCollectionsOpen, setMobileCollectionsOpen] = useState(false);
+  const [signupModalOpen, setSignupModalOpen] = useState(false);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
 
   const cartCount = 3;
 
@@ -200,7 +204,10 @@ export default function Navbar() {
             </div>
 
             {/* Desktop Login Button */}
-            <button className="hidden lg:flex items-center gap-2 px-5 py-2.5 rounded-full bg-teal-700 hover:bg-teal-800 text-sm font-semibold text-white transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 hover:scale-105 active:scale-95 ml-2 font-lato">
+            <button
+              onClick={() => setLoginModalOpen(true)}
+              className="hidden lg:flex items-center gap-2 px-5 py-2.5 rounded-full bg-teal-700 hover:bg-teal-800 text-sm font-semibold text-white transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 hover:scale-105 active:scale-95 ml-2 font-lato"
+            >
               <User size={18} />
               <span>Login</span>
             </button>
@@ -250,16 +257,22 @@ export default function Navbar() {
                 <X size={18} className="text-neutral-600" />
               </button>
             </div>
-            <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-xl">
+            <button
+              onClick={() => {
+                closeMobileMenu();
+                setLoginModalOpen(true);
+              }}
+              className="w-full flex items-center gap-3 p-3 bg-neutral-50 rounded-xl hover:bg-neutral-100 transition-colors"
+            >
               <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
                 <User size={24} className="text-neutral-400" />
               </div>
-              <div className="flex-1">
+              <div className="flex-1 text-left">
                 <p className="text-neutral-900 font-semibold font-playfair">Welcome!</p>
                 <p className="text-neutral-500 text-sm font-lato">Sign in to continue</p>
               </div>
               <ChevronRight size={20} className="text-neutral-400" />
-            </div>
+            </button>
           </div>
 
           {/* Menu Content */}
@@ -357,6 +370,26 @@ export default function Navbar() {
         onMouseEnter={handleMegaMenuEnter}
         onMouseLeave={handleMegaMenuLeave}
         onClose={() => setMegaMenuOpen(false)}
+      />
+
+      {/* Login Modal */}
+      <LoginModal
+        isOpen={loginModalOpen}
+        onClose={() => setLoginModalOpen(false)}
+        onSwitchToSignup={() => {
+          setLoginModalOpen(false);
+          setSignupModalOpen(true);
+        }}
+      />
+
+      {/* Signup Modal */}
+      <SignupModal
+        isOpen={signupModalOpen}
+        onClose={() => setSignupModalOpen(false)}
+        onSwitchToLogin={() => {
+          setSignupModalOpen(false);
+          setLoginModalOpen(true);
+        }}
       />
 
       {/* Animations */}
