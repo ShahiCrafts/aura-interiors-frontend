@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import "./styles/index.css";
 import Navbar from "./layouts/Navbar";
 import Hero from "./components/sections/Hero";
@@ -8,10 +8,25 @@ import Testimonials from "./components/sections/Testimonials";
 import Footer from "./layouts/Footer";
 import AuthCallback from "./components/AuthCallback";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ProfilePage from "./pages/ProfilePage";
+import useAuthStore from "./store/authStore";
+
+// Admin imports
+import AdminLayout from "./layouts/AdminLayout";
+import AdminDashboard from "./pages/admin/Dashboard";
+import AdminCategories from "./pages/admin/Categories";
+import AdminProducts from "./pages/admin/Products";
 
 function HomePage() {
+  const { isAuthenticated, user } = useAuthStore();
+
+  // Redirect admin users to admin dashboard
+  if (isAuthenticated && user?.role === "admin") {
+    return <Navigate to="/admin" replace />;
+  }
+
   return (
     <>
       <Navbar />
@@ -41,6 +56,20 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* Admin Routes */}
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminLayout />
+            </AdminRoute>
+          }
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="categories" element={<AdminCategories />} />
+          <Route path="products" element={<AdminProducts />} />
+        </Route>
       </Routes>
     </>
   );
