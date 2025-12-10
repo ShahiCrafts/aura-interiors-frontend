@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Upload, Trash2, Lock, Check, Camera } from "lucide-react";
 import { toast } from "../ui/Toast";
-import { useAuth } from "../../context/AuthContext";
+import useAuthStore from "../../store/authStore";
 import {
   useProfile,
   useUpdateProfile,
@@ -21,7 +21,7 @@ const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
 
 export default function PersonalInformation() {
   const fileInputRef = useRef(null);
-  const { user: authUser, signIn } = useAuth();
+  const { user: authUser, signIn } = useAuthStore();
   const [changePasswordModalOpen, setChangePasswordModalOpen] = useState(false);
 
   const { data, isLoading } = useProfile();

@@ -1,9 +1,11 @@
 import { useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import useAuthStore from "../store/authStore";
 import { toast } from "./ui/Toast";
 
 export default function AuthCallback() {
-  const { signIn } = useAuth();
+  const signIn = useAuthStore((state) => state.signIn);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleOAuthCallback = () => {
@@ -27,8 +29,12 @@ export default function AuthCallback() {
           signIn(user, token);
           toast.success(`Welcome${user.firstName ? `, ${user.firstName}` : ""}!`);
 
-          // Clean up URL and redirect to home
-          window.history.replaceState({}, document.title, "/");
+          // Redirect based on role
+          if (user.role === "admin") {
+            navigate("/admin", { replace: true });
+          } else {
+            window.history.replaceState({}, document.title, "/");
+          }
         } catch (error) {
           toast.error("Authentication failed. Please try again.");
           window.history.replaceState({}, document.title, "/");
@@ -37,7 +43,7 @@ export default function AuthCallback() {
     };
 
     handleOAuthCallback();
-  }, [signIn]);
+  }, [signIn, navigate]);
 
   return null;
 }

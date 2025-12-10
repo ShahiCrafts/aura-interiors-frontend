@@ -54,7 +54,7 @@ export default function Footer() {
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-playfair font-light mb-4">
             Subscribe to Our{" "}
-            <span className="italic text-teal-700">Design Newsletter</span>
+            <span className="italic text-primary-700">Design Newsletter</span>
           </h2>
           <p className="text-gray-600 text-base md:text-lg mb-6 sm:mb-8 max-w-2xl font-lato">
             Get exclusive access to new collections, design inspiration, and AR
@@ -71,11 +71,11 @@ export default function Footer() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               required
-              className="flex-1 w-full sm:w-auto bg-white border border-gray-300 rounded-full px-6 sm:px-8 py-3 sm:py-4 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-teal-700 transition-colors font-lato"
+              className="flex-1 w-full sm:w-auto bg-white border border-gray-300 rounded-full px-6 sm:px-8 py-3 sm:py-4 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-primary-700 transition-colors font-lato"
             />
             <button
               type="submit"
-              className="w-full sm:w-auto bg-teal-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full hover:bg-teal-800 transition-colors duration-300 whitespace-nowrap font-semibold"
+              className="w-full sm:w-auto bg-primary-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full hover:bg-primary-800 transition-colors duration-300 whitespace-nowrap font-semibold"
             >
               Subscribe
             </button>
@@ -91,7 +91,7 @@ export default function Footer() {
         >
           {/* Brand */}
           <div className="col-span-2 sm:col-span-1 space-y-4 sm:space-y-6">
-            <h3 className="text-teal-700 text-lg sm:text-xl font-semibold font-playfair">
+            <h3 className="text-primary-700 text-lg sm:text-xl font-semibold font-playfair">
               Aura Interiors
             </h3>
             <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
@@ -103,7 +103,7 @@ export default function Footer() {
                 <a
                   key={i}
                   href="#"
-                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-gray-300 flex items-center justify-center hover:border-teal-700 hover:bg-teal-700/10 transition-all duration-300"
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-gray-300 flex items-center justify-center hover:border-primary-700 hover:bg-primary-700/10 transition-all duration-300"
                 >
                   <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
                 </a>
@@ -119,7 +119,7 @@ export default function Footer() {
                 <li key={i}>
                   <a
                     href="#"
-                    className="hover:text-teal-700 transition-colors"
+                    className="hover:text-primary-700 transition-colors"
                   >
                     {link}
                   </a>
@@ -138,7 +138,7 @@ export default function Footer() {
                 <li key={i}>
                   <a
                     href="#"
-                    className="hover:text-teal-700 transition-colors"
+                    className="hover:text-primary-700 transition-colors"
                   >
                     {link}
                   </a>
@@ -177,7 +177,7 @@ export default function Footer() {
                 <a
                   key={i}
                   href="#"
-                  className="hover:text-teal-700 transition-colors"
+                  className="hover:text-primary-700 transition-colors"
                 >
                   {item}
                 </a>

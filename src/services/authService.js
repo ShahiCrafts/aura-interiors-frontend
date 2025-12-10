@@ -6,7 +6,7 @@ import {
   forgotPassword,
   resetPassword,
   updatePassword,
-} from '../api/authApi';
+} from '../store/api/authApi';
 
 export const signupService = async (data) => {
   try {

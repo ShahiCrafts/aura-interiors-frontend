@@ -3,7 +3,7 @@ import {
   updateProfile,
   updateAvatar,
   removeAvatar,
-} from '../api/profileApi';
+} from '../store/api/profileApi';
 
 export const getProfileService = async () => {
   try {

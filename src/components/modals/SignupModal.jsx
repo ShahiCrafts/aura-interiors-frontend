@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { X, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { toast } from "../ui/Toast";
-import { useAuth } from "../../context/AuthContext";
+import useAuthStore from "../../store/authStore";
 import { useSignup } from "../../hooks/useSignupTan";
 import EmailVerificationModal from "./EmailVerificationModal";
 
@@ -17,7 +17,7 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [signupData, setSignupData] = useState(null);
 
-  const { signIn } = useAuth();
+  const { signIn } = useAuthStore();
   const { mutate: signup, isPending, isError, error } = useSignup();
 
   // Lock body scroll when modal is open
@@ -115,7 +115,7 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
           <div className="mb-5">
             <h2 className="text-2xl sm:text-3xl font-playfair text-neutral-900">
               <span className="font-bold">Create your</span>{" "}
-              <span className="italic text-teal-700">account</span>
+              <span className="italic text-primary-700">account</span>
             </h2>
             <p className="text-neutral-500 mt-1 font-lato text-sm sm:text-base">
               Join us & start designing your space...
@@ -137,7 +137,7 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
                   onChange={handleChange}
                   placeholder="Saugat"
                   required
-                  className="w-full px-4 py-2 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
+                  className="w-full px-4 py-2 rounded-lg border border-neutral-200 focus:border-primary-700 focus:ring-1 focus:ring-primary-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
                 />
               </div>
               <div>
@@ -151,7 +151,7 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
                   onChange={handleChange}
                   placeholder="Shahi"
                   required
-                  className="w-full px-4 py-2 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
+                  className="w-full px-4 py-2 rounded-lg border border-neutral-200 focus:border-primary-700 focus:ring-1 focus:ring-primary-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
                 />
               </div>
             </div>
@@ -173,7 +173,7 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
                   onChange={handleChange}
                   placeholder="you@example.com"
                   required
-                  className="w-full pl-11 pr-4 py-2 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
+                  className="w-full pl-11 pr-4 py-2 rounded-lg border border-neutral-200 focus:border-primary-700 focus:ring-1 focus:ring-primary-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
                 />
               </div>
             </div>
@@ -195,7 +195,7 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
                   onChange={handleChange}
                   placeholder="Enter your password"
                   required
-                  className="w-full pl-11 pr-11 py-2 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
+                  className="w-full pl-11 pr-11 py-2 rounded-lg border border-neutral-200 focus:border-primary-700 focus:ring-1 focus:ring-primary-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
                 />
                 <button
                   type="button"
@@ -215,15 +215,15 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
                 checked={formData.agreeToTerms}
                 onChange={handleChange}
                 required
-                className="w-5 h-5 mt-0.5 rounded border-neutral-300 accent-teal-700 focus:ring-teal-700 cursor-pointer"
+                className="w-5 h-5 mt-0.5 rounded border-neutral-300 accent-primary-700 focus:ring-primary-700 cursor-pointer"
               />
               <label className="text-sm text-neutral-700 font-lato leading-relaxed">
                 I agree to the{" "}
-                <a href="/terms" className="text-teal-700 font-semibold hover:underline">
+                <a href="/terms" className="text-primary-700 font-semibold hover:underline">
                   Terms of Service
                 </a>{" "}
                 and{" "}
-                <a href="/privacy" className="text-teal-700 font-semibold hover:underline">
+                <a href="/privacy" className="text-primary-700 font-semibold hover:underline">
                   Privacy Policy
                 </a>{" "}
                 of Aura Interiors.
@@ -239,7 +239,7 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
             <button
               type="submit"
               disabled={isPending}
-              className="w-full py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-lato"
+              className="w-full py-3 bg-primary-700 hover:bg-primary-800 disabled:bg-primary-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-primary-700/25 font-lato"
             >
               {isPending ? "Signing up..." : "Sign Up"}
             </button>
@@ -289,7 +289,7 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
             <button
               type="button"
               onClick={onSwitchToLogin}
-              className="text-teal-700 font-semibold hover:underline"
+              className="text-primary-700 font-semibold hover:underline"
             >
               Login Now
             </button>

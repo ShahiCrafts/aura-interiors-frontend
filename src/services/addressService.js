@@ -5,7 +5,7 @@ import {
   updateAddress,
   deleteAddress,
   setDefaultAddress,
-} from '../api/addressApi';
+} from '../store/api/addressApi';
 
 export const getAllAddressesService = async () => {
   try {
