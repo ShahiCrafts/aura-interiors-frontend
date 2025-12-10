@@ -1,31 +1,37 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../store/authStore";
 import { toast } from "./ui/Toast";
+import { getProfile } from "../store/api/profileApi";
 
 export default function AuthCallback() {
   const signIn = useAuthStore((state) => state.signIn);
   const navigate = useNavigate();
+  const isProcessing = useRef(false);
 
   useEffect(() => {
-    const handleOAuthCallback = () => {
+    const handleOAuthCallback = async () => {
       const params = new URLSearchParams(window.location.search);
       const token = params.get("token");
-      const userParam = params.get("user");
 
       if (token && window.location.pathname === "/auth/success") {
-        try {
-          let user = null;
+        // Prevent duplicate execution (React StrictMode)
+        if (isProcessing.current) return;
+        isProcessing.current = true;
 
-          // If user data is passed in URL
-          if (userParam) {
-            user = JSON.parse(decodeURIComponent(userParam));
-          } else {
-            // Decode user from JWT token payload
-            const payload = JSON.parse(atob(token.split(".")[1]));
-            user = payload.user || { id: payload.id };
+        try {
+          // Store token first so axios interceptor can use it
+          localStorage.setItem("token", token);
+
+          // Fetch the full user profile from backend
+          const response = await getProfile();
+          const user = response.data?.data?.user;
+
+          if (!user) {
+            throw new Error("Failed to fetch user profile");
           }
 
+          // Now sign in with complete user data
           signIn(user, token);
           toast.success(`Welcome${user.firstName ? `, ${user.firstName}` : ""}!`);
 
@@ -33,11 +39,13 @@ export default function AuthCallback() {
           if (user.role === "admin") {
             navigate("/admin", { replace: true });
           } else {
-            window.history.replaceState({}, document.title, "/");
+            navigate("/", { replace: true });
           }
         } catch (error) {
+          // Clean up on failure
+          localStorage.removeItem("token");
           toast.error("Authentication failed. Please try again.");
-          window.history.replaceState({}, document.title, "/");
+          navigate("/", { replace: true });
         }
       }
     };

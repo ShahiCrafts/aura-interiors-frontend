@@ -46,7 +46,7 @@ export default function ProfilePage() {
                       className="w-14 h-14 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="w-14 h-14 rounded-full bg-primary-700 flex items-center justify-center text-white text-lg font-semibold font-lato">
+                    <div className="w-14 h-14 rounded-full bg-teal-700 flex items-center justify-center text-white text-lg font-semibold font-lato">
                       {getInitials(user?.firstName, user?.lastName)}
                     </div>
                   )}
@@ -72,7 +72,7 @@ export default function ProfilePage() {
                         onClick={() => setActiveTab(item.id)}
                         className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${
                           isActive
-                            ? "bg-primary-50 text-primary-700"
+                            ? "bg-teal-50 text-teal-700"
                             : "text-neutral-600 hover:bg-neutral-50"
                         }`}
                       >

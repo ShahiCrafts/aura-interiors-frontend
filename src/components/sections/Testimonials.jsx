@@ -74,7 +74,7 @@ export default function Testimonials() {
 
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-playfair font-light text-zinc-900 leading-tight">
             Trusted by{" "}
-            <span className="text-primary-700 italic">Design Enthusiasts</span>
+            <span className="text-teal-700 italic">Design Enthusiasts</span>
           </h2>
         </div>
 
@@ -83,7 +83,7 @@ export default function Testimonials() {
           {testimonials.map((testimonial, index) => (
             <div
               key={index}
-              className={`relative bg-white border border-primary-700/10 p-5 sm:p-6 hover:border-primary-700/20 hover:shadow-lg transition-all duration-700 rounded-xl group ${
+              className={`relative bg-white border border-teal-700/10 p-5 sm:p-6 hover:border-teal-700/20 hover:shadow-lg transition-all duration-700 rounded-xl group ${
                 isVisible
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-12"
@@ -93,7 +93,7 @@ export default function Testimonials() {
               }}
             >
               {/* Decorative Quote */}
-              <span className="absolute right-4 top-4 text-[80px] sm:text-[100px] text-primary-700/10 leading-none select-none pointer-events-none">
+              <span className="absolute right-4 top-4 text-[80px] sm:text-[100px] text-teal-700/10 leading-none select-none pointer-events-none">
                 &ldquo;
               </span>
 
@@ -102,7 +102,7 @@ export default function Testimonials() {
                 {[...Array(testimonial.rating)].map((_, i) => (
                   <Star
                     key={i}
-                    className="w-4 h-4 sm:w-5 sm:h-5 fill-primary-700 text-primary-700"
+                    className="w-4 h-4 sm:w-5 sm:h-5 fill-teal-700 text-teal-700"
                   />
                 ))}
               </div>
@@ -126,7 +126,7 @@ export default function Testimonials() {
                   <p className="text-zinc-900 font-medium text-base sm:text-lg font-playfair">
                     {testimonial.name}
                   </p>
-                  <p className="text-primary-700 text-sm sm:text-base font-lato">
+                  <p className="text-teal-700 text-sm sm:text-base font-lato">
                     {testimonial.role}
                   </p>
                 </div>

@@ -74,7 +74,7 @@ export default function FeaturedPieces() {
             </span>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-zinc-900 mb-4 tracking-tight font-playfair">
-            Featured <span className="italic text-primary-700">Masterpieces</span>
+            Featured <span className="italic text-teal-700">Masterpieces</span>
           </h2>
           <p className="text-zinc-600 text-base md:text-lg max-w-2xl mx-auto leading-relaxed font-lato">
             Curated pieces that blend timeless elegance with contemporary
@@ -110,8 +110,8 @@ export default function FeaturedPieces() {
                     <span
                       className={`px-2 py-1 sm:px-3 sm:py-1.5 text-[10px] sm:text-xs font-semibold rounded-full ${
                         p.badge === "New"
-                          ? "bg-primary-700 text-white"
-                          : "bg-secondary-500 text-white"
+                          ? "bg-teal-700 text-white"
+                          : "bg-amber-500 text-white"
                       }`}
                     >
                       {p.badge}
@@ -121,10 +121,10 @@ export default function FeaturedPieces() {
 
                 {/* Quick Actions */}
                 <div className="absolute top-2 right-2 sm:top-4 sm:right-4 flex flex-col gap-1.5 sm:gap-2 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300">
-                  <button className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-primary-700 hover:text-white transition-colors">
+                  <button className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-teal-700 hover:text-white transition-colors">
                     <Heart size={14} className="sm:w-[18px] sm:h-[18px]" />
                   </button>
-                  <button className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-primary-700 hover:text-white transition-colors">
+                  <button className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-teal-700 hover:text-white transition-colors">
                     <ShoppingBag
                       size={14}
                       className="sm:w-[18px] sm:h-[18px]"
@@ -138,11 +138,11 @@ export default function FeaturedPieces() {
                 <p className="text-xs sm:text-xs md:text-sm font-semibold tracking-[0.2em] text-zinc-500 uppercase font-lato">
                   {p.category}
                 </p>
-                <h3 className="text-base sm:text-base md:text-xl font-medium text-zinc-900 group-hover:text-primary-700 transition-colors duration-300 font-playfair">
+                <h3 className="text-base sm:text-base md:text-xl font-medium text-zinc-900 group-hover:text-teal-700 transition-colors duration-300 font-playfair">
                   {p.name}
                 </h3>
                 <div className="flex items-center gap-2">
-                  <p className="text-base sm:text-base md:text-xl font-bold text-primary-700 font-playfair">
+                  <p className="text-base sm:text-base md:text-xl font-bold text-teal-700 font-playfair">
                     {p.price}
                   </p>
                   {p.originalPrice && (
@@ -163,7 +163,7 @@ export default function FeaturedPieces() {
           }`}
           style={{ transitionDelay: isVisible ? "600ms" : "0ms" }}
         >
-          <button className="group inline-flex items-center gap-3 px-6 sm:px-8 py-3 sm:py-4 bg-primary-700 text-white hover:bg-primary-800 transition-all duration-300 rounded-full shadow-lg shadow-primary-700/25 hover:shadow-xl hover:shadow-primary-700/30">
+          <button className="group inline-flex items-center gap-3 px-6 sm:px-8 py-3 sm:py-4 bg-teal-700 text-white hover:bg-teal-800 transition-all duration-300 rounded-full shadow-lg shadow-teal-700/25 hover:shadow-xl hover:shadow-teal-700/30">
             <span className="text-sm sm:text-base font-semibold tracking-wide">
               Explore Full Collection
             </span>

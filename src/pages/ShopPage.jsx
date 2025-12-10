@@ -1,0 +1,283 @@
+import { useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { ChevronRight, Grid3X3, List, Loader2 } from "lucide-react";
+import Navbar from "../layouts/Navbar";
+import Footer from "../layouts/Footer";
+import ProductCard from "../components/shop/ProductCard";
+import CategorySidebar from "../components/shop/CategorySidebar";
+import { useCategory, useCategoryProducts, useCategoryTree } from "../hooks/useCategoryTan";
+import { useProducts } from "../hooks/useProductTan";
+
+export default function ShopPage() {
+  const { categorySlug } = useParams();
+  const [page, setPage] = useState(1);
+  const [viewMode, setViewMode] = useState("grid"); // grid or list
+  const limit = 12;
+
+  // Fetch category tree for sidebar
+  const { data: categoryTreeData } = useCategoryTree();
+  const categories = categoryTreeData?.data?.categories || [];
+
+  // Fetch current category details (if category is selected)
+  const { data: categoryData, isLoading: isCategoryLoading } = useCategory(categorySlug, {
+    enabled: !!categorySlug,
+  });
+  const currentCategory = categoryData?.data?.category;
+
+  // Fetch products - either by category or all products
+  const {
+    data: productsData,
+    isLoading: isProductsLoading,
+  } = categorySlug
+    ? useCategoryProducts(categorySlug, { page, limit })
+    : useProducts({ page, limit, status: "active" });
+
+  const products = categorySlug
+    ? productsData?.data?.products || []
+    : productsData?.data?.products || [];
+
+  const pagination = productsData?.data?.pagination || {
+    page: 1,
+    limit: 12,
+    total: 0,
+    pages: 1,
+  };
+
+  // Build breadcrumb trail
+  const buildBreadcrumbs = () => {
+    const crumbs = [{ name: "Home", path: "/" }, { name: "Shop", path: "/shop" }];
+
+    if (currentCategory) {
+      // If category has parent, add parent first
+      if (currentCategory.parent) {
+        crumbs.push({
+          name: currentCategory.parent.name,
+          path: `/shop/${currentCategory.parent.slug}`,
+        });
+      }
+      crumbs.push({
+        name: currentCategory.name,
+        path: `/shop/${currentCategory.slug}`,
+      });
+    }
+
+    return crumbs;
+  };
+
+  const breadcrumbs = buildBreadcrumbs();
+
+  // Page title
+  const pageTitle = currentCategory?.name || "All Products";
+  const totalProducts = pagination.total;
+
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const isLoading = isCategoryLoading || isProductsLoading;
+
+  return (
+    <>
+      <Navbar />
+      <main className="min-h-screen bg-neutral-50 pt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Breadcrumb */}
+          <nav className="flex items-center gap-2 text-sm mb-6">
+            {breadcrumbs.map((crumb, index) => (
+              <div key={crumb.path} className="flex items-center gap-2">
+                {index > 0 && <ChevronRight size={14} className="text-neutral-400" />}
+                {index === breadcrumbs.length - 1 ? (
+                  <span className="text-neutral-500 font-lato">{crumb.name}</span>
+                ) : (
+                  <Link
+                    to={crumb.path}
+                    className="text-neutral-600 hover:text-teal-700 transition-colors font-lato"
+                  >
+                    {crumb.name}
+                  </Link>
+                )}
+              </div>
+            ))}
+          </nav>
+
+          {/* Page Header */}
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-playfair text-neutral-900">
+                {currentCategory ? (
+                  <>
+                    <span className="font-bold">{pageTitle.split(" ")[0]}</span>{" "}
+                    <span className="italic text-teal-700">
+                      {pageTitle.split(" ").slice(1).join(" ") || "Furniture"}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="font-bold">All</span>{" "}
+                    <span className="italic text-teal-700">Products</span>
+                  </>
+                )}
+              </h1>
+              <p className="text-neutral-500 font-lato mt-1">
+                Showing <span className="font-semibold text-neutral-700">{totalProducts}</span>{" "}
+                products
+                {currentCategory?.description && (
+                  <span> for your perfect {currentCategory.name.toLowerCase()}</span>
+                )}
+              </p>
+            </div>
+
+            {/* View Toggle */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setViewMode("grid")}
+                className={`p-2 rounded-lg transition-colors ${
+                  viewMode === "grid"
+                    ? "bg-teal-700 text-white"
+                    : "bg-white border border-neutral-200 text-neutral-600 hover:border-neutral-300"
+                }`}
+              >
+                <Grid3X3 size={18} />
+              </button>
+              <button
+                onClick={() => setViewMode("list")}
+                className={`p-2 rounded-lg transition-colors ${
+                  viewMode === "list"
+                    ? "bg-teal-700 text-white"
+                    : "bg-white border border-neutral-200 text-neutral-600 hover:border-neutral-300"
+                }`}
+              >
+                <List size={18} />
+              </button>
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Sidebar */}
+            <aside className="lg:w-64 shrink-0">
+              <CategorySidebar
+                categories={categories}
+                currentCategory={currentCategory}
+              />
+            </aside>
+
+            {/* Products Grid */}
+            <div className="flex-1">
+              {isLoading ? (
+                <div className="flex items-center justify-center h-64">
+                  <Loader2 size={32} className="text-teal-700 animate-spin" />
+                </div>
+              ) : products.length === 0 ? (
+                <div className="text-center py-16 bg-white rounded-xl border border-neutral-100">
+                  <p className="text-neutral-500 font-lato">No products found in this category.</p>
+                  <Link
+                    to="/shop"
+                    className="inline-block mt-4 text-teal-700 font-semibold hover:underline font-lato"
+                  >
+                    Browse all products
+                  </Link>
+                </div>
+              ) : (
+                <>
+                  {/* Product Grid */}
+                  <div
+                    className={
+                      viewMode === "grid"
+                        ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
+                        : "flex flex-col gap-4"
+                    }
+                  >
+                    {products.map((product) => (
+                      <ProductCard key={product._id} product={product} />
+                    ))}
+                  </div>
+
+                  {/* Pagination */}
+                  {pagination.pages > 1 && (
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 pt-8 border-t border-neutral-100">
+                      <p className="text-sm text-neutral-500 font-lato">
+                        Showing {(pagination.page - 1) * pagination.limit + 1} to{" "}
+                        {Math.min(pagination.page * pagination.limit, pagination.total)} of{" "}
+                        {pagination.total} results
+                      </p>
+
+                      <div className="flex items-center gap-2">
+                        {/* Previous */}
+                        <button
+                          onClick={() => handlePageChange(page - 1)}
+                          disabled={page === 1}
+                          className="px-3 py-2 text-sm font-medium rounded-lg border border-neutral-200 text-neutral-600 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-lato"
+                        >
+                          &lt;
+                        </button>
+
+                        {/* Page Numbers */}
+                        {[...Array(pagination.pages)].map((_, i) => {
+                          const pageNum = i + 1;
+                          // Show first, last, current, and neighbors
+                          if (
+                            pageNum === 1 ||
+                            pageNum === pagination.pages ||
+                            (pageNum >= page - 1 && pageNum <= page + 1)
+                          ) {
+                            return (
+                              <button
+                                key={pageNum}
+                                onClick={() => handlePageChange(pageNum)}
+                                className={`w-10 h-10 text-sm font-medium rounded-lg transition-colors font-lato ${
+                                  pageNum === page
+                                    ? "bg-teal-700 text-white"
+                                    : "border border-neutral-200 text-neutral-600 hover:bg-neutral-50"
+                                }`}
+                              >
+                                {pageNum}
+                              </button>
+                            );
+                          }
+                          // Show ellipsis
+                          if (pageNum === page - 2 || pageNum === page + 2) {
+                            return (
+                              <span key={pageNum} className="px-2 text-neutral-400">
+                                ...
+                              </span>
+                            );
+                          }
+                          return null;
+                        })}
+
+                        {/* Next */}
+                        <button
+                          onClick={() => handlePageChange(page + 1)}
+                          disabled={page === pagination.pages}
+                          className="px-3 py-2 text-sm font-medium rounded-lg border border-neutral-200 text-neutral-600 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-lato"
+                        >
+                          &gt;
+                        </button>
+                      </div>
+
+                      {/* Items per page */}
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-neutral-500 font-lato">Show:</span>
+                        <select
+                          value={limit}
+                          className="px-3 py-2 text-sm rounded-lg border border-neutral-200 bg-white font-lato focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none"
+                          disabled
+                        >
+                          <option value={12}>12</option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </>
+  );
+}

@@ -61,7 +61,7 @@ export default function Philosophy() {
           </div>
 
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-playfair font-light text-gray-950 leading-tight">
-            Where <span className="text-primary-700 italic">Craftsmanship</span>{" "}
+            Where <span className="text-teal-700 italic">Craftsmanship</span>{" "}
             <span className="block mt-2">Meets Technology</span>
           </h2>
 
@@ -85,8 +85,8 @@ export default function Philosophy() {
                 style={{ transitionDelay: isVisible ? `${200 + index * 150}ms` : "0ms" }}
               >
                 {/* Icon Circle */}
-                <div className="w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 rounded-full bg-primary-50 border border-primary-200/30 flex items-center justify-center mb-4 transition-transform duration-500">
-                  <Icon className="w-7 h-7 sm:w-8 sm:h-8 text-primary-700 transition-transform duration-500 group-hover:rotate-8" />
+                <div className="w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 rounded-full bg-teal-50 border border-teal-200/30 flex items-center justify-center mb-4 transition-transform duration-500">
+                  <Icon className="w-7 h-7 sm:w-8 sm:h-8 text-teal-700 transition-transform duration-500 group-hover:rotate-8" />
                 </div>
 
                 {/* Title */}
@@ -110,7 +110,7 @@ export default function Philosophy() {
           }`}
           style={{ transitionDelay: isVisible ? "700ms" : "0ms" }}
         >
-          <span className="text-[80px] sm:text-[100px] md:text-[120px] text-primary-700/10 select-none leading-none absolute -left-2 sm:-left-8 md:-left-12 top-0">
+          <span className="text-[80px] sm:text-[100px] md:text-[120px] text-teal-700/10 select-none leading-none absolute -left-2 sm:-left-8 md:-left-12 top-0">
             &ldquo;
           </span>
 
@@ -120,7 +120,7 @@ export default function Philosophy() {
             Design is how it works in your life.
           </p>
 
-          <span className="text-[80px] sm:text-[100px] md:text-[120px] text-primary-700/10 select-none leading-none absolute -right-2 sm:-right-8 md:-right-12 bottom-0 rotate-180">
+          <span className="text-[80px] sm:text-[100px] md:text-[120px] text-teal-700/10 select-none leading-none absolute -right-2 sm:-right-8 md:-right-12 bottom-0 rotate-180">
             &ldquo;
           </span>
         </div>

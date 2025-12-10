@@ -90,7 +90,7 @@ export default function Navbar() {
   const navLinks = [
     {
       name: "Collections",
-      href: "/products",
+      href: "/shop",
       hasDropdown: true,
       isMegaMenu: true,
       icon: Box,
@@ -101,14 +101,14 @@ export default function Navbar() {
   ];
 
   const mobileCategories = [
-    { name: "Living Room", icon: Sofa, href: "/products?category=living-room" },
-    { name: "Bedroom", icon: BedDouble, href: "/products?category=bedroom" },
+    { name: "Living Room", icon: Sofa, href: "/shop/living-room" },
+    { name: "Bedroom", icon: BedDouble, href: "/shop/bedroom" },
     {
       name: "Dining",
       icon: UtensilsCrossed,
-      href: "/products?category=dining",
+      href: "/shop/dining",
     },
-    { name: "Lighting", icon: Lamp, href: "/products?category=lighting" },
+    { name: "Lighting", icon: Lamp, href: "/shop/lighting" },
   ];
 
   const handleMegaMenuEnter = () => {
@@ -140,7 +140,7 @@ export default function Navbar() {
           <div className="flex items-center shrink-0">
             <a href="/" onClick={closeMobileMenu}>
               <h1
-                className="font-playfair text-xl sm:text-2xl lg:text-2xl font-bold tracking-wide text-secondary-800 cursor-pointer"
+                className="font-playfair text-xl sm:text-2xl lg:text-2xl font-bold tracking-wide text-amber-800 cursor-pointer"
                 style={{
                   opacity: 0,
                   animation:
@@ -193,7 +193,7 @@ export default function Navbar() {
                 </a>
 
                 <div
-                  className={`absolute left-0 -bottom-1 h-0.5 bg-linear-to-r from-primary-700 to-primary-600 rounded-full transition-all duration-300 ${
+                  className={`absolute left-0 -bottom-1 h-0.5 bg-linear-to-r from-teal-700 to-teal-600 rounded-full transition-all duration-300 ${
                     activeLink === link.name
                       ? "w-full opacity-100"
                       : "w-0 opacity-0"
@@ -213,7 +213,7 @@ export default function Navbar() {
               <button className="relative p-2 rounded-lg hover:bg-neutral-100 transition-colors">
                 <ShoppingBag size={20} className="text-neutral-600" />
                 {cartCount > 0 && (
-                  <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-secondary-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-amber-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
                     {cartCount}
                   </span>
                 )}
@@ -235,7 +235,7 @@ export default function Navbar() {
                   className="text-neutral-600 group-hover:text-neutral-900 transition-colors"
                 />
                 {cartCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-secondary-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-md">
+                  <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-amber-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-md">
                     {cartCount}
                   </span>
                 )}
@@ -262,10 +262,10 @@ export default function Navbar() {
                       src={getAvatarUrl()}
                       alt="Profile"
                       crossOrigin="anonymous"
-                      className="w-10 h-10 rounded-full object-cover ring-2 ring-primary-700/20"
+                      className="w-10 h-10 rounded-full object-cover ring-2 ring-teal-700/20"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-primary-700 flex items-center justify-center text-white text-sm font-semibold font-lato ring-2 ring-primary-700/20">
+                    <div className="w-10 h-10 rounded-full bg-teal-700 flex items-center justify-center text-white text-sm font-semibold font-lato ring-2 ring-teal-700/20">
                       {getInitials(user?.firstName, user?.lastName)}
                     </div>
                   )}
@@ -306,7 +306,7 @@ export default function Navbar() {
             ) : (
               <button
                 onClick={() => setLoginModalOpen(true)}
-                className="hidden lg:flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary-700 hover:bg-primary-800 text-sm font-semibold text-white transition-all duration-300 hover:shadow-lg hover:shadow-primary-700/25 hover:scale-105 active:scale-95 ml-2 font-lato"
+                className="hidden lg:flex items-center gap-2 px-5 py-2.5 rounded-full bg-teal-700 hover:bg-teal-800 text-sm font-semibold text-white transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 hover:scale-105 active:scale-95 ml-2 font-lato"
               >
                 <User size={18} />
                 <span>Login</span>
@@ -348,7 +348,7 @@ export default function Navbar() {
           {/* Header */}
           <div className="px-5 py-6 border-b border-neutral-100 bg-white">
             <div className="flex items-center justify-between mb-4">
-              <h1 className="font-playfair text-lg font-bold tracking-wide text-secondary-800">
+              <h1 className="font-playfair text-lg font-bold tracking-wide text-amber-800">
                 Aura Interiors
               </h1>
               <button
@@ -368,7 +368,7 @@ export default function Navbar() {
                     className="w-11 h-11 rounded-full object-cover"
                   />
                 ) : (
-                  <div className="w-11 h-11 rounded-full bg-primary-700 flex items-center justify-center text-white font-semibold font-lato">
+                  <div className="w-11 h-11 rounded-full bg-teal-700 flex items-center justify-center text-white font-semibold font-lato">
                     {getInitials(user?.firstName, user?.lastName)}
                   </div>
                 )}
@@ -445,21 +445,21 @@ export default function Navbar() {
                                 key={category.name}
                                 href={category.href}
                                 onClick={closeMobileMenu}
-                                className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-primary-50 transition-colors group"
+                                className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-teal-50 transition-colors group"
                               >
                                 <category.icon
                                   size={16}
-                                  className="text-neutral-400 group-hover:text-primary-700 transition-colors"
+                                  className="text-neutral-400 group-hover:text-teal-700 transition-colors"
                                 />
-                                <span className="text-sm text-neutral-600 group-hover:text-primary-700 font-medium transition-colors font-lato">
+                                <span className="text-sm text-neutral-600 group-hover:text-teal-700 font-medium transition-colors font-lato">
                                   {category.name}
                                 </span>
                               </a>
                             ))}
                             <a
-                              href="/products"
+                              href="/shop"
                               onClick={closeMobileMenu}
-                              className="flex items-center gap-2 px-3 py-2.5 text-primary-700 font-medium text-sm font-lato"
+                              className="flex items-center gap-2 px-3 py-2.5 text-teal-700 font-medium text-sm font-lato"
                             >
                               <span>View All Products</span>
                               <ChevronRight size={16} />
@@ -508,8 +508,8 @@ export default function Navbar() {
                         onClick={closeMobileMenu}
                         className="flex items-center gap-3 px-3 py-3 text-neutral-700 hover:bg-neutral-50 rounded-xl transition-colors"
                       >
-                        <div className="w-9 h-9 bg-primary-100 rounded-lg flex items-center justify-center">
-                          <LayoutDashboard size={18} className="text-primary-700" />
+                        <div className="w-9 h-9 bg-teal-100 rounded-lg flex items-center justify-center">
+                          <LayoutDashboard size={18} className="text-teal-700" />
                         </div>
                         <span className="flex-1 font-medium font-lato">Admin Dashboard</span>
                         <ChevronRight size={18} className="text-neutral-400" />

@@ -11,6 +11,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ProfilePage from "./pages/ProfilePage";
+import ShopPage from "./pages/ShopPage";
 import useAuthStore from "./store/authStore";
 
 // Admin imports
@@ -47,6 +48,8 @@ function App() {
       <AuthCallback />
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/shop" element={<ShopPage />} />
+        <Route path="/shop/:categorySlug" element={<ShopPage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         <Route
           path="/profile"

@@ -99,7 +99,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
           <div className="mb-6">
             <h2 className="text-2xl sm:text-3xl font-playfair text-neutral-900">
               <span className="font-bold">Welcome</span>{" "}
-              <span className="italic text-primary-700">back!</span>
+              <span className="italic text-teal-700">back!</span>
             </h2>
             <p className="text-neutral-500 mt-1 font-lato text-sm sm:text-base">
               Sign in to continue using Aura Interiors
@@ -125,7 +125,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
                   onChange={handleChange}
                   placeholder="you@example.com"
                   required
-                  className="w-full pl-11 pr-4 py-2.5 rounded-lg border border-neutral-200 focus:border-primary-700 focus:ring-1 focus:ring-primary-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
+                  className="w-full pl-11 pr-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
                 />
               </div>
             </div>
@@ -147,7 +147,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
                   onChange={handleChange}
                   placeholder="Enter your password"
                   required
-                  className="w-full pl-11 pr-11 py-2.5 rounded-lg border border-neutral-200 focus:border-primary-700 focus:ring-1 focus:ring-primary-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
+                  className="w-full pl-11 pr-11 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
                 />
                 <button
                   type="button"
@@ -167,7 +167,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
                   name="rememberMe"
                   checked={formData.rememberMe}
                   onChange={handleChange}
-                  className="w-4 h-4 rounded border-neutral-300 accent-primary-700 focus:ring-primary-700 cursor-pointer"
+                  className="w-4 h-4 rounded border-neutral-300 accent-teal-700 focus:ring-teal-700 cursor-pointer"
                 />
                 <label className="text-sm text-neutral-700 font-lato">
                   Remember me
@@ -176,7 +176,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
               <button
                 type="button"
                 onClick={() => setShowForgotPassword(true)}
-                className="text-sm text-primary-700 font-semibold hover:underline font-lato"
+                className="text-sm text-teal-700 font-semibold hover:underline font-lato"
               >
                 Forgot password?
               </button>
@@ -191,7 +191,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
             <button
               type="submit"
               disabled={isPending}
-              className="w-full py-3 bg-primary-700 hover:bg-primary-800 disabled:bg-primary-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-primary-700/25 font-lato"
+              className="w-full py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-lato"
             >
               {isPending ? "Signing in..." : "Sign In"}
             </button>
@@ -241,7 +241,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
             <button
               type="button"
               onClick={onSwitchToSignup}
-              className="text-primary-700 font-semibold hover:underline"
+              className="text-teal-700 font-semibold hover:underline"
             >
               Create one
             </button>

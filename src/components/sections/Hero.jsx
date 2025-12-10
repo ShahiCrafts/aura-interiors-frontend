@@ -114,7 +114,7 @@ export default function Hero() {
         }`}
       >
         <div className="inline-flex items-center gap-2 w-fit mb-2 sm:mb-3 bg-white rounded-full px-3 sm:px-4 py-1.5 sm:py-2 shadow-sm border border-neutral-100">
-          <Star className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 text-primary-700" />
+          <Star className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 text-teal-700" />
           <span className="text-sm sm:text-sm md:text-base font-medium text-gray-700 font-lato">
             Trusted by 50k+ homeowners
           </span>
@@ -122,10 +122,10 @@ export default function Hero() {
 
         <h1 className="text-3xl sm:text-4xl md:text-[2.75rem] lg:text-[3rem] xl:text-5xl font-semibold font-playfair text-gray-950 leading-tight">
           <span className="block">Redefine Your Space with</span>
-          <span className="text-primary-700 font-semibold italic block mt-1 lg:hidden">
+          <span className="text-teal-700 font-semibold italic block mt-1 lg:hidden">
             modern luxury & AR
           </span>
-          <span className="text-primary-700 font-semibold italic hidden lg:block mt-1">
+          <span className="text-teal-700 font-semibold italic hidden lg:block mt-1">
             with modern luxury & AR
           </span>
         </h1>
@@ -136,7 +136,7 @@ export default function Hero() {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6 w-full sm:w-auto font-lato">
-          <button className="bg-primary-700 hover:bg-primary-800 text-white px-6 sm:px-8 py-3 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-primary-700/25 flex items-center justify-center">
+          <button className="bg-teal-700 hover:bg-teal-800 text-white px-6 sm:px-8 py-3 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 flex items-center justify-center">
             <span>Shop Collection</span>
           </button>
 
@@ -146,9 +146,9 @@ export default function Hero() {
                 handleOpenVideo();
               }
             }}
-            className="bg-white text-gray-700 px-6 sm:px-8 py-3 rounded-xl font-semibold border border-gray-200 lg:hover:border-primary-700 lg:hover:text-primary-700 transition-all duration-300 flex items-center justify-center gap-2"
+            className="bg-white text-gray-700 px-6 sm:px-8 py-3 rounded-xl font-semibold border border-gray-200 lg:hover:border-teal-700 lg:hover:text-teal-700 transition-all duration-300 flex items-center justify-center gap-2"
           >
-            <Play className="w-4 h-4 sm:w-5 sm:h-5 text-primary-700" />
+            <Play className="w-4 h-4 sm:w-5 sm:h-5 text-teal-700" />
             <span>Try AR View</span>
           </button>
         </div>
@@ -263,7 +263,7 @@ export default function Hero() {
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-40 w-14 h-14 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-2xl hover:bg-white hover:scale-110 transition-all duration-300"
           >
             <Play
-              className="w-5 h-5 text-primary-700 translate-x-0.5"
+              className="w-5 h-5 text-teal-700 translate-x-0.5"
               fill="currentColor"
             />
           </button>
