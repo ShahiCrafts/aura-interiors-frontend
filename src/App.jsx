@@ -12,6 +12,7 @@ import AdminRoute from "./components/AdminRoute";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ProfilePage from "./pages/ProfilePage";
 import ShopPage from "./pages/ShopPage";
+import ProductDetailsPage from "./pages/ProductDetailsPage";
 import useAuthStore from "./store/authStore";
 
 // Admin imports
@@ -50,6 +51,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/shop" element={<ShopPage />} />
         <Route path="/shop/:categorySlug" element={<ShopPage />} />
+        <Route path="/product/:productSlug" element={<ProductDetailsPage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         <Route
           path="/profile"

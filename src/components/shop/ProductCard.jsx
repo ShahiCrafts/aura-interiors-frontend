@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { Star, View } from "lucide-react";
+import { Star } from "lucide-react";
+import arIcon from "../../assets/icons/ar_icon.png";
 
 export default function ProductCard({ product }) {
   const {
@@ -42,8 +43,8 @@ export default function ProductCard({ product }) {
 
         {/* AR Badge */}
         {arAvailable && (
-          <div className="absolute top-3 right-3 bg-teal-700 text-white text-xs font-semibold px-2 py-1 rounded-md flex items-center gap-1 font-lato">
-            <View size={12} />
+          <div className="absolute top-3 right-3 bg-teal-700 text-white text-xs font-semibold px-2 py-1 rounded-md flex items-center gap-1.5 font-lato">
+            <img src={arIcon} alt="AR" className="w-3 h-3 invert" />
             AR
           </div>
         )}
