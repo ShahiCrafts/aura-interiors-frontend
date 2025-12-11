@@ -259,15 +259,13 @@ export default function ProductDetailsPage() {
             <div>
               {/* Main Image */}
               <div className="relative mb-4">
-                <div className="aspect-[4/3] rounded-2xl bg-neutral-100">
-                  <ImageMagnifier
-                    src={getImageUrl(images[selectedImage])}
-                    alt={product.name}
-                    magnifierSize={180}
-                    zoomLevel={2.5}
-                    className="w-full h-full rounded-2xl overflow-hidden"
-                  />
-                </div>
+                <ImageMagnifier
+                  src={getImageUrl(images[selectedImage])}
+                  alt={product.name}
+                  magnifierSize={180}
+                  zoomLevel={2.5}
+                  className="aspect-[4/3] w-full"
+                />
 
                 {/* Bestseller Badge */}
                 {product.isFeatured && (

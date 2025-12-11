@@ -55,7 +55,7 @@ export default function ImageMagnifier({
   return (
     <div
       ref={containerRef}
-      className={`relative overflow-visible ${className}`}
+      className={`relative ${className}`}
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -64,7 +64,7 @@ export default function ImageMagnifier({
       <img
         src={src}
         alt={alt}
-        className="w-full h-full object-cover"
+        className="w-full h-full object-cover rounded-2xl"
         draggable={false}
       />
 

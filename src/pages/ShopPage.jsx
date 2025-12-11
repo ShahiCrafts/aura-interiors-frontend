@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import { ChevronRight, Grid3X3, List, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useParams, Link, useSearchParams } from "react-router-dom";
+import { ChevronRight, ChevronDown, Grid3X3, List, Loader2, Search } from "lucide-react";
 import Navbar from "../layouts/Navbar";
 import Footer from "../layouts/Footer";
 import ProductCard from "../components/shop/ProductCard";
@@ -10,9 +10,24 @@ import { useProducts } from "../hooks/useProductTan";
 
 export default function ShopPage() {
   const { categorySlug } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [page, setPage] = useState(1);
-  const [viewMode, setViewMode] = useState("grid"); // grid or list
+  const [viewMode, setViewMode] = useState("grid");
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
+  const [searchInput, setSearchInput] = useState(searchParams.get("search") || "");
+  const [sortBy, setSortBy] = useState(searchParams.get("sort") || "featured");
+  const [showSortDropdown, setShowSortDropdown] = useState(false);
   const limit = 12;
+
+  // Sort options
+  const sortOptions = [
+    { value: "featured", label: "Featured" },
+    { value: "newest", label: "Newest" },
+    { value: "price_low", label: "Price: Low to High" },
+    { value: "price_high", label: "Price: High to Low" },
+    { value: "rating", label: "Highest Rated" },
+  ];
 
   // Fetch category tree for sidebar
   const { data: categoryTreeData } = useCategoryTree();
@@ -24,17 +39,46 @@ export default function ShopPage() {
   });
   const currentCategory = categoryData?.data?.category;
 
+  // Build query params for products
+  const getProductParams = () => {
+    const params = { page, limit, status: "active" };
+
+    if (searchQuery) {
+      params.search = searchQuery;
+    }
+
+    // Map sort values to API params (backend uses "-field" for descending)
+    switch (sortBy) {
+      case "newest":
+        params.sort = "-createdAt";
+        break;
+      case "price_low":
+        params.sort = "price";
+        break;
+      case "price_high":
+        params.sort = "-price";
+        break;
+      case "rating":
+        params.sort = "-rating.average";
+        break;
+      case "featured":
+      default:
+        params.sort = "-isFeatured,-createdAt";
+        break;
+    }
+
+    return params;
+  };
+
   // Fetch products - either by category or all products
   const {
     data: productsData,
     isLoading: isProductsLoading,
   } = categorySlug
-    ? useCategoryProducts(categorySlug, { page, limit })
-    : useProducts({ page, limit, status: "active" });
+    ? useCategoryProducts(categorySlug, getProductParams())
+    : useProducts(getProductParams());
 
-  const products = categorySlug
-    ? productsData?.data?.products || []
-    : productsData?.data?.products || [];
+  const products = productsData?.data?.products || [];
 
   const pagination = productsData?.data?.pagination || {
     page: 1,
@@ -43,12 +87,36 @@ export default function ShopPage() {
     pages: 1,
   };
 
+  // Update URL when search or sort changes
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchQuery) params.set("search", searchQuery);
+    if (sortBy !== "featured") params.set("sort", sortBy);
+    setSearchParams(params, { replace: true });
+  }, [searchQuery, sortBy]);
+
+  // Reset page when search or sort changes
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery, sortBy, categorySlug]);
+
+  // Handle search submit
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setSearchQuery(searchInput);
+  };
+
+  // Handle sort change
+  const handleSortChange = (value) => {
+    setSortBy(value);
+    setShowSortDropdown(false);
+  };
+
   // Build breadcrumb trail
   const buildBreadcrumbs = () => {
     const crumbs = [{ name: "Home", path: "/" }, { name: "Shop", path: "/shop" }];
 
     if (currentCategory) {
-      // If category has parent, add parent first
       if (currentCategory.parent) {
         crumbs.push({
           name: currentCategory.parent.name,
@@ -103,54 +171,110 @@ export default function ShopPage() {
           </nav>
 
           {/* Page Header */}
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
-            <div>
-              <h1 className="text-3xl sm:text-4xl font-playfair text-neutral-900">
-                {currentCategory ? (
-                  <>
-                    <span className="font-bold">{pageTitle.split(" ")[0]}</span>{" "}
-                    <span className="italic text-teal-700">
-                      {pageTitle.split(" ").slice(1).join(" ") || "Furniture"}
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <span className="font-bold">All</span>{" "}
-                    <span className="italic text-teal-700">Products</span>
-                  </>
-                )}
-              </h1>
-              <p className="text-neutral-500 font-lato mt-1">
-                Showing <span className="font-semibold text-neutral-700">{totalProducts}</span>{" "}
-                products
-                {currentCategory?.description && (
-                  <span> for your perfect {currentCategory.name.toLowerCase()}</span>
-                )}
-              </p>
+          <div className="flex flex-col gap-4 mb-8">
+            {/* Title Row */}
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+              <div>
+                <h1 className="text-3xl sm:text-4xl font-playfair text-neutral-900">
+                  {currentCategory ? (
+                    <>
+                      <span className="font-bold">{pageTitle.split(" ")[0]}</span>{" "}
+                      <span className="italic text-teal-700">
+                        {pageTitle.split(" ").slice(1).join(" ") || "Furniture"}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="font-bold">All</span>{" "}
+                      <span className="italic text-teal-700">Products</span>
+                    </>
+                  )}
+                </h1>
+                <p className="text-neutral-500 font-lato mt-1">
+                  Showing <span className="font-semibold text-neutral-700">{totalProducts}</span>{" "}
+                  products
+                  {currentCategory?.description && (
+                    <span> for your perfect {currentCategory.name.toLowerCase()}</span>
+                  )}
+                </p>
+              </div>
             </div>
 
-            {/* View Toggle */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setViewMode("grid")}
-                className={`p-2 rounded-lg transition-colors ${
-                  viewMode === "grid"
-                    ? "bg-teal-700 text-white"
-                    : "bg-white border border-neutral-200 text-neutral-600 hover:border-neutral-300"
-                }`}
-              >
-                <Grid3X3 size={18} />
-              </button>
-              <button
-                onClick={() => setViewMode("list")}
-                className={`p-2 rounded-lg transition-colors ${
-                  viewMode === "list"
-                    ? "bg-teal-700 text-white"
-                    : "bg-white border border-neutral-200 text-neutral-600 hover:border-neutral-300"
-                }`}
-              >
-                <List size={18} />
-              </button>
+            {/* Search, Sort, and View Controls */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:justify-end">
+              {/* Search Bar */}
+              <form onSubmit={handleSearch} className="sm:max-w-md">
+                <div className="relative">
+                  <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+                  <input
+                    type="text"
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    placeholder="Search for furnitures you..."
+                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-neutral-200 bg-white text-sm font-lato placeholder:text-neutral-400 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-colors"
+                  />
+                </div>
+              </form>
+
+              {/* Sort Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowSortDropdown(!showSortDropdown)}
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-neutral-200 bg-white text-sm font-lato hover:border-neutral-300 transition-colors"
+                >
+                  <span className="text-neutral-500">Sort by:</span>
+                  <span className="font-medium text-neutral-700">
+                    {sortOptions.find(opt => opt.value === sortBy)?.label}
+                  </span>
+                  <ChevronDown size={16} className={`text-neutral-400 transition-transform ${showSortDropdown ? "rotate-180" : ""}`} />
+                </button>
+
+                {showSortDropdown && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setShowSortDropdown(false)}
+                    />
+                    <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-neutral-200 rounded-lg shadow-lg z-20 py-1">
+                      {sortOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => handleSortChange(option.value)}
+                          className={`w-full text-left px-4 py-2 text-sm font-lato hover:bg-neutral-50 transition-colors ${
+                            sortBy === option.value ? "text-teal-700 bg-teal-50" : "text-neutral-700"
+                          }`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* View Toggle */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setViewMode("grid")}
+                  className={`p-2.5 rounded-lg transition-colors ${
+                    viewMode === "grid"
+                      ? "bg-teal-700 text-white"
+                      : "bg-white border border-neutral-200 text-neutral-600 hover:border-neutral-300"
+                  }`}
+                >
+                  <Grid3X3 size={18} />
+                </button>
+                <button
+                  onClick={() => setViewMode("list")}
+                  className={`p-2.5 rounded-lg transition-colors ${
+                    viewMode === "list"
+                      ? "bg-teal-700 text-white"
+                      : "bg-white border border-neutral-200 text-neutral-600 hover:border-neutral-300"
+                  }`}
+                >
+                  <List size={18} />
+                </button>
+              </div>
             </div>
           </div>
 
@@ -172,10 +296,26 @@ export default function ShopPage() {
                 </div>
               ) : products.length === 0 ? (
                 <div className="text-center py-16 bg-white rounded-xl border border-neutral-100">
-                  <p className="text-neutral-500 font-lato">No products found in this category.</p>
+                  <p className="text-neutral-500 font-lato">
+                    {searchQuery
+                      ? `No products found for "${searchQuery}"`
+                      : "No products found in this category."
+                    }
+                  </p>
+                  {searchQuery && (
+                    <button
+                      onClick={() => {
+                        setSearchInput("");
+                        setSearchQuery("");
+                      }}
+                      className="inline-block mt-4 text-teal-700 font-semibold hover:underline font-lato"
+                    >
+                      Clear search
+                    </button>
+                  )}
                   <Link
                     to="/shop"
-                    className="inline-block mt-4 text-teal-700 font-semibold hover:underline font-lato"
+                    className="inline-block mt-4 ml-4 text-teal-700 font-semibold hover:underline font-lato"
                   >
                     Browse all products
                   </Link>
@@ -217,7 +357,6 @@ export default function ShopPage() {
                         {/* Page Numbers */}
                         {[...Array(pagination.pages)].map((_, i) => {
                           const pageNum = i + 1;
-                          // Show first, last, current, and neighbors
                           if (
                             pageNum === 1 ||
                             pageNum === pagination.pages ||
@@ -237,7 +376,6 @@ export default function ShopPage() {
                               </button>
                             );
                           }
-                          // Show ellipsis
                           if (pageNum === page - 2 || pageNum === page + 2) {
                             return (
                               <span key={pageNum} className="px-2 text-neutral-400">
