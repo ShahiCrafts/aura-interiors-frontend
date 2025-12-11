@@ -4,7 +4,7 @@ import { ChevronRight, ChevronDown, Grid3X3, List, Loader2, Search } from "lucid
 import Navbar from "../layouts/Navbar";
 import Footer from "../layouts/Footer";
 import ProductCard from "../components/shop/ProductCard";
-import CategorySidebar from "../components/shop/CategorySidebar";
+import FilterSidebar from "../components/shop/FilterSidebar";
 import { useCategory, useCategoryProducts, useCategoryTree } from "../hooks/useCategoryTan";
 import { useProducts } from "../hooks/useProductTan";
 
@@ -19,6 +19,24 @@ export default function ShopPage() {
   const [sortBy, setSortBy] = useState(searchParams.get("sort") || "featured");
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const limit = 12;
+
+  // Filter states
+  const [selectedCategories, setSelectedCategories] = useState(
+    searchParams.get("categories")?.split(",").filter(Boolean) || []
+  );
+  const [priceRange, setPriceRange] = useState({
+    min: Number(searchParams.get("minPrice")) || 0,
+    max: Number(searchParams.get("maxPrice")) || 500000,
+  });
+  const [selectedColors, setSelectedColors] = useState(
+    searchParams.get("colors")?.split(",").filter(Boolean) || []
+  );
+  const [selectedMaterials, setSelectedMaterials] = useState(
+    searchParams.get("materials")?.split(",").filter(Boolean) || []
+  );
+  const [selectedRating, setSelectedRating] = useState(
+    Number(searchParams.get("rating")) || 0
+  );
 
   // Sort options
   const sortOptions = [
@@ -67,6 +85,26 @@ export default function ShopPage() {
         break;
     }
 
+    // Add filter params
+    if (selectedCategories.length > 0) {
+      params.categories = selectedCategories.join(",");
+    }
+    if (priceRange.min > 0) {
+      params.minPrice = priceRange.min;
+    }
+    if (priceRange.max < 500000) {
+      params.maxPrice = priceRange.max;
+    }
+    if (selectedColors.length > 0) {
+      params.colors = selectedColors.join(",");
+    }
+    if (selectedMaterials.length > 0) {
+      params.materials = selectedMaterials.join(",");
+    }
+    if (selectedRating > 0) {
+      params.minRating = selectedRating;
+    }
+
     return params;
   };
 
@@ -87,18 +125,24 @@ export default function ShopPage() {
     pages: 1,
   };
 
-  // Update URL when search or sort changes
+  // Update URL when search, sort, or filters change
   useEffect(() => {
     const params = new URLSearchParams();
     if (searchQuery) params.set("search", searchQuery);
     if (sortBy !== "featured") params.set("sort", sortBy);
+    if (selectedCategories.length > 0) params.set("categories", selectedCategories.join(","));
+    if (priceRange.min > 0) params.set("minPrice", priceRange.min.toString());
+    if (priceRange.max < 500000) params.set("maxPrice", priceRange.max.toString());
+    if (selectedColors.length > 0) params.set("colors", selectedColors.join(","));
+    if (selectedMaterials.length > 0) params.set("materials", selectedMaterials.join(","));
+    if (selectedRating > 0) params.set("rating", selectedRating.toString());
     setSearchParams(params, { replace: true });
-  }, [searchQuery, sortBy]);
+  }, [searchQuery, sortBy, selectedCategories, priceRange, selectedColors, selectedMaterials, selectedRating]);
 
-  // Reset page when search or sort changes
+  // Reset page when search, sort, or filters change
   useEffect(() => {
     setPage(1);
-  }, [searchQuery, sortBy, categorySlug]);
+  }, [searchQuery, sortBy, categorySlug, selectedCategories, priceRange, selectedColors, selectedMaterials, selectedRating]);
 
   // Handle search submit
   const handleSearch = (e) => {
@@ -110,6 +154,17 @@ export default function ShopPage() {
   const handleSortChange = (value) => {
     setSortBy(value);
     setShowSortDropdown(false);
+  };
+
+  // Handle reset all filters
+  const handleResetFilters = () => {
+    setSelectedCategories([]);
+    setPriceRange({ min: 0, max: 500000 });
+    setSelectedColors([]);
+    setSelectedMaterials([]);
+    setSelectedRating(0);
+    setSearchQuery("");
+    setSearchInput("");
   };
 
   // Build breadcrumb trail
@@ -171,46 +226,44 @@ export default function ShopPage() {
           </nav>
 
           {/* Page Header */}
-          <div className="flex flex-col gap-4 mb-8">
-            {/* Title Row */}
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-              <div>
-                <h1 className="text-3xl sm:text-4xl font-playfair text-neutral-900">
-                  {currentCategory ? (
-                    <>
-                      <span className="font-bold">{pageTitle.split(" ")[0]}</span>{" "}
-                      <span className="italic text-teal-700">
-                        {pageTitle.split(" ").slice(1).join(" ") || "Furniture"}
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="font-bold">All</span>{" "}
-                      <span className="italic text-teal-700">Products</span>
-                    </>
-                  )}
-                </h1>
-                <p className="text-neutral-500 font-lato mt-1">
-                  Showing <span className="font-semibold text-neutral-700">{totalProducts}</span>{" "}
-                  products
-                  {currentCategory?.description && (
-                    <span> for your perfect {currentCategory.name.toLowerCase()}</span>
-                  )}
-                </p>
-              </div>
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-8">
+            {/* Title */}
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-playfair text-neutral-900">
+                {currentCategory ? (
+                  <>
+                    <span className="font-bold">{pageTitle.split(" ")[0]}</span>{" "}
+                    <span className="italic text-teal-700">
+                      {pageTitle.split(" ").slice(1).join(" ") || "Furniture"}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="font-bold">All</span>{" "}
+                    <span className="italic text-teal-700">Products</span>
+                  </>
+                )}
+              </h1>
+              <p className="text-neutral-500 font-lato mt-1">
+                Showing <span className="font-semibold text-neutral-700">{totalProducts}</span>{" "}
+                products
+                {currentCategory?.description && (
+                  <span> for your perfect {currentCategory.name.toLowerCase()}</span>
+                )}
+              </p>
             </div>
 
             {/* Search, Sort, and View Controls */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:justify-end">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               {/* Search Bar */}
-              <form onSubmit={handleSearch} className="sm:max-w-md">
+              <form onSubmit={handleSearch} className="sm:w-64">
                 <div className="relative">
                   <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
                   <input
                     type="text"
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
-                    placeholder="Search for furnitures you..."
+                    placeholder="Search products..."
                     className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-neutral-200 bg-white text-sm font-lato placeholder:text-neutral-400 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-colors"
                   />
                 </div>
@@ -220,7 +273,7 @@ export default function ShopPage() {
               <div className="relative">
                 <button
                   onClick={() => setShowSortDropdown(!showSortDropdown)}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-neutral-200 bg-white text-sm font-lato hover:border-neutral-300 transition-colors"
+                  className="w-full sm:w-auto flex items-center justify-between sm:justify-start gap-2 px-4 py-2.5 rounded-lg border border-neutral-200 bg-white text-sm font-lato hover:border-neutral-300 transition-colors"
                 >
                   <span className="text-neutral-500">Sort by:</span>
                   <span className="font-medium text-neutral-700">
@@ -282,13 +335,24 @@ export default function ShopPage() {
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Sidebar */}
             <aside className="lg:w-64 shrink-0">
-              <CategorySidebar
+              <FilterSidebar
                 categories={categories}
-                currentCategory={currentCategory}
+                selectedCategories={selectedCategories}
+                onCategoryChange={setSelectedCategories}
+                priceRange={{ min: 0, max: 500000 }}
+                selectedPriceRange={priceRange}
+                onPriceChange={setPriceRange}
+                selectedColors={selectedColors}
+                onColorChange={setSelectedColors}
+                selectedMaterials={selectedMaterials}
+                onMaterialChange={setSelectedMaterials}
+                selectedRating={selectedRating}
+                onRatingChange={setSelectedRating}
+                onResetFilters={handleResetFilters}
               />
             </aside>
 
-            {/* Products Grid */}
+            {/* Products Section */}
             <div className="flex-1">
               {isLoading ? (
                 <div className="flex items-center justify-center h-64">

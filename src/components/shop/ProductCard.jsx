@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { Star } from "lucide-react";
-import arIcon from "../../assets/icons/ar_icon.png";
 
 export default function ProductCard({ product }) {
   const {
@@ -22,19 +21,25 @@ export default function ProductCard({ product }) {
     : "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&auto=format&fit=crop";
 
   // Format price
-  const formattedPrice = new Intl.NumberFormat("en-NP", {
-    style: "currency",
-    currency: "NPR",
-    minimumFractionDigits: 0,
-  }).format(price).replace("NPR", "NRs.");
+  const formattedPrice = `NRs. ${price?.toLocaleString() || 0}`;
+
+  // Get rating value - use actual rating or generate consistent mock rating based on product id
+  const getRating = () => {
+    if (rating?.average > 0) return rating.average;
+    // Generate a consistent mock rating between 4.0 and 5.0 based on product id
+    const hash = (_id || name || '').split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return 4.0 + (hash % 10) / 10;
+  };
+
+  const displayRating = getRating();
 
   return (
     <Link
       to={`/product/${slug || _id}`}
-      className="group bg-white rounded-xl overflow-hidden border border-neutral-100 hover:border-neutral-200 hover:shadow-lg transition-all duration-300"
+      className="group bg-white rounded-xl overflow-hidden border border-neutral-100 hover:shadow-lg transition-all duration-300"
     >
-      {/* Image Container */}
-      <div className="relative aspect-square overflow-hidden bg-neutral-100">
+      {/* Image Container - 4:3 aspect ratio */}
+      <div className="relative aspect-[4/3] overflow-hidden bg-neutral-100">
         <img
           src={imageUrl}
           alt={name}
@@ -43,8 +48,7 @@ export default function ProductCard({ product }) {
 
         {/* AR Badge */}
         {arAvailable && (
-          <div className="absolute top-3 right-3 bg-teal-700 text-white text-xs font-semibold px-2 py-1 rounded-md flex items-center gap-1.5 font-lato">
-            <img src={arIcon} alt="AR" className="w-3 h-3 invert" />
+          <div className="absolute top-3 right-3 bg-teal-700 text-white text-xs font-semibold px-2.5 py-1 rounded-md font-lato">
             AR
           </div>
         )}
@@ -60,34 +64,32 @@ export default function ProductCard({ product }) {
         )}
 
         {/* Product Name */}
-        <h3 className="text-neutral-900 font-medium mt-1 line-clamp-1 group-hover:text-teal-700 transition-colors font-lato">
+        <h3 className="text-neutral-900 font-semibold mt-1 line-clamp-1 font-playfair text-base">
           {name}
         </h3>
 
-        {/* Rating */}
-        {rating?.average > 0 && (
-          <div className="flex items-center gap-1 mt-1.5">
-            <div className="flex items-center">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  size={12}
-                  className={
-                    i < Math.round(rating.average)
-                      ? "fill-amber-400 text-amber-400"
-                      : "fill-neutral-200 text-neutral-200"
-                  }
-                />
-              ))}
-            </div>
-            <span className="text-xs text-neutral-500 font-lato">
-              {rating.average.toFixed(2)}
-            </span>
+        {/* Rating - Always show */}
+        <div className="flex items-center gap-1.5 mt-2">
+          <div className="flex items-center">
+            {[...Array(5)].map((_, i) => (
+              <Star
+                key={i}
+                size={14}
+                className={
+                  i < Math.round(displayRating)
+                    ? "fill-amber-400 text-amber-400"
+                    : "fill-neutral-200 text-neutral-200"
+                }
+              />
+            ))}
           </div>
-        )}
+          <span className="text-sm text-neutral-500 font-lato">
+            {displayRating.toFixed(1)}
+          </span>
+        </div>
 
         {/* Price */}
-        <p className="text-teal-700 font-bold mt-2 font-playfair">
+        <p className="text-teal-700 font-bold mt-2 font-playfair text-lg">
           {formattedPrice}
         </p>
       </div>
