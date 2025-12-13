@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Star } from "lucide-react";
 
-export default function ProductCard({ product }) {
+export default function ProductCard({ product, viewMode = "grid" }) {
   const {
     _id,
     name,
@@ -11,6 +11,7 @@ export default function ProductCard({ product }) {
     category,
     rating,
     arAvailable,
+    shortDescription,
   } = product;
 
   // Get primary image or first image
@@ -33,6 +34,73 @@ export default function ProductCard({ product }) {
 
   const displayRating = getRating();
 
+  // List view layout
+  if (viewMode === "list") {
+    return (
+      <Link
+        to={`/product/${slug || _id}`}
+        className="group flex bg-white rounded-xl overflow-hidden border border-neutral-100 hover:shadow-lg transition-all duration-300"
+      >
+        {/* Image Container */}
+        <div className="relative w-48 sm:w-56 shrink-0 overflow-hidden bg-neutral-100">
+          <img
+            src={imageUrl}
+            alt={name}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+          {arAvailable && (
+            <div className="absolute top-3 left-3 bg-teal-700 text-white text-xs font-semibold px-2.5 py-1 rounded-md font-lato">
+              AR
+            </div>
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 p-4 sm:p-5 flex flex-col justify-center">
+          {category?.name && (
+            <span className="text-xs font-semibold text-teal-700 uppercase tracking-wide font-lato">
+              {category.name}
+            </span>
+          )}
+
+          <h3 className="text-neutral-900 font-semibold mt-1 font-playfair text-lg sm:text-xl line-clamp-1">
+            {name}
+          </h3>
+
+          {shortDescription && (
+            <p className="text-neutral-500 text-sm font-lato mt-2 line-clamp-2 hidden sm:block">
+              {shortDescription}
+            </p>
+          )}
+
+          <div className="flex items-center gap-1.5 mt-2">
+            <div className="flex items-center">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  size={14}
+                  className={
+                    i < Math.round(displayRating)
+                      ? "fill-amber-400 text-amber-400"
+                      : "fill-neutral-200 text-neutral-200"
+                  }
+                />
+              ))}
+            </div>
+            <span className="text-sm text-neutral-500 font-lato">
+              {displayRating.toFixed(1)}
+            </span>
+          </div>
+
+          <p className="text-teal-700 font-bold mt-2 font-playfair text-lg sm:text-xl">
+            {formattedPrice}
+          </p>
+        </div>
+      </Link>
+    );
+  }
+
+  // Grid view layout (default)
   return (
     <Link
       to={`/product/${slug || _id}`}

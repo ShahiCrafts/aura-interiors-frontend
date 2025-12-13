@@ -204,7 +204,7 @@ export default function ShopPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-neutral-50 pt-20">
+      <main className="min-h-screen bg-neutral-50 pt-20 font-lato">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm mb-6">
@@ -395,7 +395,7 @@ export default function ShopPage() {
                     }
                   >
                     {products.map((product) => (
-                      <ProductCard key={product._id} product={product} />
+                      <ProductCard key={product._id} product={product} viewMode={viewMode} />
                     ))}
                   </div>
 

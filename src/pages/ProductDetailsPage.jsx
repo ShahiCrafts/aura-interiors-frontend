@@ -19,6 +19,7 @@ import Footer from "../layouts/Footer";
 import { useProduct, useRelatedProducts } from "../hooks/useProductTan";
 import ProductCard from "../components/shop/ProductCard";
 import ImageMagnifier from "../components/shop/ImageMagnifier";
+import ARViewModal from "../components/modals/ARViewModal";
 import arIcon from "../assets/icons/ar_icon.png";
 
 export default function ProductDetailsPage() {
@@ -29,6 +30,7 @@ export default function ProductDetailsPage() {
   const [quantity, setQuantity] = useState(0);
   const [expandedSections, setExpandedSections] = useState({});
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [isARModalOpen, setIsARModalOpen] = useState(false);
   const reviewsSectionRef = useRef(null);
 
   // Fetch product data
@@ -195,7 +197,7 @@ export default function ProductDetailsPage() {
     return (
       <>
         <Navbar />
-        <main className="min-h-screen bg-white pt-20">
+        <main className="min-h-screen bg-white pt-20 font-lato">
           <div className="flex items-center justify-center h-96">
             <Loader2 size={40} className="text-teal-700 animate-spin" />
           </div>
@@ -209,7 +211,7 @@ export default function ProductDetailsPage() {
     return (
       <>
         <Navbar />
-        <main className="min-h-screen bg-white pt-20">
+        <main className="min-h-screen bg-white pt-20 font-lato">
           <div className="max-w-7xl mx-auto px-4 py-16 text-center">
             <h1 className="text-2xl font-playfair text-neutral-900 mb-4">Product Not Found</h1>
             <p className="text-neutral-500 font-lato mb-6">The product you're looking for doesn't exist or has been removed.</p>
@@ -232,7 +234,7 @@ export default function ProductDetailsPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-white pt-20">
+      <main className="min-h-screen bg-white pt-20 font-lato">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm mb-6 overflow-x-auto pb-2">
@@ -291,7 +293,10 @@ export default function ProductDetailsPage() {
                 </div>
 
                 {/* 3D/AR View Button */}
-                <button className="absolute bottom-4 right-4 w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center hover:bg-neutral-50 transition-colors">
+                <button
+                  onClick={() => setIsARModalOpen(true)}
+                  className="absolute bottom-4 right-4 w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center hover:bg-neutral-50 transition-colors"
+                >
                   <img src={arIcon} alt="AR View" className="w-5 h-5" />
                 </button>
               </div>
@@ -695,6 +700,13 @@ export default function ProductDetailsPage() {
         </div>
       </main>
       <Footer />
+
+      {/* AR View Modal */}
+      <ARViewModal
+        isOpen={isARModalOpen}
+        onClose={() => setIsARModalOpen(false)}
+        product={product}
+      />
     </>
   );
 }

@@ -75,7 +75,7 @@ export default function ImageMagnifier({
             width: `${magnifierSize}px`,
             height: `${magnifierSize}px`,
             backgroundRepeat: "no-repeat",
-            zIndex: 9999,
+            zIndex: 40,
             ...magnifierStyle,
           }}
         />

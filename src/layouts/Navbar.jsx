@@ -12,12 +12,12 @@ import {
   BedDouble,
   UtensilsCrossed,
   Lamp,
-  Home,
   Box,
-  Phone,
-  FileText,
+  Heart,
   LogOut,
   LayoutDashboard,
+  FileText,
+  Phone,
 } from "lucide-react";
 import useAuthStore from "../store/authStore";
 import MegaMenuDropdown from "../components/MegaMenuDropdown";
@@ -89,14 +89,14 @@ export default function Navbar() {
 
   const navLinks = [
     {
-      name: "Collections",
+      name: "Shop",
       href: "/shop",
       hasDropdown: true,
       isMegaMenu: true,
       icon: Box,
     },
-    { name: "3D Workspace", href: "/designer", hasDropdown: false, icon: Home },
-    { name: "Blogs", href: "/blogs", hasDropdown: false, icon: FileText },
+    { name: "Design Studio", href: "/design-studio", hasDropdown: false, icon: LayoutDashboard },
+    { name: "Blog", href: "/blog", hasDropdown: false, icon: FileText },
     { name: "Contact", href: "/contact", hasDropdown: false, icon: Phone },
   ];
 
@@ -129,7 +129,7 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`w-full fixed top-0 left-0 z-50 transition-all duration-500 ${
+        className={`w-full fixed top-0 left-0 z-50 transition-all duration-500 font-lato ${
           scrolled
             ? "bg-white/95 backdrop-blur-2xl shadow-lg border-b border-neutral-200/80"
             : "bg-white/80 backdrop-blur-xl border-b border-neutral-200/40 shadow-sm"
@@ -306,10 +306,9 @@ export default function Navbar() {
             ) : (
               <button
                 onClick={() => setLoginModalOpen(true)}
-                className="hidden lg:flex items-center gap-2 px-5 py-2.5 rounded-full bg-teal-700 hover:bg-teal-800 text-sm font-semibold text-white transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 hover:scale-105 active:scale-95 ml-2 font-lato"
+                className="hidden lg:flex items-center px-5 py-2 rounded-lg bg-teal-700 hover:bg-teal-800 text-[15px] font-medium text-white transition-colors duration-200 ml-3 font-lato"
               >
-                <User size={18} />
-                <span>Login</span>
+                Login
               </button>
             )}
 
@@ -341,7 +340,7 @@ export default function Navbar() {
 
         {/* Menu Panel */}
         <div
-          className={`absolute top-0 right-0 w-[85%] max-w-[320px] h-full bg-white shadow-2xl transition-transform duration-300 ease-out flex flex-col ${
+          className={`absolute top-0 right-0 w-[85%] max-w-[320px] h-full bg-white shadow-2xl transition-transform duration-300 ease-out flex flex-col font-lato ${
             mobileMenuOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
@@ -484,9 +483,40 @@ export default function Navbar() {
                 ))}
               </div>
 
+              {/* Quick Links Section */}
+              <div className="mt-4 pt-4 border-t border-neutral-100">
+                <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wider px-2 mb-2 font-lato">
+                  Quick Links
+                </p>
+                <div className="space-y-1">
+                  <a
+                    href="/shop?sort=rating"
+                    onClick={closeMobileMenu}
+                    className="flex items-center gap-3 px-3 py-3 text-neutral-700 hover:bg-neutral-50 rounded-xl transition-colors"
+                  >
+                    <div className="w-9 h-9 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <Heart size={18} className="text-purple-600" />
+                    </div>
+                    <span className="flex-1 font-medium font-lato">Top Rated</span>
+                    <ChevronRight size={18} className="text-neutral-400" />
+                  </a>
+                  <a
+                    href="/shop?sort=price_low"
+                    onClick={closeMobileMenu}
+                    className="flex items-center gap-3 px-3 py-3 text-neutral-700 hover:bg-neutral-50 rounded-xl transition-colors"
+                  >
+                    <div className="w-9 h-9 bg-green-100 rounded-lg flex items-center justify-center">
+                      <Box size={18} className="text-green-600" />
+                    </div>
+                    <span className="flex-1 font-medium font-lato">Best Value</span>
+                    <ChevronRight size={18} className="text-neutral-400" />
+                  </a>
+                </div>
+              </div>
+
               {/* Account Section for Authenticated Users */}
               {isAuthenticated && (
-                <div className="px-4 py-3 border-t border-neutral-100">
+                <div className="pt-4 border-t border-neutral-100">
                   <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wider px-2 mb-2 font-lato">
                     Account
                   </p>

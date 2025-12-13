@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Star, X, Play } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Star, X, Play, Box } from "lucide-react";
 
 export default function Hero() {
   const leftColumnRef = useRef(null);
@@ -114,8 +115,8 @@ export default function Hero() {
         }`}
       >
         <div className="inline-flex items-center gap-2 w-fit mb-2 sm:mb-3 bg-white rounded-full px-3 sm:px-4 py-1.5 sm:py-2 shadow-sm border border-neutral-100">
-          <Star className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 text-teal-700" />
-          <span className="text-sm sm:text-sm md:text-base font-medium text-gray-700 font-lato">
+          <Star className="w-4 h-4 md:w-5 md:h-5 text-teal-700" />
+          <span className="text-sm md:text-base font-medium text-gray-700 font-lato">
             Trusted by 50k+ homeowners
           </span>
         </div>
@@ -130,27 +131,25 @@ export default function Hero() {
           </span>
         </h1>
 
-        <p className="text-base sm:text-base md:text-lg lg:text-lg text-gray-600 mb-2 sm:mb-3 font-lato leading-relaxed max-w-sm sm:max-w-md lg:max-w-lg">
-          See how furniture looks in your space with AR. Elevate your home's
-          style, effortlessly.
+        <p className="text-base md:text-lg text-gray-600 mb-2 sm:mb-3 font-lato leading-relaxed max-w-sm sm:max-w-md lg:max-w-lg">
+          Premium furniture crafted for modern living. Experience pieces in your space with AR before you buy.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6 w-full sm:w-auto font-lato">
-          <button className="bg-teal-700 hover:bg-teal-800 text-white px-6 sm:px-8 py-3 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 flex items-center justify-center">
-            <span>Shop Collection</span>
-          </button>
-
-          <button
-            onClick={() => {
-              if (window.innerWidth >= 1024) {
-                handleOpenVideo();
-              }
-            }}
-            className="bg-white text-gray-700 px-6 sm:px-8 py-3 rounded-xl font-semibold border border-gray-200 lg:hover:border-teal-700 lg:hover:text-teal-700 transition-all duration-300 flex items-center justify-center gap-2"
+          <Link
+            to="/shop"
+            className="bg-teal-700 hover:bg-teal-800 text-white px-6 sm:px-8 py-3 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg flex items-center justify-center"
           >
-            <Play className="w-4 h-4 sm:w-5 sm:h-5 text-teal-700" />
-            <span>Try AR View</span>
-          </button>
+            <span>Shop Now</span>
+          </Link>
+
+          <Link
+            to="/design-studio"
+            className="bg-white text-gray-700 px-6 sm:px-8 py-3 rounded-xl font-semibold border border-gray-200 hover:border-teal-700 hover:text-teal-700 transition-all duration-300 flex items-center justify-center gap-2"
+          >
+            <Box className="w-4 h-4 sm:w-5 sm:h-5 text-teal-700" />
+            <span>Design Your Space</span>
+          </Link>
         </div>
 
         <div className="flex justify-center lg:justify-start gap-6 sm:gap-8">
@@ -158,7 +157,7 @@ export default function Hero() {
             <div className="text-xl sm:text-2xl font-bold text-gray-950 font-playfair">
               50k+
             </div>
-            <div className="text-sm sm:text-sm text-gray-500 mt-0.5 font-lato">
+            <div className="text-xs sm:text-sm text-gray-500 mt-0.5 font-lato">
               Happy Customers
             </div>
           </div>
@@ -166,7 +165,7 @@ export default function Hero() {
             <div className="text-xl sm:text-2xl font-bold text-gray-950 font-playfair">
               4.9/5
             </div>
-            <div className="text-sm sm:text-sm text-gray-500 mt-0.5 font-lato">
+            <div className="text-xs sm:text-sm text-gray-500 mt-0.5 font-lato">
               Customer Rating
             </div>
           </div>
@@ -174,7 +173,7 @@ export default function Hero() {
             <div className="text-xl sm:text-2xl font-bold text-gray-950 font-playfair">
               99.9%
             </div>
-            <div className="text-sm sm:text-sm text-gray-500 mt-0.5 font-lato">
+            <div className="text-xs sm:text-sm text-gray-500 mt-0.5 font-lato">
               Satisfaction Rate
             </div>
           </div>
@@ -193,7 +192,7 @@ export default function Hero() {
                 <div
                   key={i}
                   ref={imgRef}
-                  className="w-full h-56 lg:h-60 xl:h-64 rounded-xl overflow-hidden cursor-pointer relative group transition-transform duration-500"
+                  className="w-full h-56 lg:h-60 xl:h-64 overflow-hidden cursor-pointer relative group transition-transform duration-500"
                   onMouseMove={(e) => handleMouseMove(e, imgRef)}
                   onMouseLeave={() => handleMouseLeave(imgRef)}
                 >
@@ -219,7 +218,7 @@ export default function Hero() {
                 <div
                   key={i}
                   ref={imgRef}
-                  className="w-full h-56 lg:h-60 xl:h-64 rounded-xl overflow-hidden cursor-pointer relative group transition-transform duration-500"
+                  className="w-full h-56 lg:h-60 xl:h-64 overflow-hidden cursor-pointer relative group transition-transform duration-500"
                   onMouseMove={(e) => handleMouseMove(e, imgRef)}
                   onMouseLeave={() => handleMouseLeave(imgRef)}
                 >

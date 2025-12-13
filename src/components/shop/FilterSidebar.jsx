@@ -89,7 +89,7 @@ export default function FilterSidebar({
 
   // Custom Checkbox
   const Checkbox = ({ checked, onChange, label, count }) => (
-    <label className="flex items-center gap-3 py-1.5 cursor-pointer group">
+    <label className="flex items-center gap-3 py-1.5 cursor-pointer group" onClick={onChange}>
       <div
         className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
           checked
@@ -249,13 +249,15 @@ export default function FilterSidebar({
         <h3 className="text-base font-semibold text-neutral-900 font-lato mb-3">
           Rating
         </h3>
-        <div className="space-y-2">
+        <div className="space-y-1">
           {[4, 3, 2, 1].map((rating) => (
             <button
               key={rating}
               onClick={() => onRatingChange(selectedRating === rating ? 0 : rating)}
-              className={`flex items-center gap-2 w-full py-1 transition-colors ${
-                selectedRating === rating ? "opacity-100" : "opacity-70 hover:opacity-100"
+              className={`flex items-center gap-2 w-full py-2 px-2 rounded-lg transition-all ${
+                selectedRating === rating
+                  ? "bg-teal-50"
+                  : "hover:bg-neutral-50"
               }`}
             >
               <div className="flex items-center">
@@ -271,7 +273,7 @@ export default function FilterSidebar({
                   />
                 ))}
               </div>
-              <span className="text-sm text-neutral-600 font-lato">{rating} & up</span>
+              <span className={`text-sm font-lato ${selectedRating === rating ? "text-teal-700 font-medium" : "text-neutral-600"}`}>{rating} & up</span>
             </button>
           ))}
         </div>

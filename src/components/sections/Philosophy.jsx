@@ -45,7 +45,7 @@ export default function Philosophy() {
   return (
     <section
       ref={sectionRef}
-      className="bg-linear-to-b from-zinc-50 to-white py-16 sm:py-20 px-4 sm:px-6 md:px-12 lg:px-20"
+      className="bg-linear-to-b from-zinc-50 to-white py-16 sm:py-20 px-4 sm:px-6 md:px-12 lg:px-20 font-lato"
     >
       <div className="max-w-7xl mx-auto">
         {/* Header */}

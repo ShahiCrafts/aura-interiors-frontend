@@ -9,8 +9,8 @@ import {
   Monitor,
   Sparkles,
   ArrowRight,
-  Tag,
-  Heart,
+  TrendingUp,
+  Clock,
   Package,
 } from "lucide-react";
 import { useCategoryTree } from "../hooks/useCategoryTan";
@@ -69,7 +69,7 @@ export default function MegaMenuDropdown({ isOpen, onMouseEnter, onMouseLeave, o
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <div className="bg-white border-b border-neutral-200 shadow-2xl">
+      <div className="bg-white border-b border-neutral-200 shadow-2xl font-lato">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
           <div className="grid grid-cols-12 gap-8">
             {/* Categories */}
@@ -117,17 +117,17 @@ export default function MegaMenuDropdown({ isOpen, onMouseEnter, onMouseLeave, o
               </Link>
             </div>
 
-            {/* Featured Products */}
+            {/* Trending Now */}
             <div className="col-span-4">
               <div className="flex items-center gap-2 mb-5">
                 <div className="w-8 h-8 bg-teal-700/10 rounded-lg flex items-center justify-center">
-                  <Heart className="w-4 h-4 text-teal-700" />
+                  <TrendingUp className="w-4 h-4 text-teal-700" />
                 </div>
                 <h3 className="font-semibold text-neutral-900 font-playfair">
-                  Featured Products
+                  Trending Now
                 </h3>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {featuredProducts.map((product) => (
                   <Link
                     key={product._id}
@@ -135,59 +135,90 @@ export default function MegaMenuDropdown({ isOpen, onMouseEnter, onMouseLeave, o
                     onClick={onClose}
                     className="group flex items-center gap-4 p-2 rounded-xl hover:bg-neutral-50 transition-all duration-200"
                   >
-                    <div className="w-20 h-20 rounded-xl overflow-hidden bg-neutral-100 shrink-0">
+                    <div className="w-16 h-16 rounded-lg overflow-hidden bg-neutral-100 shrink-0">
                       <img
                         src={getProductImageUrl(product)}
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
                     </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-neutral-800 group-hover:text-teal-700 transition-colors font-playfair line-clamp-1">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-neutral-800 group-hover:text-teal-700 transition-colors font-lato line-clamp-1">
                         {product.name}
                       </p>
-                      <p className="text-lg font-bold text-teal-700 mt-1 font-playfair">
+                      <p className="text-base font-bold text-teal-700 mt-0.5 font-playfair">
                         {formatPrice(product.price)}
                       </p>
                     </div>
-                    <ChevronRight className="w-5 h-5 text-neutral-400 group-hover:text-teal-700 group-hover:translate-x-1 transition-all" />
+                    <ChevronRight className="w-4 h-4 text-neutral-400 group-hover:text-teal-700 group-hover:translate-x-1 transition-all shrink-0" />
                   </Link>
                 ))}
               </div>
             </div>
 
-            {/* Promo Banner */}
+            {/* Quick Links */}
             <div className="col-span-4">
-              <Link
-                to="/shop"
-                onClick={onClose}
-                className="block relative h-full min-h-60 rounded-2xl overflow-hidden group"
-              >
-                <img
-                  src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&auto=format&fit=crop"
-                  alt="Promo"
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Tag className="w-4 h-4" />
-                    <span className="text-xs font-semibold uppercase tracking-wider font-lato">
-                      New Collection
-                    </span>
-                  </div>
-                  <h4 className="text-2xl font-playfair font-bold mb-1">
-                    Explore Our Range
-                  </h4>
-                  <p className="text-sm text-white/80 mb-4 font-lato">
-                    Discover premium furniture for every room
-                  </p>
-                  <span className="inline-flex items-center gap-2 bg-white text-teal-700 px-5 py-2.5 rounded-full text-sm font-semibold group-hover:bg-teal-700 group-hover:text-white transition-all duration-300 font-lato">
-                    Shop Now
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </span>
+              <div className="flex items-center gap-2 mb-5">
+                <div className="w-8 h-8 bg-teal-700/10 rounded-lg flex items-center justify-center">
+                  <Clock className="w-4 h-4 text-teal-700" />
                 </div>
-              </Link>
+                <h3 className="font-semibold text-neutral-900 font-playfair">
+                  Quick Links
+                </h3>
+              </div>
+              <div className="space-y-2">
+                <Link
+                  to="/shop?sort=newest"
+                  onClick={onClose}
+                  className="group flex items-center gap-3 p-3 rounded-xl hover:bg-teal-700/5 transition-all duration-200"
+                >
+                  <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+                    <Sparkles className="w-5 h-5 text-amber-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-neutral-800 group-hover:text-teal-700 transition-colors font-lato">
+                      New Arrivals
+                    </p>
+                    <p className="text-xs text-neutral-500 font-lato">
+                      Latest additions
+                    </p>
+                  </div>
+                </Link>
+                <Link
+                  to="/shop?sort=price_low"
+                  onClick={onClose}
+                  className="group flex items-center gap-3 p-3 rounded-xl hover:bg-teal-700/5 transition-all duration-200"
+                >
+                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                    <TrendingUp className="w-5 h-5 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-neutral-800 group-hover:text-teal-700 transition-colors font-lato">
+                      Best Value
+                    </p>
+                    <p className="text-xs text-neutral-500 font-lato">
+                      Budget-friendly picks
+                    </p>
+                  </div>
+                </Link>
+                <Link
+                  to="/shop?sort=rating"
+                  onClick={onClose}
+                  className="group flex items-center gap-3 p-3 rounded-xl hover:bg-teal-700/5 transition-all duration-200"
+                >
+                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <Sparkles className="w-5 h-5 text-purple-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-neutral-800 group-hover:text-teal-700 transition-colors font-lato">
+                      Top Rated
+                    </p>
+                    <p className="text-xs text-neutral-500 font-lato">
+                      Customer favorites
+                    </p>
+                  </div>
+                </Link>
+              </div>
             </div>
           </div>
 

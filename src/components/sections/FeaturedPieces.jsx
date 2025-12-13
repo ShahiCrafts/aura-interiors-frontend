@@ -97,7 +97,7 @@ export default function FeaturedPieces() {
               }}
             >
               {/* Image Container */}
-              <div className="relative w-full aspect-square md:aspect-4/5 lg:aspect-3/4 overflow-hidden rounded-xl sm:rounded-2xl bg-zinc-100">
+              <div className="relative w-full aspect-square md:aspect-4/5 lg:aspect-3/4 overflow-hidden bg-zinc-100">
                 <img
                   src={p.image}
                   alt={p.name}
@@ -134,19 +134,19 @@ export default function FeaturedPieces() {
               </div>
 
               {/* Product Info */}
-              <div className="mt-3 sm:mt-5 space-y-1 sm:space-y-2">
-                <p className="text-xs sm:text-xs md:text-sm font-semibold tracking-[0.2em] text-zinc-500 uppercase font-lato">
+              <div className="mt-3 sm:mt-4 space-y-1 sm:space-y-1.5">
+                <p className="text-[10px] sm:text-xs font-semibold tracking-[0.15em] text-zinc-500 uppercase font-lato">
                   {p.category}
                 </p>
-                <h3 className="text-base sm:text-base md:text-xl font-medium text-zinc-900 group-hover:text-teal-700 transition-colors duration-300 font-playfair">
+                <h3 className="text-sm sm:text-base md:text-lg font-medium text-zinc-900 group-hover:text-teal-700 transition-colors duration-300 font-playfair leading-snug">
                   {p.name}
                 </h3>
                 <div className="flex items-center gap-2">
-                  <p className="text-base sm:text-base md:text-xl font-bold text-teal-700 font-playfair">
+                  <p className="text-base sm:text-lg md:text-xl font-bold text-teal-700 font-playfair">
                     {p.price}
                   </p>
                   {p.originalPrice && (
-                    <p className="text-sm sm:text-sm md:text-base text-zinc-400 line-through font-playfair">
+                    <p className="text-xs sm:text-sm text-zinc-400 line-through font-lato">
                       {p.originalPrice}
                     </p>
                   )}
@@ -163,7 +163,7 @@ export default function FeaturedPieces() {
           }`}
           style={{ transitionDelay: isVisible ? "600ms" : "0ms" }}
         >
-          <button className="group inline-flex items-center gap-3 px-6 sm:px-8 py-3 sm:py-4 bg-teal-700 text-white hover:bg-teal-800 transition-all duration-300 rounded-full shadow-lg shadow-teal-700/25 hover:shadow-xl hover:shadow-teal-700/30">
+          <button className="group inline-flex items-center gap-3 px-6 sm:px-8 py-3 sm:py-4 bg-teal-700 text-white hover:bg-teal-800 transition-all duration-300 rounded-full shadow-lg hover:shadow-xl">
             <span className="text-sm sm:text-base font-semibold tracking-wide">
               Explore Full Collection
             </span>
