@@ -18,6 +18,7 @@ import Navbar from "../layouts/Navbar";
 import Footer from "../layouts/Footer";
 import { useProduct, useRelatedProducts } from "../hooks/useProductTan";
 import { useAddToWishlist, useRemoveFromWishlist, useCheckWishlist } from "../hooks/useWishlistTan";
+import { useAddToCart } from "../hooks/useCartTan";
 import useAuthStore from "../store/authStore";
 import { toast } from "../components/ui/Toast";
 import ProductCard from "../components/shop/ProductCard";
@@ -30,7 +31,7 @@ export default function ProductDetailsPage() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState(1);
   const [expandedSections, setExpandedSections] = useState({});
   const [isARModalOpen, setIsARModalOpen] = useState(false);
   const reviewsSectionRef = useRef(null);
@@ -49,6 +50,37 @@ export default function ProductDetailsPage() {
 
   const isInWishlist = wishlistCheck?.data?.inWishlist || false;
   const isWishlistLoading = isAddingToWishlist || isRemovingFromWishlist;
+
+  // Cart hook
+  const { mutate: addToCart, isPending: isAddingToCart } = useAddToCart();
+
+  const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      toast.error("Please login to add items to cart");
+      return;
+    }
+
+    const variant = {};
+    if (selectedColor) {
+      variant.color = typeof selectedColor === "object" ? selectedColor.name : selectedColor;
+    }
+    if (selectedSize) {
+      variant.size = typeof selectedSize === "object" ? selectedSize.name : selectedSize;
+    }
+
+    addToCart(
+      { productId: product._id, quantity, variant },
+      {
+        onSuccess: () => {
+          toast.success("Added to cart");
+          setQuantity(1);
+        },
+        onError: (error) => {
+          toast.error(error?.response?.data?.message || "Failed to add to cart");
+        },
+      }
+    );
+  };
 
   const handleWishlistToggle = () => {
     if (!isAuthenticated) {
@@ -161,7 +193,7 @@ export default function ProductDetailsPage() {
   // Handle quantity change
   const handleQuantityChange = (delta) => {
     const newQuantity = quantity + delta;
-    if (newQuantity >= 0 && newQuantity <= (product?.stock || 10)) {
+    if (newQuantity >= 1 && newQuantity <= (product?.stock || 10)) {
       setQuantity(newQuantity);
     }
   };
@@ -498,7 +530,7 @@ export default function ProductDetailsPage() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleQuantityChange(-1)}
-                    disabled={quantity <= 0}
+                    disabled={quantity <= 1}
                     className="p-1 text-neutral-700 hover:text-neutral-900 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                   >
                     <Minus size={22} strokeWidth={2} />
@@ -516,8 +548,12 @@ export default function ProductDetailsPage() {
                 </div>
 
                 {/* Add to Cart Button */}
-                <button className="flex-1 bg-teal-700 text-white px-8 py-3 rounded-full font-semibold hover:bg-teal-800 transition-colors font-lato">
-                  Add to Cart
+                <button
+                  onClick={handleAddToCart}
+                  disabled={isAddingToCart}
+                  className="flex-1 bg-teal-700 text-white px-8 py-3 rounded-full font-semibold hover:bg-teal-800 transition-colors font-lato disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isAddingToCart ? "Adding..." : "Add to Cart"}
                 </button>
               </div>
             </div>

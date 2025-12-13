@@ -23,6 +23,8 @@ import useAuthStore from "../store/authStore";
 import MegaMenuDropdown from "../components/MegaMenuDropdown";
 import SignupModal from "../components/modals/SignupModal";
 import LoginModal from "../components/modals/LoginModal";
+import CartSlider from "../components/cart/CartSlider";
+import { useCart } from "../hooks/useCartTan";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -33,11 +35,14 @@ export default function Navbar() {
   const [signupModalOpen, setSignupModalOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [cartSliderOpen, setCartSliderOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   const { user, isAuthenticated, signOut } = useAuthStore();
   const navigate = useNavigate();
-  const cartCount = 3;
+
+  const { data: cartData } = useCart({ enabled: isAuthenticated });
+  const cartCount = cartData?.data?.cart?.totalItems || 0;
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -210,7 +215,10 @@ export default function Navbar() {
               <button className="p-2 rounded-lg hover:bg-neutral-100 transition-colors">
                 <Bell size={20} className="text-neutral-600" />
               </button>
-              <button className="relative p-2 rounded-lg hover:bg-neutral-100 transition-colors">
+              <button
+                onClick={() => setCartSliderOpen(true)}
+                className="relative p-2 rounded-lg hover:bg-neutral-100 transition-colors"
+              >
                 <ShoppingBag size={20} className="text-neutral-600" />
                 {cartCount > 0 && (
                   <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-amber-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
@@ -229,7 +237,10 @@ export default function Navbar() {
                 />
               </button>
 
-              <button className="p-2.5 rounded-xl hover:bg-neutral-100 transition-all duration-300 group relative">
+              <button
+                onClick={() => setCartSliderOpen(true)}
+                className="p-2.5 rounded-xl hover:bg-neutral-100 transition-all duration-300 group relative"
+              >
                 <ShoppingBag
                   size={20}
                   className="text-neutral-600 group-hover:text-neutral-900 transition-colors"
@@ -588,6 +599,12 @@ export default function Navbar() {
           setSignupModalOpen(false);
           setLoginModalOpen(true);
         }}
+      />
+
+      {/* Cart Slider */}
+      <CartSlider
+        isOpen={cartSliderOpen}
+        onClose={() => setCartSliderOpen(false)}
       />
 
       {/* Animations */}

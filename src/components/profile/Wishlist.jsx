@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { toast } from "../ui/Toast";
 import { useWishlist, useRemoveFromWishlist } from "../../hooks/useWishlistTan";
+import { useAddToCart } from "../../hooks/useCartTan";
 
 export default function Wishlist() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -20,6 +21,7 @@ export default function Wishlist() {
 
   const { data, isLoading, error } = useWishlist();
   const { mutate: removeFromWishlist, isPending: isRemoving } = useRemoveFromWishlist();
+  const { mutate: addToCart, isPending: isAddingToCart } = useAddToCart();
 
   const wishlistItems = data?.data?.wishlist?.items || [];
   const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
@@ -70,13 +72,27 @@ export default function Wishlist() {
   };
 
   const handleAddToCart = (product) => {
-    // TODO: Implement add to cart functionality
-    toast.success(`${product.name} added to cart`);
+    addToCart(
+      { productId: product._id, quantity: 1 },
+      {
+        onSuccess: () => toast.success(`${product.name} added to cart`),
+        onError: () => toast.error("Failed to add to cart"),
+      }
+    );
   };
 
   const handleAddAllToCart = () => {
-    // TODO: Implement add all to cart functionality
-    toast.success("All items added to cart");
+    filteredItems.forEach((item) => {
+      if (item.product) {
+        addToCart(
+          { productId: item.product._id, quantity: 1 },
+          {
+            onError: () => toast.error(`Failed to add ${item.product.name} to cart`),
+          }
+        );
+      }
+    });
+    toast.success("Adding all items to cart");
   };
 
   const getImageUrl = (product) => {
@@ -137,10 +153,11 @@ export default function Wishlist() {
             </button>
             <button
               onClick={handleAddAllToCart}
-              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-lg transition-all duration-300 font-lato text-sm"
+              disabled={isAddingToCart}
+              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-lg transition-all duration-300 font-lato text-sm disabled:opacity-50"
             >
               <ShoppingCart size={18} />
-              Add All to Cart
+              {isAddingToCart ? "Adding..." : "Add All to Cart"}
             </button>
           </div>
         )}
@@ -327,10 +344,11 @@ export default function Wishlist() {
                   <div className="flex items-center gap-2 mt-4">
                     <button
                       onClick={() => handleAddToCart(product)}
-                      className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-lg transition-colors font-lato text-sm"
+                      disabled={isAddingToCart}
+                      className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-lg transition-colors font-lato text-sm disabled:opacity-50"
                     >
                       <ShoppingCart size={16} />
-                      Add to Cart
+                      {isAddingToCart ? "Adding..." : "Add to Cart"}
                     </button>
                     <Link
                       to={`/product/${product.slug || product._id}`}
