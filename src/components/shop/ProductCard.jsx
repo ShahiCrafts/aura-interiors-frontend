@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
-import { Star } from "lucide-react";
+import { Star, Heart } from "lucide-react";
+import { useAddToWishlist, useRemoveFromWishlist, useCheckWishlist } from "../../hooks/useWishlistTan";
+import useAuthStore from "../../store/authStore";
+import { toast } from "../ui/Toast";
 
 export default function ProductCard({ product, viewMode = "grid" }) {
   const {
@@ -13,6 +16,36 @@ export default function ProductCard({ product, viewMode = "grid" }) {
     arAvailable,
     shortDescription,
   } = product;
+
+  const { isAuthenticated } = useAuthStore();
+  const { data: wishlistCheck } = useCheckWishlist(_id, { enabled: isAuthenticated });
+  const { mutate: addToWishlist, isPending: isAdding } = useAddToWishlist();
+  const { mutate: removeFromWishlist, isPending: isRemoving } = useRemoveFromWishlist();
+
+  const isInWishlist = wishlistCheck?.data?.inWishlist || false;
+  const isWishlistLoading = isAdding || isRemoving;
+
+  const handleWishlistToggle = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isAuthenticated) {
+      toast.error("Please login to add items to wishlist");
+      return;
+    }
+
+    if (isInWishlist) {
+      removeFromWishlist(_id, {
+        onSuccess: () => toast.success("Removed from wishlist"),
+        onError: () => toast.error("Failed to remove from wishlist"),
+      });
+    } else {
+      addToWishlist(_id, {
+        onSuccess: () => toast.success("Added to wishlist"),
+        onError: () => toast.error("Failed to add to wishlist"),
+      });
+    }
+  };
 
   // Get primary image or first image
   const primaryImage = images?.find((img) => img.isPrimary)?.url || images?.[0]?.url;
@@ -53,6 +86,17 @@ export default function ProductCard({ product, viewMode = "grid" }) {
               AR
             </div>
           )}
+          {/* Wishlist Button */}
+          <button
+            onClick={handleWishlistToggle}
+            disabled={isWishlistLoading}
+            className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:scale-110 transition-transform disabled:opacity-50"
+          >
+            <Heart
+              size={16}
+              className={isInWishlist ? "fill-red-500 text-red-500" : "text-neutral-400"}
+            />
+          </button>
         </div>
 
         {/* Content */}
@@ -116,10 +160,22 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 
         {/* AR Badge */}
         {arAvailable && (
-          <div className="absolute top-3 right-3 bg-teal-700 text-white text-xs font-semibold px-2.5 py-1 rounded-md font-lato">
+          <div className="absolute top-3 left-3 bg-teal-700 text-white text-xs font-semibold px-2.5 py-1 rounded-md font-lato">
             AR
           </div>
         )}
+
+        {/* Wishlist Button */}
+        <button
+          onClick={handleWishlistToggle}
+          disabled={isWishlistLoading}
+          className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:scale-110 transition-transform disabled:opacity-50"
+        >
+          <Heart
+            size={16}
+            className={isInWishlist ? "fill-red-500 text-red-500" : "text-neutral-400"}
+          />
+        </button>
       </div>
 
       {/* Content */}

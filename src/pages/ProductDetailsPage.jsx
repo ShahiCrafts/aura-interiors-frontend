@@ -17,6 +17,9 @@ import {
 import Navbar from "../layouts/Navbar";
 import Footer from "../layouts/Footer";
 import { useProduct, useRelatedProducts } from "../hooks/useProductTan";
+import { useAddToWishlist, useRemoveFromWishlist, useCheckWishlist } from "../hooks/useWishlistTan";
+import useAuthStore from "../store/authStore";
+import { toast } from "../components/ui/Toast";
 import ProductCard from "../components/shop/ProductCard";
 import ImageMagnifier from "../components/shop/ImageMagnifier";
 import ARViewModal from "../components/modals/ARViewModal";
@@ -29,13 +32,42 @@ export default function ProductDetailsPage() {
   const [selectedSize, setSelectedSize] = useState(null);
   const [quantity, setQuantity] = useState(0);
   const [expandedSections, setExpandedSections] = useState({});
-  const [isWishlisted, setIsWishlisted] = useState(false);
   const [isARModalOpen, setIsARModalOpen] = useState(false);
   const reviewsSectionRef = useRef(null);
+
+  // Auth state
+  const { isAuthenticated } = useAuthStore();
 
   // Fetch product data
   const { data: productData, isLoading, error } = useProduct(productSlug);
   const product = productData?.data?.product;
+
+  // Wishlist hooks
+  const { data: wishlistCheck } = useCheckWishlist(product?._id, { enabled: isAuthenticated && !!product?._id });
+  const { mutate: addToWishlist, isPending: isAddingToWishlist } = useAddToWishlist();
+  const { mutate: removeFromWishlist, isPending: isRemovingFromWishlist } = useRemoveFromWishlist();
+
+  const isInWishlist = wishlistCheck?.data?.inWishlist || false;
+  const isWishlistLoading = isAddingToWishlist || isRemovingFromWishlist;
+
+  const handleWishlistToggle = () => {
+    if (!isAuthenticated) {
+      toast.error("Please login to add items to wishlist");
+      return;
+    }
+
+    if (isInWishlist) {
+      removeFromWishlist(product._id, {
+        onSuccess: () => toast.success("Removed from wishlist"),
+        onError: () => toast.error("Failed to remove from wishlist"),
+      });
+    } else {
+      addToWishlist(product._id, {
+        onSuccess: () => toast.success("Added to wishlist"),
+        onError: () => toast.error("Failed to add to wishlist"),
+      });
+    }
+  };
 
   // Fetch related products
   const { data: relatedData } = useRelatedProducts(product?._id, 4);
@@ -279,12 +311,13 @@ export default function ProductDetailsPage() {
                 {/* Action Buttons */}
                 <div className="absolute top-4 right-4 flex flex-col gap-2">
                   <button
-                    onClick={() => setIsWishlisted(!isWishlisted)}
-                    className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center hover:bg-neutral-50 transition-colors"
+                    onClick={handleWishlistToggle}
+                    disabled={isWishlistLoading}
+                    className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center hover:bg-neutral-50 transition-colors disabled:opacity-50"
                   >
                     <Heart
                       size={18}
-                      className={isWishlisted ? "fill-red-500 text-red-500" : "text-neutral-600"}
+                      className={isInWishlist ? "fill-red-500 text-red-500" : "text-neutral-600"}
                     />
                   </button>
                   <button className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center hover:bg-neutral-50 transition-colors">
