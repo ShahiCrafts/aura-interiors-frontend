@@ -145,7 +145,7 @@ export default function Navbar() {
           <div className="flex items-center shrink-0">
             <a href="/" onClick={closeMobileMenu}>
               <h1
-                className="font-playfair text-xl sm:text-2xl lg:text-2xl font-bold tracking-wide text-amber-800 cursor-pointer"
+                className="font-playfair text-xl sm:text-2xl lg:text-xl font-bold tracking-wide text-black-800 cursor-pointer"
                 style={{
                   opacity: 0,
                   animation:

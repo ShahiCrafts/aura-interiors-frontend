@@ -127,7 +127,7 @@ export default function Hero() {
             modern luxury & AR
           </span>
           <span className="text-teal-700 font-semibold italic hidden lg:block mt-1">
-            with modern luxury & AR
+            modern luxury & AR
           </span>
         </h1>
 

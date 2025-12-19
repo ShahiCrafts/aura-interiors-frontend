@@ -83,7 +83,7 @@ export default function Testimonials() {
           {testimonials.map((testimonial, index) => (
             <div
               key={index}
-              className={`relative bg-white border border-teal-700/10 p-5 sm:p-6 hover:border-teal-700/20 hover:shadow-lg transition-all duration-700 rounded-xl group ${
+              className={`relative bg-white border border-teal-700/10 p-5 sm:p-6 transition-all duration-700 rounded-xl group ${
                 isVisible
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-12"
