@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Star, X, Play, Box } from "lucide-react";
+import { Star, X, Play } from "lucide-react";
 
 export default function Hero() {
   const leftColumnRef = useRef(null);
@@ -138,42 +138,42 @@ export default function Hero() {
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6 w-full sm:w-auto font-lato">
           <Link
             to="/shop"
-            className="bg-teal-700 hover:bg-teal-800 text-white px-6 sm:px-8 py-3 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg flex items-center justify-center"
+            className="bg-teal-700 hover:bg-teal-800 text-white px-6 sm:px-8 py-3 rounded-full font-semibold transition-all duration-300 hover:shadow-lg flex items-center justify-center"
           >
             <span>Shop Now</span>
           </Link>
 
           <Link
-            to="/design-studio"
-            className="bg-white text-gray-700 px-6 sm:px-8 py-3 rounded-xl font-semibold border border-gray-200 hover:border-teal-700 hover:text-teal-700 transition-all duration-300 flex items-center justify-center gap-2"
+            to="/native-ar"
+            className="bg-white text-gray-700 px-6 sm:px-8 py-3 rounded-full font-semibold border border-gray-200 hover:border-teal-700 hover:text-teal-700 transition-all duration-300 flex items-center justify-center gap-2"
           >
-            <Box className="w-4 h-4 sm:w-5 sm:h-5 text-teal-700" />
-            <span>Design Your Space</span>
+            <Play className="w-4 h-4 sm:w-5 sm:h-5 text-teal-700" />
+            <span>Try AR View</span>
           </Link>
         </div>
 
         <div className="flex justify-center lg:justify-start gap-6 sm:gap-8">
           <div>
-            <div className="text-xl sm:text-2xl font-bold text-gray-950 font-playfair">
+            <div className="text-lg sm:text-xl font-bold text-gray-950 font-lato">
               50k+
             </div>
-            <div className="text-xs sm:text-sm text-gray-500 mt-0.5 font-lato">
+            <div className="text-xs sm:text-sm text-gray-500 mt-1.5 font-lato">
               Happy Customers
             </div>
           </div>
           <div>
-            <div className="text-xl sm:text-2xl font-bold text-gray-950 font-playfair">
+            <div className="text-lg sm:text-xl font-bold text-gray-950 font-lato">
               4.9/5
             </div>
-            <div className="text-xs sm:text-sm text-gray-500 mt-0.5 font-lato">
+            <div className="text-xs sm:text-sm text-gray-500 mt-1.5 font-lato">
               Customer Rating
             </div>
           </div>
           <div>
-            <div className="text-xl sm:text-2xl font-bold text-gray-950 font-playfair">
+            <div className="text-lg sm:text-xl font-bold text-gray-950 font-lato">
               99.9%
             </div>
-            <div className="text-xs sm:text-sm text-gray-500 mt-0.5 font-lato">
+            <div className="text-xs sm:text-sm text-gray-500 mt-1.5 font-lato">
               Satisfaction Rate
             </div>
           </div>

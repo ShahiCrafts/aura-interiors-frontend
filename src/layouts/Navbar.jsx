@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Bell,
+  Search,
   ShoppingBag,
   User,
   Menu,
@@ -18,6 +19,8 @@ import {
   LayoutDashboard,
   FileText,
   Phone,
+  Sparkles,
+  Smartphone,
 } from "lucide-react";
 import useAuthStore from "../store/authStore";
 import MegaMenuDropdown from "../components/MegaMenuDropdown";
@@ -100,7 +103,7 @@ export default function Navbar() {
       isMegaMenu: true,
       icon: Box,
     },
-    { name: "Design Studio", href: "/design-studio", hasDropdown: false, icon: LayoutDashboard },
+    { name: "New Arrivals", href: "/shop?sort=newest", hasDropdown: false, icon: Sparkles },
     { name: "Blog", href: "/blog", hasDropdown: false, icon: FileText },
     { name: "Contact", href: "/contact", hasDropdown: false, icon: Phone },
   ];
@@ -213,7 +216,7 @@ export default function Navbar() {
             {/* Mobile Icons */}
             <div className="flex lg:hidden items-center gap-1">
               <button className="p-2 rounded-lg hover:bg-neutral-100 transition-colors">
-                <Bell size={20} className="text-neutral-600" />
+                <Search size={20} className="text-neutral-600" />
               </button>
               <button
                 onClick={() => setCartSliderOpen(true)}
@@ -231,7 +234,7 @@ export default function Navbar() {
             {/* Desktop Icons */}
             <div className="hidden lg:flex items-center gap-1">
               <button className="p-2.5 rounded-xl hover:bg-neutral-100 transition-all duration-300 group relative">
-                <Bell
+                <Search
                   size={20}
                   className="text-neutral-600 group-hover:text-neutral-900 transition-colors"
                 />
@@ -258,16 +261,8 @@ export default function Navbar() {
               <div className="hidden lg:block relative ml-4" ref={dropdownRef}>
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="flex items-center gap-3"
+                  className="flex items-center"
                 >
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-neutral-900 font-lato">
-                      {user?.firstName} {user?.lastName}
-                    </p>
-                    <p className="text-xs text-neutral-500 font-lato">
-                      {user?.email}
-                    </p>
-                  </div>
                   {getAvatarUrl() ? (
                     <img
                       src={getAvatarUrl()}
@@ -284,7 +279,30 @@ export default function Navbar() {
 
                 {/* User Dropdown */}
                 {userDropdownOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-44 bg-white rounded-xl shadow-lg border border-neutral-100 py-1">
+                  <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-lg border border-neutral-100 py-1">
+                    {/* User Info */}
+                    <div className="flex items-center gap-3 px-4 py-3 border-b border-neutral-100">
+                      {getAvatarUrl() ? (
+                        <img
+                          src={getAvatarUrl()}
+                          alt="Profile"
+                          crossOrigin="anonymous"
+                          className="w-10 h-10 rounded-full object-cover shrink-0"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-teal-700 flex items-center justify-center text-white text-sm font-semibold font-lato shrink-0">
+                          {getInitials(user?.firstName, user?.lastName)}
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-neutral-900 font-lato truncate">
+                          {user?.firstName} {user?.lastName}
+                        </p>
+                        <p className="text-xs text-neutral-500 font-lato truncate">
+                          {user?.email}
+                        </p>
+                      </div>
+                    </div>
                     <a
                       href="/profile"
                       onClick={() => setUserDropdownOpen(false)}
@@ -292,6 +310,22 @@ export default function Navbar() {
                     >
                       <User size={16} className="text-neutral-400" />
                       My Profile
+                    </a>
+                    <a
+                      href="/wishlist"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-neutral-700 hover:bg-neutral-50 transition-colors font-lato text-sm"
+                    >
+                      <Heart size={16} className="text-neutral-400" />
+                      Wishlist
+                    </a>
+                    <a
+                      href="/notifications"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-neutral-700 hover:bg-neutral-50 transition-colors font-lato text-sm"
+                    >
+                      <Bell size={16} className="text-neutral-400" />
+                      Notifications
                     </a>
                     {user?.role === "admin" && (
                       <a
@@ -500,6 +534,17 @@ export default function Navbar() {
                   Quick Links
                 </p>
                 <div className="space-y-1">
+                  <a
+                    href="/native-ar"
+                    onClick={closeMobileMenu}
+                    className="flex items-center gap-3 px-3 py-3 text-neutral-700 hover:bg-neutral-50 rounded-xl transition-colors"
+                  >
+                    <div className="w-9 h-9 bg-teal-100 rounded-lg flex items-center justify-center">
+                      <Smartphone size={18} className="text-teal-600" />
+                    </div>
+                    <span className="flex-1 font-medium font-lato">AR Experience</span>
+                    <ChevronRight size={18} className="text-neutral-400" />
+                  </a>
                   <a
                     href="/shop?sort=rating"
                     onClick={closeMobileMenu}

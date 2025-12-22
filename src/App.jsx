@@ -14,6 +14,7 @@ import ProfilePage from "./pages/ProfilePage";
 import ShopPage from "./pages/ShopPage";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import ARViewPage from "./pages/ARViewPage";
+import NativeARPage from "./pages/NativeARPage";
 import useAuthStore from "./store/authStore";
 
 // Admin imports
@@ -33,6 +34,7 @@ function HomePage() {
   return (
     <>
       <Navbar />
+
       <main className="min-h-screen">
         <Hero />
         <FeaturedPieces />
@@ -54,6 +56,7 @@ function App() {
         <Route path="/shop/:categorySlug" element={<ShopPage />} />
         <Route path="/product/:productSlug" element={<ProductDetailsPage />} />
         <Route path="/ar/:productSlug" element={<ARViewPage />} />
+        <Route path="/native-ar" element={<NativeARPage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         <Route
           path="/profile"
