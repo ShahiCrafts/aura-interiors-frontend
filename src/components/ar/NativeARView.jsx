@@ -807,66 +807,48 @@ const NativeARView = ({
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
-            {!hasPlacedModel && (
+            {/* Only show scanning UI when no surface detected and no model placed */}
+            {!hasPlacedModel && !surfaceDetected && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="flex flex-col items-center gap-6">
                   <div className="relative">
-                    {surfaceDetected ? (
-                      <>
-                        <div className="w-32 h-32 rounded-full border-2 border-teal-400/50 bg-teal-500/10" />
-                        <div className="absolute inset-0 w-32 h-32 rounded-full border-2 border-teal-400 animate-pulse" />
-                        <div className="absolute inset-4 w-24 h-24 rounded-full border border-teal-300/40 bg-teal-500/5" />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-12 h-12 bg-teal-500 rounded-full flex items-center justify-center shadow-lg shadow-teal-500/30">
-                            <IoCheckmarkCircle
-                              size={28}
-                              className="text-white"
-                            />
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="w-32 h-32 rounded-full border-2 border-white/30" />
-                        <div className="absolute inset-0 w-32 h-32 rounded-full border-2 border-transparent border-t-white animate-spin" />
-                        <div className="absolute inset-4 w-24 h-24 rounded-full border border-white/20" />
-                        <div
-                          className="absolute inset-4 w-24 h-24 rounded-full border border-transparent border-t-white/60 animate-spin"
-                          style={{
-                            animationDuration: "1.5s",
-                            animationDirection: "reverse",
-                          }}
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <MdOutlineViewInAr
-                            size={28}
-                            className="text-white/80"
-                          />
-                        </div>
-                      </>
-                    )}
+                    <div className="w-32 h-32 rounded-full border-2 border-white/30" />
+                    <div className="absolute inset-0 w-32 h-32 rounded-full border-2 border-transparent border-t-white animate-spin" />
+                    <div className="absolute inset-4 w-24 h-24 rounded-full border border-white/20" />
+                    <div
+                      className="absolute inset-4 w-24 h-24 rounded-full border border-transparent border-t-white/60 animate-spin"
+                      style={{
+                        animationDuration: "1.5s",
+                        animationDirection: "reverse",
+                      }}
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <MdOutlineViewInAr
+                        size={28}
+                        className="text-white/80"
+                      />
+                    </div>
                   </div>
                   <div className="text-center">
-                    {surfaceDetected ? (
-                      <>
-                        <p className="text-teal-400 text-base font-semibold">
-                          Surface Detected
-                        </p>
-                        <p className="text-white text-sm mt-1 font-medium">
-                          Tap anywhere to place furniture
-                        </p>
-                      </>
-                    ) : (
-                      <>
-                        <p className="text-white text-base font-medium">
-                          Scanning for surface
-                        </p>
-                        <p className="text-white/60 text-sm mt-1">
-                          Point camera at a flat surface
-                        </p>
-                      </>
-                    )}
+                    <p className="text-white text-base font-medium">
+                      Scanning for surface
+                    </p>
+                    <p className="text-white/60 text-sm mt-1">
+                      Point camera at a flat surface
+                    </p>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* Show minimal instruction when surface detected (reticle visible) */}
+            {!hasPlacedModel && surfaceDetected && (
+              <div className="absolute bottom-48 left-0 right-0 flex justify-center pointer-events-none">
+                <div className="bg-black/60 backdrop-blur-xl rounded-full px-5 py-2.5 flex items-center gap-2">
+                  <IoCheckmarkCircle size={18} className="text-teal-400" />
+                  <p className="text-white text-sm font-medium">
+                    Tap to place furniture
+                  </p>
                 </div>
               </div>
             )}
