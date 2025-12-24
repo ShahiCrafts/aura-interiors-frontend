@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   X,
@@ -6,8 +7,10 @@ import {
   Minus,
   Trash2,
   Loader2,
+  Tag,
 } from "lucide-react";
 import { useCart, useUpdateCartItem, useRemoveFromCart } from "../../hooks/useCartTan";
+import { useApplyDiscount } from "../../hooks/useDiscountTan";
 import useAuthStore from "../../store/authStore";
 import { toast } from "../ui/Toast";
 
@@ -50,11 +53,17 @@ export default function CartSlider({ isOpen, onClose }) {
   const { data, isLoading } = useCart({ enabled: isAuthenticated });
   const { mutate: updateCartItem, isPending: isUpdating } = useUpdateCartItem();
   const { mutate: removeFromCart, isPending: isRemoving } = useRemoveFromCart();
+  const applyDiscountMutation = useApplyDiscount();
+
+  const [discountCode, setDiscountCode] = useState("");
+  const [appliedDiscount, setAppliedDiscount] = useState(null);
 
   const cart = data?.data?.cart;
   const cartItems = cart?.items || [];
   const totalItems = cart?.totalItems || 0;
   const subtotal = cart?.subtotal || 0;
+  const discountAmount = appliedDiscount?.discount?.discountAmount || 0;
+  const finalTotal = subtotal - discountAmount;
 
   const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
 
@@ -82,6 +91,29 @@ export default function CartSlider({ isOpen, onClose }) {
       onSuccess: () => toast.success("Item removed from cart"),
       onError: () => toast.error("Failed to remove item"),
     });
+  };
+
+  const handleApplyDiscount = () => {
+    if (!discountCode.trim()) {
+      toast.error("Please enter a discount code");
+      return;
+    }
+
+    applyDiscountMutation.mutate(discountCode, {
+      onSuccess: (data) => {
+        setAppliedDiscount(data.data);
+        setDiscountCode("");
+        toast.success("Discount applied successfully!");
+      },
+      onError: (err) => {
+        toast.error(err.response?.data?.message || "Invalid discount code");
+      },
+    });
+  };
+
+  const handleRemoveDiscount = () => {
+    setAppliedDiscount(null);
+    toast.success("Discount removed");
   };
 
   return (
@@ -215,12 +247,71 @@ export default function CartSlider({ isOpen, onClose }) {
 
         {/* Footer */}
         <div className="border-t border-neutral-200 p-6 bg-white">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-neutral-700 font-lato">Subtotal</span>
-            <span className="text-xl font-bold text-neutral-900 font-playfair">
-              NRs. {subtotal.toLocaleString()}
-            </span>
+          {/* Discount Code Section */}
+          {cartItems.length > 0 && (
+            <div className="mb-4">
+              {appliedDiscount ? (
+                <div className="flex items-center justify-between p-3 bg-teal-50 border border-teal-200 rounded-xl">
+                  <div className="flex items-center gap-2">
+                    <Tag className="w-4 h-4 text-teal-700" />
+                    <span className="text-sm font-medium text-teal-800 font-lato">
+                      {appliedDiscount.discount.code} ({appliedDiscount.discount.discountPercentage}% OFF)
+                    </span>
+                  </div>
+                  <button
+                    onClick={handleRemoveDiscount}
+                    className="p-1 hover:bg-teal-100 rounded-full transition-colors"
+                  >
+                    <X className="w-4 h-4 text-teal-700" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={discountCode}
+                    onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+                    placeholder="Enter discount code"
+                    className="flex-1 px-4 py-2.5 border border-neutral-200 rounded-xl text-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500/20 font-mono uppercase font-lato"
+                  />
+                  <button
+                    onClick={handleApplyDiscount}
+                    disabled={applyDiscountMutation.isPending || !discountCode.trim()}
+                    className="px-4 py-2.5 bg-neutral-100 text-neutral-700 font-medium rounded-xl hover:bg-neutral-200 transition-colors disabled:opacity-50 font-lato"
+                  >
+                    {applyDiscountMutation.isPending ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      "Apply"
+                    )}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Totals */}
+          <div className="space-y-2 mb-4">
+            <div className="flex items-center justify-between">
+              <span className="text-neutral-600 font-lato">Subtotal</span>
+              <span className="text-neutral-900 font-lato">
+                NRs. {subtotal.toLocaleString()}
+              </span>
+            </div>
+            {discountAmount > 0 && (
+              <div className="flex items-center justify-between text-teal-700">
+                <span className="font-lato">Discount</span>
+                <span className="font-lato">-NRs. {discountAmount.toLocaleString()}</span>
+              </div>
+            )}
+            <div className="flex items-center justify-between pt-2 border-t border-neutral-200">
+              <span className="text-neutral-700 font-semibold font-lato">Total</span>
+              <span className="text-xl font-bold text-neutral-900 font-playfair">
+                NRs. {finalTotal.toLocaleString()}
+              </span>
+            </div>
           </div>
+
           <p className="text-xs text-neutral-500 font-lato mb-4">
             Shipping and taxes calculated at checkout
           </p>

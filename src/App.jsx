@@ -22,6 +22,7 @@ import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminCategories from "./pages/admin/Categories";
 import AdminProducts from "./pages/admin/Products";
+import AdminDiscounts from "./pages/admin/Discounts";
 
 function HomePage() {
   const { isAuthenticated, user } = useAuthStore();
@@ -79,6 +80,7 @@ function App() {
           <Route index element={<AdminDashboard />} />
           <Route path="categories" element={<AdminCategories />} />
           <Route path="products" element={<AdminProducts />} />
+          <Route path="discounts" element={<AdminDiscounts />} />
         </Route>
       </Routes>
     </>
