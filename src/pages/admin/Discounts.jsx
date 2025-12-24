@@ -192,13 +192,13 @@ export default function Discounts() {
           <h1 className="text-2xl font-bold text-gray-900 font-playfair">
             Discount Codes
           </h1>
-          <p className="text-gray-500 mt-1 font-lato">
+          <p className="text-gray-500 mt-1 font-dm-sans">
             {pagination.total || 0} total discounts
           </p>
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="flex items-center gap-2 px-4 py-2.5 bg-teal-700 text-white rounded-xl font-medium hover:bg-teal-800 transition-colors font-lato"
+          className="flex items-center gap-2 px-4 py-2.5 bg-teal-700 text-white rounded-xl font-medium hover:bg-teal-800 transition-colors font-dm-sans"
         >
           <Plus className="w-5 h-5" />
           Add Discount
@@ -215,7 +215,7 @@ export default function Discounts() {
               placeholder="Search by code..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 font-lato"
+              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 font-dm-sans"
             />
           </div>
           <div className="flex gap-2">
@@ -223,7 +223,7 @@ export default function Discounts() {
               <button
                 key={status}
                 onClick={() => setStatusFilter(status)}
-                className={`px-4 py-2.5 rounded-xl text-sm font-medium capitalize transition-colors font-lato ${
+                className={`px-4 py-2.5 rounded-xl text-sm font-medium capitalize transition-colors font-dm-sans ${
                   statusFilter === status
                     ? "bg-teal-700 text-white"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -247,25 +247,25 @@ export default function Discounts() {
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4 font-lato">
+                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4 font-dm-sans">
                     Code
                   </th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4 font-lato">
+                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4 font-dm-sans">
                     Discount
                   </th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4 font-lato">
+                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4 font-dm-sans">
                     Min. Order
                   </th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4 font-lato">
+                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4 font-dm-sans">
                     Usage
                   </th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4 font-lato">
+                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4 font-dm-sans">
                     Expiry
                   </th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4 font-lato">
+                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4 font-dm-sans">
                     Status
                   </th>
-                  <th className="text-right text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4 font-lato">
+                  <th className="text-right text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4 font-dm-sans">
                     Actions
                   </th>
                 </tr>
@@ -286,27 +286,27 @@ export default function Discounts() {
                         </span>
                       </div>
                       {discount.description && (
-                        <p className="text-xs text-gray-500 mt-1 font-lato">
+                        <p className="text-xs text-gray-500 mt-1 font-dm-sans">
                           {discount.description}
                         </p>
                       )}
                     </td>
                     <td className="px-5 py-4">
-                      <span className="inline-flex items-center gap-1 font-semibold text-teal-700 font-lato">
+                      <span className="inline-flex items-center gap-1 font-semibold text-teal-700 font-dm-sans">
                         <Percent className="w-4 h-4" />
                         {discount.discountPercentage}% OFF
                       </span>
                     </td>
-                    <td className="px-5 py-4 text-gray-600 font-lato">
+                    <td className="px-5 py-4 text-gray-600 font-dm-sans">
                       Rs. {discount.minimumOrderAmount?.toLocaleString() || 0}
                     </td>
-                    <td className="px-5 py-4 text-gray-600 font-lato">
+                    <td className="px-5 py-4 text-gray-600 font-dm-sans">
                       {discount.currentUsageCount}
                       {discount.maxUsageLimit
                         ? ` / ${discount.maxUsageLimit}`
                         : " / Unlimited"}
                     </td>
-                    <td className="px-5 py-4 text-gray-600 font-lato">
+                    <td className="px-5 py-4 text-gray-600 font-dm-sans">
                       {new Date(discount.expiryDate).toLocaleDateString()}
                     </td>
                     <td className="px-5 py-4">{getStatusBadge(discount)}</td>
@@ -342,7 +342,7 @@ export default function Discounts() {
             <h3 className="font-medium text-gray-900 mb-1 font-playfair">
               No discounts found
             </h3>
-            <p className="text-sm text-gray-500 font-lato">
+            <p className="text-sm text-gray-500 font-dm-sans">
               Create your first discount code to get started
             </p>
           </div>
@@ -382,7 +382,7 @@ export default function Discounts() {
               {/* Modal Content */}
               <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2 font-lato">
+                  <label className="block text-sm font-medium text-gray-700 mb-2 font-dm-sans">
                     Discount Code *
                   </label>
                   <input
@@ -400,7 +400,7 @@ export default function Discounts() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2 font-lato">
+                  <label className="block text-sm font-medium text-gray-700 mb-2 font-dm-sans">
                     Description
                   </label>
                   <input
@@ -412,14 +412,14 @@ export default function Discounts() {
                         description: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all font-lato"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all font-dm-sans"
                     placeholder="20% off on orders above Rs. 5000"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 font-lato">
+                    <label className="block text-sm font-medium text-gray-700 mb-2 font-dm-sans">
                       Discount Percentage *
                     </label>
                     <div className="relative">
@@ -432,7 +432,7 @@ export default function Discounts() {
                             discountPercentage: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-3 pr-10 rounded-xl border border-gray-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all font-lato"
+                        className="w-full px-4 py-3 pr-10 rounded-xl border border-gray-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all font-dm-sans"
                         placeholder="20"
                         min="1"
                         max="100"
@@ -441,11 +441,11 @@ export default function Discounts() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 font-lato">
+                    <label className="block text-sm font-medium text-gray-700 mb-2 font-dm-sans">
                       Min. Order Amount
                     </label>
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-lato">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-dm-sans">
                         Rs.
                       </span>
                       <input
@@ -457,7 +457,7 @@ export default function Discounts() {
                             minimumOrderAmount: e.target.value,
                           })
                         }
-                        className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all font-lato"
+                        className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all font-dm-sans"
                         placeholder="5000"
                         min="0"
                       />
@@ -467,7 +467,7 @@ export default function Discounts() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 font-lato">
+                    <label className="block text-sm font-medium text-gray-700 mb-2 font-dm-sans">
                       Usage Limit
                     </label>
                     <input
@@ -479,16 +479,16 @@ export default function Discounts() {
                           maxUsageLimit: e.target.value,
                         })
                       }
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all font-lato"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all font-dm-sans"
                       placeholder="Unlimited"
                       min="1"
                     />
-                    <p className="text-xs text-gray-500 mt-1 font-lato">
+                    <p className="text-xs text-gray-500 mt-1 font-dm-sans">
                       Leave empty for unlimited
                     </p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 font-lato">
+                    <label className="block text-sm font-medium text-gray-700 mb-2 font-dm-sans">
                       Expiry Date *
                     </label>
                     <input
@@ -500,7 +500,7 @@ export default function Discounts() {
                           expiryDate: e.target.value,
                         })
                       }
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all font-lato"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all font-dm-sans"
                       min={new Date().toISOString().split("T")[0]}
                     />
                   </div>
@@ -518,7 +518,7 @@ export default function Discounts() {
                     }
                     className="w-4 h-4 rounded border-gray-300 text-teal-700 focus:ring-teal-500"
                   />
-                  <span className="text-sm text-gray-700 font-lato">
+                  <span className="text-sm text-gray-700 font-dm-sans">
                     Active (can be used immediately)
                   </span>
                 </label>
@@ -528,7 +528,7 @@ export default function Discounts() {
               <div className="flex gap-3 p-6 border-t border-gray-100">
                 <button
                   onClick={handleCloseModal}
-                  className="flex-1 px-6 py-3 rounded-xl border border-gray-200 font-medium text-gray-600 hover:bg-gray-50 transition-colors font-lato"
+                  className="flex-1 px-6 py-3 rounded-xl border border-gray-200 font-medium text-gray-600 hover:bg-gray-50 transition-colors font-dm-sans"
                 >
                   Cancel
                 </button>
@@ -541,7 +541,7 @@ export default function Discounts() {
                     createMutation.isPending ||
                     updateMutation.isPending
                   }
-                  className="flex-1 bg-teal-700 text-white px-6 py-3 rounded-xl font-medium hover:bg-teal-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-lato"
+                  className="flex-1 bg-teal-700 text-white px-6 py-3 rounded-xl font-medium hover:bg-teal-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-dm-sans"
                 >
                   {createMutation.isPending || updateMutation.isPending ? (
                     <Loader2 className="w-5 h-5 animate-spin mx-auto" />

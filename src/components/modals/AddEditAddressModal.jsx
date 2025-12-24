@@ -152,7 +152,7 @@ export default function AddEditAddressModal({isOpen, onClose, address}) {
                             <span className="font-bold">{isEditing ? "Edit" : "Add"}</span>{" "}
                             <span className="italic text-teal-700">Address</span>
                         </h2>
-                        <p className="text-neutral-500 font-lato text-sm mt-1">
+                        <p className="text-neutral-500 font-dm-sans text-sm mt-1">
                             {isEditing
                                 ? "Update your address details"
                                 : "Add a new delivery or billing address"}
@@ -163,7 +163,7 @@ export default function AddEditAddressModal({isOpen, onClose, address}) {
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {/* Label Selection */}
                         <div>
-                            <label className="block text-sm font-medium text-neutral-800 mb-2 font-lato">
+                            <label className="block text-sm font-medium text-neutral-800 mb-2 font-dm-sans">
                                 Address Label
                             </label>
                             <div className="grid grid-cols-4 gap-2">
@@ -184,7 +184,7 @@ export default function AddEditAddressModal({isOpen, onClose, address}) {
                                             }`}
                                         >
                                             <Icon size={20}/>
-                                            <span className="text-xs font-medium font-lato">
+                                            <span className="text-xs font-medium font-dm-sans">
                         {option.label}
                       </span>
                                         </button>
@@ -196,7 +196,7 @@ export default function AddEditAddressModal({isOpen, onClose, address}) {
                         {/* Custom Label (if Other selected) */}
                         {formData.label === "other" && (
                             <div>
-                                <label className="block text-sm font-medium text-neutral-800 mb-1 font-lato">
+                                <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
                                     Custom Label <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -206,14 +206,14 @@ export default function AddEditAddressModal({isOpen, onClose, address}) {
                                     onChange={handleChange}
                                     placeholder="e.g., Parents' Home"
                                     required
-                                    className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
+                                    className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
                                 />
                             </div>
                         )}
 
                         {/* Address Type */}
                         <div>
-                            <label className="block text-sm font-medium text-neutral-800 mb-2 font-lato">
+                            <label className="block text-sm font-medium text-neutral-800 mb-2 font-dm-sans">
                                 Address Type
                             </label>
                             <div className="flex gap-3">
@@ -234,7 +234,7 @@ export default function AddEditAddressModal({isOpen, onClose, address}) {
                                             onChange={handleChange}
                                             className="sr-only"
                                         />
-                                        <span className="text-sm font-medium font-lato">
+                                        <span className="text-sm font-medium font-dm-sans">
                       {option.label}
                     </span>
                                     </label>
@@ -244,7 +244,7 @@ export default function AddEditAddressModal({isOpen, onClose, address}) {
 
                         {/* Full Name */}
                         <div>
-                            <label className="block text-sm font-medium text-neutral-800 mb-1 font-lato">
+                            <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
                                 Full Name <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -254,13 +254,13 @@ export default function AddEditAddressModal({isOpen, onClose, address}) {
                                 onChange={handleChange}
                                 placeholder="John Doe"
                                 required
-                                className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
+                                className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
                             />
                         </div>
 
                         {/* Phone */}
                         <div>
-                            <label className="block text-sm font-medium text-neutral-800 mb-1 font-lato">
+                            <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
                                 Phone Number <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -270,13 +270,13 @@ export default function AddEditAddressModal({isOpen, onClose, address}) {
                                 onChange={handleChange}
                                 placeholder="+977 98XXXXXXXX"
                                 required
-                                className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
+                                className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
                             />
                         </div>
 
                         {/* Address Line 1 */}
                         <div>
-                            <label className="block text-sm font-medium text-neutral-800 mb-1 font-lato">
+                            <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
                                 Address Line 1 <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -286,13 +286,13 @@ export default function AddEditAddressModal({isOpen, onClose, address}) {
                                 onChange={handleChange}
                                 placeholder="Street address, P.O. box"
                                 required
-                                className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
+                                className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
                             />
                         </div>
 
                         {/* Address Line 2 */}
                         <div>
-                            <label className="block text-sm font-medium text-neutral-800 mb-1 font-lato">
+                            <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
                                 Address Line 2
                             </label>
                             <input
@@ -301,14 +301,14 @@ export default function AddEditAddressModal({isOpen, onClose, address}) {
                                 value={formData.addressLine2}
                                 onChange={handleChange}
                                 placeholder="Apartment, suite, unit, building, floor, etc."
-                                className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
+                                className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
                             />
                         </div>
 
                         {/* City & Postal Code */}
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-neutral-800 mb-1 font-lato">
+                                <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
                                     City <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -318,11 +318,11 @@ export default function AddEditAddressModal({isOpen, onClose, address}) {
                                     onChange={handleChange}
                                     placeholder="Kathmandu"
                                     required
-                                    className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
+                                    className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-neutral-800 mb-1 font-lato">
+                                <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
                                     Postal Code <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -332,7 +332,7 @@ export default function AddEditAddressModal({isOpen, onClose, address}) {
                                     onChange={handleChange}
                                     placeholder="44600"
                                     required
-                                    className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
+                                    className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
                                 />
                             </div>
                         </div>
@@ -340,7 +340,7 @@ export default function AddEditAddressModal({isOpen, onClose, address}) {
                         {/* State & Country */}
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-neutral-800 mb-1 font-lato">
+                                <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
                                     State/Province
                                 </label>
                                 <input
@@ -349,11 +349,11 @@ export default function AddEditAddressModal({isOpen, onClose, address}) {
                                     value={formData.state}
                                     onChange={handleChange}
                                     placeholder="Bagmati"
-                                    className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
+                                    className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-neutral-800 mb-1 font-lato">
+                                <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
                                     Country <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -363,7 +363,7 @@ export default function AddEditAddressModal({isOpen, onClose, address}) {
                                     onChange={handleChange}
                                     placeholder="Nepal"
                                     required
-                                    className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
+                                    className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
                                 />
                             </div>
                         </div>
@@ -377,7 +377,7 @@ export default function AddEditAddressModal({isOpen, onClose, address}) {
                                 onChange={handleChange}
                                 className="w-4 h-4 rounded border-neutral-300 accent-teal-700 cursor-pointer"
                             />
-                            <label className="text-sm text-neutral-700 font-lato cursor-pointer">
+                            <label className="text-sm text-neutral-700 font-dm-sans cursor-pointer">
                                 Set as default address
                             </label>
                         </div>
@@ -387,14 +387,14 @@ export default function AddEditAddressModal({isOpen, onClose, address}) {
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="flex-1 py-3 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-semibold rounded-full transition-all duration-300 font-lato"
+                                className="flex-1 py-3 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-semibold rounded-full transition-all duration-300 font-dm-sans"
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
                                 disabled={isPending}
-                                className="flex-1 py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-lato"
+                                className="flex-1 py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-dm-sans"
                             >
                                 {isPending
                                     ? isEditing

@@ -59,7 +59,7 @@ export default function FeaturedPieces() {
   return (
     <section
       ref={sectionRef}
-      className="bg-linear-to-b from-zinc-50 to-white py-16 sm:py-20 px-4 sm:px-6 md:px-12 lg:px-20 font-lato"
+      className="bg-linear-to-b from-zinc-50 to-white py-16 sm:py-20 px-4 sm:px-6 md:px-12 lg:px-20 font-dm-sans"
     >
       <div className="max-w-7xl mx-auto">
         {/* Heading Section */}
@@ -69,14 +69,14 @@ export default function FeaturedPieces() {
           }`}
         >
           <div className="inline-block mb-4">
-            <span className="text-xs font-semibold tracking-[0.2em] text-zinc-700 uppercase bg-zinc-100 px-6 py-2 font-lato">
+            <span className="text-xs font-semibold tracking-[0.2em] text-zinc-700 uppercase bg-zinc-100 px-6 py-2 font-dm-sans">
               Our Collection
             </span>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-zinc-900 mb-4 tracking-tight font-playfair">
             Featured <span className="italic text-teal-700">Masterpieces</span>
           </h2>
-          <p className="text-zinc-600 text-base md:text-lg max-w-2xl mx-auto leading-relaxed font-lato">
+          <p className="text-zinc-600 text-base md:text-lg max-w-2xl mx-auto leading-relaxed font-dm-sans">
             Curated pieces that blend timeless elegance with contemporary
             innovation.
           </p>
@@ -135,7 +135,7 @@ export default function FeaturedPieces() {
 
               {/* Product Info */}
               <div className="mt-3 sm:mt-4 space-y-1 sm:space-y-1.5">
-                <p className="text-[10px] sm:text-xs font-semibold tracking-[0.15em] text-zinc-500 uppercase font-lato">
+                <p className="text-[10px] sm:text-xs font-semibold tracking-[0.15em] text-zinc-500 uppercase font-dm-sans">
                   {p.category}
                 </p>
                 <h3 className="text-sm sm:text-base md:text-lg font-medium text-zinc-900 group-hover:text-teal-700 transition-colors duration-300 font-playfair leading-snug">
@@ -146,7 +146,7 @@ export default function FeaturedPieces() {
                     {p.price}
                   </p>
                   {p.originalPrice && (
-                    <p className="text-xs sm:text-sm text-zinc-400 line-through font-lato">
+                    <p className="text-xs sm:text-sm text-zinc-400 line-through font-dm-sans">
                       {p.originalPrice}
                     </p>
                   )}

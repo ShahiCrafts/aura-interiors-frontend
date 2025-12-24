@@ -82,7 +82,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
           {arAvailable && (
-            <div className="absolute top-3 left-3 bg-teal-700 text-white text-xs font-semibold px-2.5 py-1 rounded-md font-lato">
+            <div className="absolute top-3 left-3 bg-teal-700 text-white text-xs font-semibold px-2.5 py-1 rounded-md font-dm-sans">
               AR
             </div>
           )}
@@ -102,7 +102,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
         {/* Content */}
         <div className="flex-1 p-4 sm:p-5 flex flex-col justify-center">
           {category?.name && (
-            <span className="text-xs font-semibold text-teal-700 uppercase tracking-wide font-lato">
+            <span className="text-xs font-semibold text-teal-700 uppercase tracking-wide font-dm-sans">
               {category.name}
             </span>
           )}
@@ -112,7 +112,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
           </h3>
 
           {shortDescription && (
-            <p className="text-neutral-500 text-sm font-lato mt-2 line-clamp-2 hidden sm:block">
+            <p className="text-neutral-500 text-sm font-dm-sans mt-2 line-clamp-2 hidden sm:block">
               {shortDescription}
             </p>
           )}
@@ -131,7 +131,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                 />
               ))}
             </div>
-            <span className="text-sm text-neutral-500 font-lato">
+            <span className="text-sm text-neutral-500 font-dm-sans">
               {displayRating.toFixed(1)}
             </span>
           </div>
@@ -160,7 +160,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 
         {/* AR Badge */}
         {arAvailable && (
-          <div className="absolute top-3 left-3 bg-teal-700 text-white text-xs font-semibold px-2.5 py-1 rounded-md font-lato">
+          <div className="absolute top-3 left-3 bg-teal-700 text-white text-xs font-semibold px-2.5 py-1 rounded-md font-dm-sans">
             AR
           </div>
         )}
@@ -182,7 +182,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
       <div className="p-4">
         {/* Category Label */}
         {category?.name && (
-          <span className="text-xs font-semibold text-teal-700 uppercase tracking-wide font-lato">
+          <span className="text-xs font-semibold text-teal-700 uppercase tracking-wide font-dm-sans">
             {category.name}
           </span>
         )}
@@ -207,7 +207,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
               />
             ))}
           </div>
-          <span className="text-sm text-neutral-500 font-lato">
+          <span className="text-sm text-neutral-500 font-dm-sans">
             {displayRating.toFixed(1)}
           </span>
         </div>

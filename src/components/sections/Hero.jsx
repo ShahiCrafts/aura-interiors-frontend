@@ -116,7 +116,7 @@ export default function Hero() {
       >
         <div className="inline-flex items-center gap-2 w-fit mb-2 sm:mb-3 bg-white rounded-full px-3 sm:px-4 py-1.5 sm:py-2 shadow-sm border border-neutral-100">
           <Star className="w-4 h-4 md:w-5 md:h-5 text-teal-700" />
-          <span className="text-sm md:text-base font-medium text-gray-700 font-lato">
+          <span className="text-sm md:text-base font-medium text-gray-700 font-dm-sans">
             Trusted by 50k+ homeowners
           </span>
         </div>
@@ -131,11 +131,11 @@ export default function Hero() {
           </span>
         </h1>
 
-        <p className="text-base md:text-lg text-gray-600 mb-2 sm:mb-3 font-lato leading-relaxed max-w-sm sm:max-w-md lg:max-w-lg">
+        <p className="text-base md:text-lg text-gray-600 mb-2 sm:mb-3 font-dm-sans leading-relaxed max-w-sm sm:max-w-md lg:max-w-lg">
           Premium furniture crafted for modern living. Experience pieces in your space with AR before you buy.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6 w-full sm:w-auto font-lato">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6 w-full sm:w-auto font-dm-sans">
           <Link
             to="/shop"
             className="bg-teal-700 hover:bg-teal-800 text-white px-6 sm:px-8 py-3 rounded-full font-semibold transition-all duration-300 hover:shadow-lg flex items-center justify-center"
@@ -154,26 +154,26 @@ export default function Hero() {
 
         <div className="flex justify-center lg:justify-start gap-6 sm:gap-8">
           <div>
-            <div className="text-lg sm:text-xl font-bold text-gray-950 font-lato">
+            <div className="text-lg sm:text-xl font-bold text-gray-950 font-dm-sans">
               50k+
             </div>
-            <div className="text-xs sm:text-sm text-gray-500 mt-1.5 font-lato">
+            <div className="text-xs sm:text-sm text-gray-500 mt-1.5 font-dm-sans">
               Happy Customers
             </div>
           </div>
           <div>
-            <div className="text-lg sm:text-xl font-bold text-gray-950 font-lato">
+            <div className="text-lg sm:text-xl font-bold text-gray-950 font-dm-sans">
               4.9/5
             </div>
-            <div className="text-xs sm:text-sm text-gray-500 mt-1.5 font-lato">
+            <div className="text-xs sm:text-sm text-gray-500 mt-1.5 font-dm-sans">
               Customer Rating
             </div>
           </div>
           <div>
-            <div className="text-lg sm:text-xl font-bold text-gray-950 font-lato">
+            <div className="text-lg sm:text-xl font-bold text-gray-950 font-dm-sans">
               99.9%
             </div>
-            <div className="text-xs sm:text-sm text-gray-500 mt-1.5 font-lato">
+            <div className="text-xs sm:text-sm text-gray-500 mt-1.5 font-dm-sans">
               Satisfaction Rate
             </div>
           </div>

@@ -99,9 +99,9 @@ export default function FilterSidebar({
       >
         {checked && <Check size={14} className="text-white" strokeWidth={3} />}
       </div>
-      <span className="text-sm text-neutral-700 font-lato flex-1">{label}</span>
+      <span className="text-sm text-neutral-700 font-dm-sans flex-1">{label}</span>
       {count !== undefined && (
-        <span className="text-sm text-neutral-400 font-lato">{count}</span>
+        <span className="text-sm text-neutral-400 font-dm-sans">{count}</span>
       )}
     </label>
   );
@@ -110,7 +110,7 @@ export default function FilterSidebar({
     <div className="space-y-6">
       {/* Categories Section */}
       <div>
-        <h3 className="text-base font-semibold text-neutral-900 font-lato mb-3">
+        <h3 className="text-base font-semibold text-neutral-900 font-dm-sans mb-3">
           Categories
         </h3>
         <div className="space-y-1">
@@ -129,12 +129,12 @@ export default function FilterSidebar({
       {/* Price Range Section */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-base font-semibold text-neutral-900 font-lato">
+          <h3 className="text-base font-semibold text-neutral-900 font-dm-sans">
             Price Range
           </h3>
           <button
             onClick={handlePriceReset}
-            className="text-sm text-teal-700 hover:text-teal-800 font-medium font-lato"
+            className="text-sm text-teal-700 hover:text-teal-800 font-medium font-dm-sans"
           >
             Reset
           </button>
@@ -143,7 +143,7 @@ export default function FilterSidebar({
         {/* Price Inputs */}
         <div className="flex items-center gap-3 mb-4">
           <div className="flex-1">
-            <label className="text-xs text-neutral-500 font-lato mb-1 block">
+            <label className="text-xs text-neutral-500 font-dm-sans mb-1 block">
               Min Price
             </label>
             <input
@@ -154,11 +154,11 @@ export default function FilterSidebar({
                 setLocalMinPrice(Number(val) || 0);
               }}
               onBlur={handlePriceSubmit}
-              className="w-full px-3 py-2 rounded-lg border border-neutral-200 text-sm font-lato focus:border-teal-600 focus:outline-none"
+              className="w-full px-3 py-2 rounded-lg border border-neutral-200 text-sm font-dm-sans focus:border-teal-600 focus:outline-none"
             />
           </div>
           <div className="flex-1">
-            <label className="text-xs text-neutral-500 font-lato mb-1 block">
+            <label className="text-xs text-neutral-500 font-dm-sans mb-1 block">
               Max Price
             </label>
             <input
@@ -169,7 +169,7 @@ export default function FilterSidebar({
                 setLocalMaxPrice(Number(val) || 0);
               }}
               onBlur={handlePriceSubmit}
-              className="w-full px-3 py-2 rounded-lg border border-neutral-200 text-sm font-lato focus:border-teal-600 focus:outline-none"
+              className="w-full px-3 py-2 rounded-lg border border-neutral-200 text-sm font-dm-sans focus:border-teal-600 focus:outline-none"
             />
           </div>
         </div>
@@ -204,7 +204,7 @@ export default function FilterSidebar({
 
       {/* Colors Section */}
       <div>
-        <h3 className="text-base font-semibold text-neutral-900 font-lato mb-3">
+        <h3 className="text-base font-semibold text-neutral-900 font-dm-sans mb-3">
           Colors
         </h3>
         <div className="flex flex-wrap gap-2">
@@ -228,7 +228,7 @@ export default function FilterSidebar({
 
       {/* Materials Section */}
       <div>
-        <h3 className="text-base font-semibold text-neutral-900 font-lato mb-3">
+        <h3 className="text-base font-semibold text-neutral-900 font-dm-sans mb-3">
           Materials
         </h3>
         <div className="space-y-1">
@@ -246,7 +246,7 @@ export default function FilterSidebar({
 
       {/* Rating Section */}
       <div>
-        <h3 className="text-base font-semibold text-neutral-900 font-lato mb-3">
+        <h3 className="text-base font-semibold text-neutral-900 font-dm-sans mb-3">
           Rating
         </h3>
         <div className="space-y-1">
@@ -273,7 +273,7 @@ export default function FilterSidebar({
                   />
                 ))}
               </div>
-              <span className={`text-sm font-lato ${selectedRating === rating ? "text-teal-700 font-medium" : "text-neutral-600"}`}>{rating} & up</span>
+              <span className={`text-sm font-dm-sans ${selectedRating === rating ? "text-teal-700 font-medium" : "text-neutral-600"}`}>{rating} & up</span>
             </button>
           ))}
         </div>

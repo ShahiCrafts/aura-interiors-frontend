@@ -20,6 +20,7 @@ import { useProduct, useRelatedProducts } from "../hooks/useProductTan";
 import { useAddToWishlist, useRemoveFromWishlist, useCheckWishlist } from "../hooks/useWishlistTan";
 import { useAddToCart } from "../hooks/useCartTan";
 import useAuthStore from "../store/authStore";
+import useGuestCartStore from "../store/guestCartStore";
 import { toast } from "../components/ui/Toast";
 import ProductCard from "../components/shop/ProductCard";
 import ImageMagnifier from "../components/shop/ImageMagnifier";
@@ -51,21 +52,25 @@ export default function ProductDetailsPage() {
   const isInWishlist = wishlistCheck?.data?.inWishlist || false;
   const isWishlistLoading = isAddingToWishlist || isRemovingFromWishlist;
 
-  // Cart hook
+  // Cart hooks
   const { mutate: addToCart, isPending: isAddingToCart } = useAddToCart();
+  const { addItem: addToGuestCart } = useGuestCartStore();
 
   const handleAddToCart = () => {
-    if (!isAuthenticated) {
-      toast.error("Please login to add items to cart");
-      return;
-    }
-
     const variant = {};
     if (selectedColor) {
       variant.color = typeof selectedColor === "object" ? selectedColor.name : selectedColor;
     }
     if (selectedSize) {
       variant.size = typeof selectedSize === "object" ? selectedSize.name : selectedSize;
+    }
+
+    if (!isAuthenticated) {
+      // Use guest cart for unauthenticated users
+      addToGuestCart(product, quantity, variant);
+      toast.success("Added to cart");
+      setQuantity(1);
+      return;
     }
 
     addToCart(
@@ -261,7 +266,7 @@ export default function ProductDetailsPage() {
     return (
       <>
         <Navbar />
-        <main className="min-h-screen bg-white pt-20 font-lato">
+        <main className="min-h-screen bg-white pt-20 font-dm-sans">
           <div className="flex items-center justify-center h-96">
             <Loader2 size={40} className="text-teal-700 animate-spin" />
           </div>
@@ -275,13 +280,13 @@ export default function ProductDetailsPage() {
     return (
       <>
         <Navbar />
-        <main className="min-h-screen bg-white pt-20 font-lato">
+        <main className="min-h-screen bg-white pt-20 font-dm-sans">
           <div className="max-w-7xl mx-auto px-4 py-16 text-center">
             <h1 className="text-2xl font-playfair text-neutral-900 mb-4">Product Not Found</h1>
-            <p className="text-neutral-500 font-lato mb-6">The product you're looking for doesn't exist or has been removed.</p>
+            <p className="text-neutral-500 font-dm-sans mb-6">The product you're looking for doesn't exist or has been removed.</p>
             <Link
               to="/shop"
-              className="inline-block bg-teal-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-teal-800 transition-colors font-lato"
+              className="inline-block bg-teal-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-teal-800 transition-colors font-dm-sans"
             >
               Browse Products
             </Link>
@@ -298,7 +303,7 @@ export default function ProductDetailsPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-white pt-20 font-lato">
+      <main className="min-h-screen bg-white pt-20 font-dm-sans">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm mb-6 overflow-x-auto pb-2">
@@ -306,11 +311,11 @@ export default function ProductDetailsPage() {
               <div key={index} className="flex items-center gap-2 whitespace-nowrap">
                 {index > 0 && <ChevronRight size={14} className="text-neutral-400 shrink-0" />}
                 {index === breadcrumbs.length - 1 ? (
-                  <span className="text-neutral-500 font-lato truncate max-w-[200px]">{crumb.name}</span>
+                  <span className="text-neutral-500 font-dm-sans truncate max-w-[200px]">{crumb.name}</span>
                 ) : (
                   <Link
                     to={crumb.path}
-                    className="text-neutral-600 hover:text-teal-700 transition-colors font-lato"
+                    className="text-neutral-600 hover:text-teal-700 transition-colors font-dm-sans"
                   >
                     {crumb.name}
                   </Link>
@@ -335,7 +340,7 @@ export default function ProductDetailsPage() {
 
                 {/* Bestseller Badge */}
                 {product.isFeatured && (
-                  <div className="absolute top-4 left-4 bg-amber-400 text-amber-900 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wide font-lato">
+                  <div className="absolute top-4 left-4 bg-amber-400 text-amber-900 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wide font-dm-sans">
                     Bestseller
                   </div>
                 )}
@@ -392,7 +397,7 @@ export default function ProductDetailsPage() {
             <div>
               {/* Category Label */}
               {product.category?.name && (
-                <span className="text-xs font-semibold text-teal-700 uppercase tracking-wider font-lato">
+                <span className="text-xs font-semibold text-teal-700 uppercase tracking-wider font-dm-sans">
                   {product.category.name}
                 </span>
               )}
@@ -417,13 +422,13 @@ export default function ProductDetailsPage() {
                     />
                   ))}
                 </div>
-                <span className="text-sm font-semibold text-neutral-900 font-lato">
+                <span className="text-sm font-semibold text-neutral-900 font-dm-sans">
                   {mockReviews.average.toFixed(2)}
                 </span>
-                <span className="text-sm text-neutral-500 font-lato">
+                <span className="text-sm text-neutral-500 font-dm-sans">
                   ({mockReviews.total} reviews)
                 </span>
-                <span className="text-sm text-neutral-500 font-lato">
+                <span className="text-sm text-neutral-500 font-dm-sans">
                   {product.soldCount || "2.5k"} Sold
                 </span>
               </div>
@@ -436,19 +441,19 @@ export default function ProductDetailsPage() {
                     NRs. {formatPrice(product.price)}
                   </span>
                   {product.originalPrice && product.originalPrice > product.price && (
-                    <span className="text-base text-neutral-400 line-through font-lato">
+                    <span className="text-base text-neutral-400 line-through font-dm-sans">
                       NRs. {formatPrice(product.originalPrice)}
                     </span>
                   )}
                   {discount && (
-                    <span className="text-xs font-semibold text-white bg-red-500 px-2.5 py-1 rounded font-lato">
+                    <span className="text-xs font-semibold text-white bg-red-500 px-2.5 py-1 rounded font-dm-sans">
                       {discount}% OFF
                     </span>
                   )}
                 </div>
 
                 {/* EMI Info */}
-                <p className="text-sm text-neutral-600 font-lato">
+                <p className="text-sm text-neutral-600 font-dm-sans">
                   {savings > 0 && (
                     <span className="text-teal-700 font-medium">Save NRs. {formatPrice(savings)}</span>
                   )}
@@ -459,7 +464,7 @@ export default function ProductDetailsPage() {
 
               {/* Description */}
               {product.description && (
-                <p className="text-neutral-600 font-lato mb-6 leading-relaxed text-sm">
+                <p className="text-neutral-600 font-dm-sans mb-6 leading-relaxed text-sm">
                   {product.description}
                 </p>
               )}
@@ -467,7 +472,7 @@ export default function ProductDetailsPage() {
               {/* Color Selector */}
               {colors.length > 0 && (
                 <div className="mb-6">
-                  <p className="text-sm text-neutral-700 font-lato mb-3">
+                  <p className="text-sm text-neutral-700 font-dm-sans mb-3">
                     Color: <span className="text-neutral-500">{selectedColor && typeof selectedColor === "object" ? selectedColor.name : selectedColor}</span>
                   </p>
                   <div className="flex gap-3">
@@ -495,7 +500,7 @@ export default function ProductDetailsPage() {
               {/* Size Selector */}
               {sizes.length > 0 && (
                 <div className="mb-6">
-                  <p className="text-sm text-neutral-700 font-lato mb-3">Size:</p>
+                  <p className="text-sm text-neutral-700 font-dm-sans mb-3">Size:</p>
                   <div className="flex flex-wrap gap-3">
                     {sizes.map((size, index) => {
                       const sizeName = typeof size === "object" ? size.name : size;
@@ -505,7 +510,7 @@ export default function ProductDetailsPage() {
                         <button
                           key={index}
                           onClick={() => setSelectedSize(size)}
-                          className={`px-4 py-3 rounded-lg border transition-all font-lato text-center min-w-[100px] ${
+                          className={`px-4 py-3 rounded-lg border transition-all font-dm-sans text-center min-w-[100px] ${
                             isSelected
                               ? "border-teal-700 bg-white"
                               : "border-neutral-200 hover:border-neutral-400 bg-white"
@@ -535,7 +540,7 @@ export default function ProductDetailsPage() {
                   >
                     <Minus size={22} strokeWidth={2} />
                   </button>
-                  <div className="w-11 h-11 flex items-center justify-center border border-neutral-300 rounded-lg font-semibold text-neutral-900 font-lato text-base">
+                  <div className="w-11 h-11 flex items-center justify-center border border-neutral-300 rounded-lg font-semibold text-neutral-900 font-dm-sans text-base">
                     {quantity}
                   </div>
                   <button
@@ -551,7 +556,7 @@ export default function ProductDetailsPage() {
                 <button
                   onClick={handleAddToCart}
                   disabled={isAddingToCart}
-                  className="flex-1 bg-teal-700 text-white px-8 py-3 rounded-full font-semibold hover:bg-teal-800 transition-colors font-lato disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 bg-teal-700 text-white px-8 py-3 rounded-full font-semibold hover:bg-teal-800 transition-colors font-dm-sans disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isAddingToCart ? "Adding..." : "Add to Cart"}
                 </button>
@@ -566,8 +571,8 @@ export default function ProductDetailsPage() {
                 <RotateCcw size={22} className="text-neutral-700" />
               </div>
               <div>
-                <p className="font-semibold text-neutral-900 font-lato mb-1">30 Day Returns</p>
-                <p className="text-sm text-neutral-500 font-lato leading-relaxed">
+                <p className="font-semibold text-neutral-900 font-dm-sans mb-1">30 Day Returns</p>
+                <p className="text-sm text-neutral-500 font-dm-sans leading-relaxed">
                   Enjoy hassle-free returns with our 30-day policy for peace of mind.
                 </p>
               </div>
@@ -578,8 +583,8 @@ export default function ProductDetailsPage() {
                 <Truck size={22} className="text-neutral-700" />
               </div>
               <div>
-                <p className="font-semibold text-neutral-900 font-lato mb-1">Next Day Delivery</p>
-                <p className="text-sm text-neutral-500 font-lato leading-relaxed">
+                <p className="font-semibold text-neutral-900 font-dm-sans mb-1">Next Day Delivery</p>
+                <p className="text-sm text-neutral-500 font-dm-sans leading-relaxed">
                   Get your order delivered fast with our reliable next-day delivery service.
                 </p>
               </div>
@@ -590,8 +595,8 @@ export default function ProductDetailsPage() {
                 <ShieldCheck size={22} className="text-neutral-700" />
               </div>
               <div>
-                <p className="font-semibold text-neutral-900 font-lato mb-1">Secure Payments</p>
-                <p className="text-sm text-neutral-500 font-lato leading-relaxed">
+                <p className="font-semibold text-neutral-900 font-dm-sans mb-1">Secure Payments</p>
+                <p className="text-sm text-neutral-500 font-dm-sans leading-relaxed">
                   Shop confidently with our secure and seamless payment process.
                 </p>
               </div>
@@ -613,7 +618,7 @@ export default function ProductDetailsPage() {
                         onClick={() => toggleSection(section.id)}
                         className="w-full flex items-center justify-between py-4 text-left hover:text-teal-700 transition-colors"
                       >
-                        <span className="font-medium text-neutral-900 font-lato">
+                        <span className="font-medium text-neutral-900 font-dm-sans">
                           {section.title}
                         </span>
                         <ChevronDown
@@ -624,7 +629,7 @@ export default function ProductDetailsPage() {
                         />
                       </button>
                       {expandedSections[section.id] && (
-                        <div className="pb-4 text-neutral-600 font-lato text-sm leading-relaxed">
+                        <div className="pb-4 text-neutral-600 font-dm-sans text-sm leading-relaxed">
                           {section.content}
                         </div>
                       )}
@@ -660,7 +665,7 @@ export default function ProductDetailsPage() {
                       />
                     ))}
                   </div>
-                  <p className="text-sm text-neutral-500 font-lato mt-1">
+                  <p className="text-sm text-neutral-500 font-dm-sans mt-1">
                     {mockReviews.total} reviews
                   </p>
                 </div>
@@ -669,7 +674,7 @@ export default function ProductDetailsPage() {
                 <div className="flex-1 space-y-1.5">
                   {mockReviews.breakdown.map((item) => (
                     <div key={item.stars} className="flex items-center gap-2">
-                      <span className="text-sm text-neutral-600 font-lato w-12">
+                      <span className="text-sm text-neutral-600 font-dm-sans w-12">
                         {item.stars} star
                       </span>
                       <div className="flex-1 h-2 bg-neutral-100 rounded-full overflow-hidden">
@@ -680,7 +685,7 @@ export default function ProductDetailsPage() {
                           }}
                         />
                       </div>
-                      <span className="text-sm text-neutral-500 font-lato w-8 text-right">
+                      <span className="text-sm text-neutral-500 font-dm-sans w-8 text-right">
                         {item.count}
                       </span>
                     </div>
@@ -703,11 +708,11 @@ export default function ProductDetailsPage() {
                       />
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-neutral-900 font-lato">
+                          <span className="font-semibold text-neutral-900 font-dm-sans">
                             {review.user}
                           </span>
                           {review.verified && (
-                            <span className="text-xs bg-teal-50 text-teal-700 px-2 py-0.5 rounded font-lato">
+                            <span className="text-xs bg-teal-50 text-teal-700 px-2 py-0.5 rounded font-dm-sans">
                               Verified
                             </span>
                           )}
@@ -726,17 +731,17 @@ export default function ProductDetailsPage() {
                               />
                             ))}
                           </div>
-                          <span className="text-xs text-neutral-400 font-lato">
+                          <span className="text-xs text-neutral-400 font-dm-sans">
                             {review.date}
                           </span>
                         </div>
-                        <p className="font-medium text-neutral-900 font-lato mb-1">
+                        <p className="font-medium text-neutral-900 font-dm-sans mb-1">
                           {review.title}
                         </p>
-                        <p className="text-sm text-neutral-600 font-lato leading-relaxed">
+                        <p className="text-sm text-neutral-600 font-dm-sans leading-relaxed">
                           {review.content}
                         </p>
-                        <button className="flex items-center gap-1.5 mt-3 text-sm text-neutral-500 hover:text-teal-700 transition-colors font-lato">
+                        <button className="flex items-center gap-1.5 mt-3 text-sm text-neutral-500 hover:text-teal-700 transition-colors font-dm-sans">
                           <ThumbsUp size={14} />
                           Helpful ({review.helpful})
                         </button>
@@ -747,7 +752,7 @@ export default function ProductDetailsPage() {
               </div>
 
               {/* View All Reviews Button */}
-              <button className="w-full mt-4 py-3 border border-neutral-200 rounded-full text-neutral-700 font-semibold hover:bg-neutral-50 transition-colors font-lato">
+              <button className="w-full mt-4 py-3 border border-neutral-200 rounded-full text-neutral-700 font-semibold hover:bg-neutral-50 transition-colors font-dm-sans">
                 View All Reviews
               </button>
             </div>

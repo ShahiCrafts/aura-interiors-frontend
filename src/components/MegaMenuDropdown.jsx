@@ -69,7 +69,7 @@ export default function MegaMenuDropdown({ isOpen, onMouseEnter, onMouseLeave, o
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <div className="bg-white border-b border-neutral-200 shadow-2xl font-lato">
+      <div className="bg-white border-b border-neutral-200 shadow-2xl font-dm-sans">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
           <div className="grid grid-cols-12 gap-8">
             {/* Categories */}
@@ -96,10 +96,10 @@ export default function MegaMenuDropdown({ isOpen, onMouseEnter, onMouseLeave, o
                         <IconComponent className="w-5 h-5 text-neutral-600 group-hover:text-teal-700 transition-colors" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-neutral-800 group-hover:text-teal-700 transition-colors font-lato">
+                        <p className="text-sm font-medium text-neutral-800 group-hover:text-teal-700 transition-colors font-dm-sans">
                           {category.name}
                         </p>
-                        <p className="text-xs text-neutral-500 font-lato">
+                        <p className="text-xs text-neutral-500 font-dm-sans">
                           {category.productCount || 0} items
                         </p>
                       </div>
@@ -110,7 +110,7 @@ export default function MegaMenuDropdown({ isOpen, onMouseEnter, onMouseLeave, o
               <Link
                 to="/shop"
                 onClick={onClose}
-                className="inline-flex items-center gap-2 mt-4 text-sm font-medium text-teal-700 hover:underline font-lato"
+                className="inline-flex items-center gap-2 mt-4 text-sm font-medium text-teal-700 hover:underline font-dm-sans"
               >
                 View All Categories
                 <ArrowRight className="w-4 h-4" />
@@ -143,7 +143,7 @@ export default function MegaMenuDropdown({ isOpen, onMouseEnter, onMouseLeave, o
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-neutral-800 group-hover:text-teal-700 transition-colors font-lato line-clamp-1">
+                      <p className="text-sm font-medium text-neutral-800 group-hover:text-teal-700 transition-colors font-dm-sans line-clamp-1">
                         {product.name}
                       </p>
                       <p className="text-base font-bold text-teal-700 mt-0.5 font-playfair">
@@ -176,10 +176,10 @@ export default function MegaMenuDropdown({ isOpen, onMouseEnter, onMouseLeave, o
                     <Sparkles className="w-5 h-5 text-amber-600" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-neutral-800 group-hover:text-teal-700 transition-colors font-lato">
+                    <p className="text-sm font-medium text-neutral-800 group-hover:text-teal-700 transition-colors font-dm-sans">
                       New Arrivals
                     </p>
-                    <p className="text-xs text-neutral-500 font-lato">
+                    <p className="text-xs text-neutral-500 font-dm-sans">
                       Latest additions
                     </p>
                   </div>
@@ -193,10 +193,10 @@ export default function MegaMenuDropdown({ isOpen, onMouseEnter, onMouseLeave, o
                     <TrendingUp className="w-5 h-5 text-green-600" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-neutral-800 group-hover:text-teal-700 transition-colors font-lato">
+                    <p className="text-sm font-medium text-neutral-800 group-hover:text-teal-700 transition-colors font-dm-sans">
                       Best Value
                     </p>
-                    <p className="text-xs text-neutral-500 font-lato">
+                    <p className="text-xs text-neutral-500 font-dm-sans">
                       Budget-friendly picks
                     </p>
                   </div>
@@ -210,10 +210,10 @@ export default function MegaMenuDropdown({ isOpen, onMouseEnter, onMouseLeave, o
                     <Sparkles className="w-5 h-5 text-purple-600" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-neutral-800 group-hover:text-teal-700 transition-colors font-lato">
+                    <p className="text-sm font-medium text-neutral-800 group-hover:text-teal-700 transition-colors font-dm-sans">
                       Top Rated
                     </p>
-                    <p className="text-xs text-neutral-500 font-lato">
+                    <p className="text-xs text-neutral-500 font-dm-sans">
                       Customer favorites
                     </p>
                   </div>
@@ -225,11 +225,11 @@ export default function MegaMenuDropdown({ isOpen, onMouseEnter, onMouseLeave, o
           {/* Footer */}
           <div className="flex items-center justify-between mt-8 pt-6 border-t border-neutral-100">
             <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2 text-sm text-neutral-600 font-lato">
+              <div className="flex items-center gap-2 text-sm text-neutral-600 font-dm-sans">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                 Free shipping on orders over NRs. 50,000
               </div>
-              <div className="flex items-center gap-2 text-sm text-neutral-600 font-lato">
+              <div className="flex items-center gap-2 text-sm text-neutral-600 font-dm-sans">
                 <div className="w-2 h-2 bg-blue-500 rounded-full" />
                 30-day returns
               </div>
@@ -237,7 +237,7 @@ export default function MegaMenuDropdown({ isOpen, onMouseEnter, onMouseLeave, o
             <Link
               to="/shop"
               onClick={onClose}
-              className="flex items-center gap-2 text-sm font-semibold text-teal-700 hover:underline font-lato"
+              className="flex items-center gap-2 text-sm font-semibold text-teal-700 hover:underline font-dm-sans"
             >
               Browse All Products
               <ArrowRight className="w-4 h-4" />

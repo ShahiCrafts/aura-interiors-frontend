@@ -57,7 +57,7 @@ export default function Testimonials() {
   return (
     <section
       ref={sectionRef}
-      className="bg-linear-to-b from-zinc-50 to-white py-16 sm:py-20 px-4 sm:px-6 md:px-12 lg:px-20 font-lato"
+      className="bg-linear-to-b from-zinc-50 to-white py-16 sm:py-20 px-4 sm:px-6 md:px-12 lg:px-20 font-dm-sans"
     >
       <div className="max-w-7xl mx-auto">
         {/* Header */}
@@ -67,7 +67,7 @@ export default function Testimonials() {
           }`}
         >
           <div className="inline-block mb-4">
-            <span className="text-xs font-semibold tracking-[0.2em] text-zinc-700 uppercase bg-zinc-100 px-6 py-2 font-lato">
+            <span className="text-xs font-semibold tracking-[0.2em] text-zinc-700 uppercase bg-zinc-100 px-6 py-2 font-dm-sans">
               Testimonials
             </span>
           </div>
@@ -126,7 +126,7 @@ export default function Testimonials() {
                   <p className="text-zinc-900 font-medium text-base sm:text-lg font-playfair">
                     {testimonial.name}
                   </p>
-                  <p className="text-teal-700 text-sm sm:text-base font-lato">
+                  <p className="text-teal-700 text-sm sm:text-base font-dm-sans">
                     {testimonial.role}
                   </p>
                 </div>

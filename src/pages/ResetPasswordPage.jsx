@@ -85,7 +85,7 @@ export default function ResetPasswordPage() {
 
   if (resetSuccess) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-4 font-lato">
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-4 font-dm-sans">
         <div className="w-full max-w-[420px] bg-white rounded-2xl shadow-xl p-8 text-center">
           <div className="w-16 h-16 bg-teal-50 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle size={32} className="text-teal-700" />
@@ -94,12 +94,12 @@ export default function ResetPasswordPage() {
             <span className="font-bold">Password</span>{" "}
             <span className="italic text-teal-700">Reset!</span>
           </h2>
-          <p className="text-neutral-500 font-lato text-sm mb-6">
+          <p className="text-neutral-500 font-dm-sans text-sm mb-6">
             Your password has been successfully reset. You can now log in with your new password.
           </p>
           <button
             onClick={() => navigate("/")}
-            className="w-full py-3 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-lato"
+            className="w-full py-3 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-dm-sans"
           >
             Go to Homepage
           </button>
@@ -109,7 +109,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-4 font-lato">
+    <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-4 font-dm-sans">
       <div className="w-full max-w-[420px] bg-white rounded-2xl shadow-xl p-6 sm:p-8">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
@@ -121,7 +121,7 @@ export default function ResetPasswordPage() {
               <span className="font-bold">Reset</span>{" "}
               <span className="italic text-teal-700">Password</span>
             </h2>
-            <p className="text-neutral-500 font-lato text-sm">
+            <p className="text-neutral-500 font-dm-sans text-sm">
               Create your new password
             </p>
           </div>
@@ -131,7 +131,7 @@ export default function ResetPasswordPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* New Password */}
           <div>
-            <label className="block text-sm font-medium text-neutral-800 mb-1 font-lato">
+            <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
               New Password <span className="text-red-500">*</span>
             </label>
             <div className="relative">
@@ -142,7 +142,7 @@ export default function ResetPasswordPage() {
                 onChange={handleChange}
                 placeholder="Create a new password"
                 required
-                className="w-full px-4 py-2.5 pr-11 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
+                className="w-full px-4 py-2.5 pr-11 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
               />
               <button
                 type="button"
@@ -164,7 +164,7 @@ export default function ResetPasswordPage() {
 
           {/* Confirm Password */}
           <div>
-            <label className="block text-sm font-medium text-neutral-800 mb-1 font-lato">
+            <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
               Confirm Password <span className="text-red-500">*</span>
             </label>
             <div className="relative">
@@ -175,7 +175,7 @@ export default function ResetPasswordPage() {
                 onChange={handleChange}
                 placeholder="Confirm your new password"
                 required
-                className={`w-full px-4 py-2.5 pr-11 rounded-lg border outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400 ${
+                className={`w-full px-4 py-2.5 pr-11 rounded-lg border outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400 ${
                   formData.confirmPassword
                     ? passwordsMatch
                       ? "border-teal-500 focus:border-teal-600 focus:ring-1 focus:ring-teal-600 bg-teal-50/30"
@@ -209,14 +209,14 @@ export default function ResetPasswordPage() {
           <button
             type="submit"
             disabled={isPending || !passwordsMatch}
-            className="w-full py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-lato"
+            className="w-full py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-dm-sans"
           >
             {isPending ? "Resetting..." : "Reset Password"}
           </button>
         </form>
 
         {/* Back to Home */}
-        <p className="text-center mt-5 text-neutral-500 font-lato">
+        <p className="text-center mt-5 text-neutral-500 font-dm-sans">
           Remember your password?{" "}
           <button
             type="button"

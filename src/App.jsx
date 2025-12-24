@@ -15,6 +15,9 @@ import ShopPage from "./pages/ShopPage";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import ARViewPage from "./pages/ARViewPage";
 import NativeARPage from "./pages/NativeARPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import OrderConfirmationPage from "./pages/OrderConfirmationPage";
+import PaymentFailedPage from "./pages/PaymentFailedPage";
 import useAuthStore from "./store/authStore";
 
 // Admin imports
@@ -58,6 +61,9 @@ function App() {
         <Route path="/product/:productSlug" element={<ProductDetailsPage />} />
         <Route path="/ar/:productSlug" element={<ARViewPage />} />
         <Route path="/native-ar" element={<NativeARPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/checkout/payment-failed" element={<PaymentFailedPage />} />
+        <Route path="/order-confirmation/:orderId" element={<OrderConfirmationPage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         <Route
           path="/profile"

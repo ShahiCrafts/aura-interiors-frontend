@@ -113,13 +113,13 @@ export default function SavedAddresses() {
             <span className="font-bold">Saved</span>{" "}
             <span className="italic text-teal-700">Addresses</span>
           </h1>
-          <p className="text-neutral-500 font-lato text-sm mt-1">
+          <p className="text-neutral-500 font-dm-sans text-sm mt-1">
             Manage your delivery and billing addresses
           </p>
         </div>
         <button
           onClick={handleAddNew}
-          className="flex items-center justify-center gap-2 px-5 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-lato text-sm"
+          className="flex items-center justify-center gap-2 px-5 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-dm-sans text-sm"
         >
           <Plus size={18} />
           Add New Address
@@ -148,22 +148,22 @@ export default function SavedAddresses() {
                     <Icon size={18} />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-neutral-900 font-lato capitalize">
+                    <h3 className="font-semibold text-neutral-900 font-dm-sans capitalize">
                       {address.label === "other" ? address.customLabel : address.label}
                     </h3>
-                    <p className="text-xs text-neutral-500 font-lato capitalize">
+                    <p className="text-xs text-neutral-500 font-dm-sans capitalize">
                       {address.type} Address
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   {address.isDefault && (
-                    <span className="px-2.5 py-1 bg-teal-700 text-white text-xs font-semibold rounded-full font-lato">
+                    <span className="px-2.5 py-1 bg-teal-700 text-white text-xs font-semibold rounded-full font-dm-sans">
                       DEFAULT
                     </span>
                   )}
                   {address.type === "billing" && !address.isDefault && (
-                    <span className="px-2.5 py-1 bg-teal-100 text-teal-700 text-xs font-semibold rounded-full font-lato">
+                    <span className="px-2.5 py-1 bg-teal-100 text-teal-700 text-xs font-semibold rounded-full font-dm-sans">
                       BILLING
                     </span>
                   )}
@@ -172,10 +172,10 @@ export default function SavedAddresses() {
 
               {/* Address Details */}
               <div className="space-y-2 mb-4">
-                <p className="font-medium text-neutral-800 font-lato">
+                <p className="font-medium text-neutral-800 font-dm-sans">
                   {address.fullName}
                 </p>
-                <div className="flex items-start gap-2 text-sm text-neutral-600 font-lato">
+                <div className="flex items-start gap-2 text-sm text-neutral-600 font-dm-sans">
                   <MapPin size={16} className="text-neutral-400 mt-0.5 shrink-0" />
                   <span>
                     {address.addressLine1}
@@ -186,7 +186,7 @@ export default function SavedAddresses() {
                     {address.state && `${address.state}, `}{address.country}
                   </span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-neutral-600 font-lato">
+                <div className="flex items-center gap-2 text-sm text-neutral-600 font-dm-sans">
                   <Phone size={16} className="text-neutral-400" />
                   <span>{address.phone}</span>
                 </div>
@@ -203,7 +203,7 @@ export default function SavedAddresses() {
                       disabled={isSettingDefault}
                       className="w-4 h-4 rounded border-neutral-300 accent-teal-700 cursor-pointer"
                     />
-                    <span className="text-sm text-neutral-600 font-lato">
+                    <span className="text-sm text-neutral-600 font-dm-sans">
                       Set as Default
                     </span>
                   </label>
@@ -213,7 +213,7 @@ export default function SavedAddresses() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleEdit(address)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-teal-700 border border-teal-200 rounded-lg hover:bg-teal-50 transition-colors font-lato"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-teal-700 border border-teal-200 rounded-lg hover:bg-teal-50 transition-colors font-dm-sans"
                   >
                     <Pencil size={14} />
                     Edit
@@ -221,7 +221,7 @@ export default function SavedAddresses() {
                   <button
                     onClick={() => handleDelete(address._id)}
                     disabled={isDeleting}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-neutral-600 border border-neutral-200 rounded-lg hover:bg-neutral-50 hover:text-red-600 hover:border-red-200 transition-colors font-lato"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-neutral-600 border border-neutral-200 rounded-lg hover:bg-neutral-50 hover:text-red-600 hover:border-red-200 transition-colors font-dm-sans"
                   >
                     <Trash2 size={14} />
                     Delete
@@ -241,10 +241,10 @@ export default function SavedAddresses() {
             <Plus size={24} className="text-neutral-400 group-hover:text-teal-700 transition-colors" />
           </div>
           <div className="text-center">
-            <p className="font-semibold text-neutral-700 group-hover:text-teal-700 font-lato transition-colors">
+            <p className="font-semibold text-neutral-700 group-hover:text-teal-700 font-dm-sans transition-colors">
               Add New Address
             </p>
-            <p className="text-sm text-neutral-500 font-lato">
+            <p className="text-sm text-neutral-500 font-dm-sans">
               Save a new delivery or billing address
             </p>
           </div>

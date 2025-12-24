@@ -55,7 +55,7 @@ function ToastItem({ toast, onRemove }) {
       style={{ minWidth: "320px", maxWidth: "420px" }}
     >
       <Icon size={20} className={config.iconColor} />
-      <p className={`flex-1 font-lato text-sm ${config.textColor}`}>
+      <p className={`flex-1 font-dm-sans text-sm ${config.textColor}`}>
         {toast.message}
       </p>
       <button

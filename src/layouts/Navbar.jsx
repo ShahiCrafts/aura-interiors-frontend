@@ -23,6 +23,7 @@ import {
   Smartphone,
 } from "lucide-react";
 import useAuthStore from "../store/authStore";
+import useGuestCartStore from "../store/guestCartStore";
 import MegaMenuDropdown from "../components/MegaMenuDropdown";
 import SignupModal from "../components/modals/SignupModal";
 import LoginModal from "../components/modals/LoginModal";
@@ -45,7 +46,13 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   const { data: cartData } = useCart({ enabled: isAuthenticated });
-  const cartCount = cartData?.data?.cart?.totalItems || 0;
+  const { getCartTotals: getGuestCartTotals } = useGuestCartStore();
+
+  // Use appropriate cart count based on authentication status
+  const guestTotals = getGuestCartTotals();
+  const cartCount = isAuthenticated
+    ? (cartData?.data?.cart?.totalItems || 0)
+    : guestTotals.itemCount;
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -137,7 +144,7 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`w-full fixed top-0 left-0 z-50 transition-all duration-500 font-lato ${
+        className={`w-full fixed top-0 left-0 z-50 transition-all duration-500 font-dm-sans ${
           scrolled
             ? "bg-white/95 backdrop-blur-2xl shadow-lg border-b border-neutral-200/80"
             : "bg-white/80 backdrop-blur-xl border-b border-neutral-200/40 shadow-sm"
@@ -187,7 +194,7 @@ export default function Navbar() {
               >
                 <a
                   href={link.href}
-                  className="flex items-center gap-1.5 text-sm lg:text-base font-medium text-neutral-700 hover:text-neutral-900 transition-colors duration-200 py-2 font-lato"
+                  className="flex items-center gap-1.5 text-sm lg:text-base font-medium text-neutral-700 hover:text-neutral-900 transition-colors duration-200 py-2 font-dm-sans"
                 >
                   {link.name}
                   {link.hasDropdown && (
@@ -271,7 +278,7 @@ export default function Navbar() {
                       className="w-10 h-10 rounded-full object-cover ring-2 ring-teal-700/20"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-teal-700 flex items-center justify-center text-white text-sm font-semibold font-lato ring-2 ring-teal-700/20">
+                    <div className="w-10 h-10 rounded-full bg-teal-700 flex items-center justify-center text-white text-sm font-semibold font-dm-sans ring-2 ring-teal-700/20">
                       {getInitials(user?.firstName, user?.lastName)}
                     </div>
                   )}
@@ -290,15 +297,15 @@ export default function Navbar() {
                           className="w-10 h-10 rounded-full object-cover shrink-0"
                         />
                       ) : (
-                        <div className="w-10 h-10 rounded-full bg-teal-700 flex items-center justify-center text-white text-sm font-semibold font-lato shrink-0">
+                        <div className="w-10 h-10 rounded-full bg-teal-700 flex items-center justify-center text-white text-sm font-semibold font-dm-sans shrink-0">
                           {getInitials(user?.firstName, user?.lastName)}
                         </div>
                       )}
                       <div className="min-w-0">
-                        <p className="text-sm font-medium text-neutral-900 font-lato truncate">
+                        <p className="text-sm font-medium text-neutral-900 font-dm-sans truncate">
                           {user?.firstName} {user?.lastName}
                         </p>
-                        <p className="text-xs text-neutral-500 font-lato truncate">
+                        <p className="text-xs text-neutral-500 font-dm-sans truncate">
                           {user?.email}
                         </p>
                       </div>
@@ -306,7 +313,7 @@ export default function Navbar() {
                     <a
                       href="/profile"
                       onClick={() => setUserDropdownOpen(false)}
-                      className="flex items-center gap-2.5 px-4 py-2.5 text-neutral-700 hover:bg-neutral-50 transition-colors font-lato text-sm"
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-neutral-700 hover:bg-neutral-50 transition-colors font-dm-sans text-sm"
                     >
                       <User size={16} className="text-neutral-400" />
                       My Profile
@@ -314,7 +321,7 @@ export default function Navbar() {
                     <a
                       href="/wishlist"
                       onClick={() => setUserDropdownOpen(false)}
-                      className="flex items-center gap-2.5 px-4 py-2.5 text-neutral-700 hover:bg-neutral-50 transition-colors font-lato text-sm"
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-neutral-700 hover:bg-neutral-50 transition-colors font-dm-sans text-sm"
                     >
                       <Heart size={16} className="text-neutral-400" />
                       Wishlist
@@ -322,7 +329,7 @@ export default function Navbar() {
                     <a
                       href="/notifications"
                       onClick={() => setUserDropdownOpen(false)}
-                      className="flex items-center gap-2.5 px-4 py-2.5 text-neutral-700 hover:bg-neutral-50 transition-colors font-lato text-sm"
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-neutral-700 hover:bg-neutral-50 transition-colors font-dm-sans text-sm"
                     >
                       <Bell size={16} className="text-neutral-400" />
                       Notifications
@@ -331,7 +338,7 @@ export default function Navbar() {
                       <a
                         href="/admin"
                         onClick={() => setUserDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-4 py-2.5 text-neutral-700 hover:bg-neutral-50 transition-colors font-lato text-sm"
+                        className="flex items-center gap-2.5 px-4 py-2.5 text-neutral-700 hover:bg-neutral-50 transition-colors font-dm-sans text-sm"
                       >
                         <LayoutDashboard size={16} className="text-neutral-400" />
                         Admin Dashboard
@@ -340,7 +347,7 @@ export default function Navbar() {
                     <hr className="my-1 border-neutral-100" />
                     <button
                       onClick={handleSignOut}
-                      className="w-full flex items-center gap-2.5 px-4 py-2.5 text-neutral-700 hover:bg-neutral-50 transition-colors font-lato text-sm"
+                      className="w-full flex items-center gap-2.5 px-4 py-2.5 text-neutral-700 hover:bg-neutral-50 transition-colors font-dm-sans text-sm"
                     >
                       <LogOut size={16} className="text-neutral-400" />
                       Logout
@@ -351,7 +358,7 @@ export default function Navbar() {
             ) : (
               <button
                 onClick={() => setLoginModalOpen(true)}
-                className="hidden lg:flex items-center px-5 py-2 rounded-lg bg-teal-700 hover:bg-teal-800 text-[15px] font-medium text-white transition-colors duration-200 ml-3 font-lato"
+                className="hidden lg:flex items-center px-5 py-2 rounded-lg bg-teal-700 hover:bg-teal-800 text-[15px] font-medium text-white transition-colors duration-200 ml-3 font-dm-sans"
               >
                 Login
               </button>
@@ -385,7 +392,7 @@ export default function Navbar() {
 
         {/* Menu Panel */}
         <div
-          className={`absolute top-0 right-0 w-[85%] max-w-[320px] h-full bg-white shadow-2xl transition-transform duration-300 ease-out flex flex-col font-lato ${
+          className={`absolute top-0 right-0 w-[85%] max-w-[320px] h-full bg-white shadow-2xl transition-transform duration-300 ease-out flex flex-col font-dm-sans ${
             mobileMenuOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
@@ -412,15 +419,15 @@ export default function Navbar() {
                     className="w-11 h-11 rounded-full object-cover"
                   />
                 ) : (
-                  <div className="w-11 h-11 rounded-full bg-teal-700 flex items-center justify-center text-white font-semibold font-lato">
+                  <div className="w-11 h-11 rounded-full bg-teal-700 flex items-center justify-center text-white font-semibold font-dm-sans">
                     {getInitials(user?.firstName, user?.lastName)}
                   </div>
                 )}
                 <div className="flex-1 text-left min-w-0">
-                  <p className="text-neutral-900 font-semibold font-lato truncate">
+                  <p className="text-neutral-900 font-semibold font-dm-sans truncate">
                     {user?.firstName} {user?.lastName}
                   </p>
-                  <p className="text-neutral-500 text-sm font-lato truncate">{user?.email}</p>
+                  <p className="text-neutral-500 text-sm font-dm-sans truncate">{user?.email}</p>
                 </div>
               </div>
             ) : (
@@ -436,7 +443,7 @@ export default function Navbar() {
                 </div>
                 <div className="flex-1 text-left">
                   <p className="text-neutral-900 font-semibold font-playfair">Welcome!</p>
-                  <p className="text-neutral-500 text-sm font-lato">Sign in to continue</p>
+                  <p className="text-neutral-500 text-sm font-dm-sans">Sign in to continue</p>
                 </div>
                 <ChevronRight size={20} className="text-neutral-400" />
               </button>
@@ -447,7 +454,7 @@ export default function Navbar() {
           <div className="flex-1 overflow-y-auto">
             {/* Navigation Links */}
             <div className="px-4 py-3">
-              <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wider px-2 mb-2 font-lato">
+              <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wider px-2 mb-2 font-dm-sans">
                 Menu
               </p>
               <div className="space-y-1">
@@ -464,7 +471,7 @@ export default function Navbar() {
                           <div className="w-9 h-9 bg-neutral-100 rounded-lg flex items-center justify-center">
                             <link.icon size={18} className="text-neutral-500" />
                           </div>
-                          <span className="flex-1 text-left font-medium font-lato">
+                          <span className="flex-1 text-left font-medium font-dm-sans">
                             {link.name}
                           </span>
                           <ChevronDown
@@ -495,7 +502,7 @@ export default function Navbar() {
                                   size={16}
                                   className="text-neutral-400 group-hover:text-teal-700 transition-colors"
                                 />
-                                <span className="text-sm text-neutral-600 group-hover:text-teal-700 font-medium transition-colors font-lato">
+                                <span className="text-sm text-neutral-600 group-hover:text-teal-700 font-medium transition-colors font-dm-sans">
                                   {category.name}
                                 </span>
                               </a>
@@ -503,7 +510,7 @@ export default function Navbar() {
                             <a
                               href="/shop"
                               onClick={closeMobileMenu}
-                              className="flex items-center gap-2 px-3 py-2.5 text-teal-700 font-medium text-sm font-lato"
+                              className="flex items-center gap-2 px-3 py-2.5 text-teal-700 font-medium text-sm font-dm-sans"
                             >
                               <span>View All Products</span>
                               <ChevronRight size={16} />
@@ -520,7 +527,7 @@ export default function Navbar() {
                         <div className="w-9 h-9 bg-neutral-100 rounded-lg flex items-center justify-center">
                           <link.icon size={18} className="text-neutral-500" />
                         </div>
-                        <span className="flex-1 font-medium font-lato">{link.name}</span>
+                        <span className="flex-1 font-medium font-dm-sans">{link.name}</span>
                         <ChevronRight size={18} className="text-neutral-400" />
                       </a>
                     )}
@@ -530,7 +537,7 @@ export default function Navbar() {
 
               {/* Quick Links Section */}
               <div className="mt-4 pt-4 border-t border-neutral-100">
-                <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wider px-2 mb-2 font-lato">
+                <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wider px-2 mb-2 font-dm-sans">
                   Quick Links
                 </p>
                 <div className="space-y-1">
@@ -542,7 +549,7 @@ export default function Navbar() {
                     <div className="w-9 h-9 bg-teal-100 rounded-lg flex items-center justify-center">
                       <Smartphone size={18} className="text-teal-600" />
                     </div>
-                    <span className="flex-1 font-medium font-lato">AR Experience</span>
+                    <span className="flex-1 font-medium font-dm-sans">AR Experience</span>
                     <ChevronRight size={18} className="text-neutral-400" />
                   </a>
                   <a
@@ -553,7 +560,7 @@ export default function Navbar() {
                     <div className="w-9 h-9 bg-purple-100 rounded-lg flex items-center justify-center">
                       <Heart size={18} className="text-purple-600" />
                     </div>
-                    <span className="flex-1 font-medium font-lato">Top Rated</span>
+                    <span className="flex-1 font-medium font-dm-sans">Top Rated</span>
                     <ChevronRight size={18} className="text-neutral-400" />
                   </a>
                   <a
@@ -564,7 +571,7 @@ export default function Navbar() {
                     <div className="w-9 h-9 bg-green-100 rounded-lg flex items-center justify-center">
                       <Box size={18} className="text-green-600" />
                     </div>
-                    <span className="flex-1 font-medium font-lato">Best Value</span>
+                    <span className="flex-1 font-medium font-dm-sans">Best Value</span>
                     <ChevronRight size={18} className="text-neutral-400" />
                   </a>
                 </div>
@@ -573,7 +580,7 @@ export default function Navbar() {
               {/* Account Section for Authenticated Users */}
               {isAuthenticated && (
                 <div className="pt-4 border-t border-neutral-100">
-                  <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wider px-2 mb-2 font-lato">
+                  <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wider px-2 mb-2 font-dm-sans">
                     Account
                   </p>
                   <div className="space-y-1">
@@ -585,7 +592,7 @@ export default function Navbar() {
                       <div className="w-9 h-9 bg-neutral-100 rounded-lg flex items-center justify-center">
                         <User size={18} className="text-neutral-500" />
                       </div>
-                      <span className="flex-1 font-medium font-lato">My Profile</span>
+                      <span className="flex-1 font-medium font-dm-sans">My Profile</span>
                       <ChevronRight size={18} className="text-neutral-400" />
                     </a>
                     {user?.role === "admin" && (
@@ -597,7 +604,7 @@ export default function Navbar() {
                         <div className="w-9 h-9 bg-teal-100 rounded-lg flex items-center justify-center">
                           <LayoutDashboard size={18} className="text-teal-700" />
                         </div>
-                        <span className="flex-1 font-medium font-lato">Admin Dashboard</span>
+                        <span className="flex-1 font-medium font-dm-sans">Admin Dashboard</span>
                         <ChevronRight size={18} className="text-neutral-400" />
                       </a>
                     )}
@@ -608,7 +615,7 @@ export default function Navbar() {
                       <div className="w-9 h-9 bg-neutral-100 rounded-lg flex items-center justify-center">
                         <LogOut size={18} className="text-neutral-500" />
                       </div>
-                      <span className="flex-1 text-left font-medium font-lato">Logout</span>
+                      <span className="flex-1 text-left font-medium font-dm-sans">Logout</span>
                     </button>
                   </div>
                 </div>

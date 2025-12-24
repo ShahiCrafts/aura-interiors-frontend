@@ -26,7 +26,7 @@ export default function CategorySidebar({ categories, currentCategory, productCo
             <Link
               key={category._id}
               to={`/shop/${category.slug}`}
-              className={`flex items-center justify-between px-3 py-2.5 rounded-lg transition-all font-lato text-sm ${
+              className={`flex items-center justify-between px-3 py-2.5 rounded-lg transition-all font-dm-sans text-sm ${
                 isActive
                   ? "bg-teal-50 text-teal-700 font-medium"
                   : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900"
@@ -50,7 +50,7 @@ export default function CategorySidebar({ categories, currentCategory, productCo
       {currentCategory && (
         <Link
           to="/shop"
-          className="flex items-center gap-1 mt-4 pt-4 border-t border-neutral-100 text-sm text-teal-700 font-medium hover:underline font-lato"
+          className="flex items-center gap-1 mt-4 pt-4 border-t border-neutral-100 text-sm text-teal-700 font-medium hover:underline font-dm-sans"
         >
           View All Categories
           <ChevronRight size={14} />

@@ -135,7 +135,7 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
                 <span className="font-bold">Change</span>{" "}
                 <span className="italic text-teal-700">Password</span>
               </h2>
-              <p className="text-neutral-500 font-lato text-sm">
+              <p className="text-neutral-500 font-dm-sans text-sm">
                 Keep your account secure
               </p>
             </div>
@@ -145,7 +145,7 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Current Password */}
             <div>
-              <label className="block text-sm font-medium text-neutral-800 mb-1 font-lato">
+              <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
                 Current Password <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -156,7 +156,7 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
                   onChange={handleChange}
                   placeholder="Enter your current password"
                   required
-                  className="w-full px-4 py-2.5 pr-11 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
+                  className="w-full px-4 py-2.5 pr-11 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
                 />
                 <button
                   type="button"
@@ -170,7 +170,7 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
 
             {/* New Password */}
             <div>
-              <label className="block text-sm font-medium text-neutral-800 mb-1 font-lato">
+              <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
                 New Password <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -181,7 +181,7 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
                   onChange={handleChange}
                   placeholder="Create a new password"
                   required
-                  className="w-full px-4 py-2.5 pr-11 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
+                  className="w-full px-4 py-2.5 pr-11 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
                 />
                 <button
                   type="button"
@@ -203,7 +203,7 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
 
             {/* Confirm New Password */}
             <div>
-              <label className="block text-sm font-medium text-neutral-800 mb-1 font-lato">
+              <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
                 Confirm New Password <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -214,7 +214,7 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
                   onChange={handleChange}
                   placeholder="Confirm your new password"
                   required
-                  className={`w-full px-4 py-2.5 pr-11 rounded-lg border outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400 ${
+                  className={`w-full px-4 py-2.5 pr-11 rounded-lg border outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400 ${
                     formData.confirmPassword
                       ? passwordsMatch
                         ? "border-teal-500 focus:border-teal-600 focus:ring-1 focus:ring-teal-600 bg-teal-50/30"
@@ -249,14 +249,14 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 py-3 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-semibold rounded-full transition-all duration-300 font-lato"
+                className="flex-1 py-3 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-semibold rounded-full transition-all duration-300 font-dm-sans"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isPending || !passwordsMatch}
-                className="flex-1 py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-lato"
+                className="flex-1 py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-dm-sans"
               >
                 {isPending ? "Updating..." : "Update Password"}
               </button>

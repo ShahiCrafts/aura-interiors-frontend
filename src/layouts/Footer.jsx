@@ -38,7 +38,7 @@ export default function Footer() {
   return (
     <footer
       ref={sectionRef}
-      className="bg-linear-to-b from-zinc-50 to-white text-gray-900 font-lato"
+      className="bg-linear-to-b from-zinc-50 to-white text-gray-900 font-dm-sans"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 lg:px-20 py-12 sm:py-16">
         {/* Newsletter Section */}
@@ -48,7 +48,7 @@ export default function Footer() {
           }`}
         >
           <div className="inline-block mb-4">
-            <span className="text-xs font-semibold tracking-[0.2em] text-zinc-700 uppercase bg-zinc-100 px-6 py-2 font-lato">
+            <span className="text-xs font-semibold tracking-[0.2em] text-zinc-700 uppercase bg-zinc-100 px-6 py-2 font-dm-sans">
               Newsletter
             </span>
           </div>
@@ -56,7 +56,7 @@ export default function Footer() {
             Subscribe to Our{" "}
             <span className="italic text-teal-700">Design Newsletter</span>
           </h2>
-          <p className="text-gray-600 text-base md:text-lg mb-6 sm:mb-8 max-w-2xl font-lato">
+          <p className="text-gray-600 text-base md:text-lg mb-6 sm:mb-8 max-w-2xl font-dm-sans">
             Get exclusive access to new collections, design inspiration, and AR
             features.
           </p>
@@ -71,7 +71,7 @@ export default function Footer() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               required
-              className="flex-1 w-full sm:w-auto bg-white border border-gray-300 rounded-full px-6 sm:px-8 py-3 sm:py-4 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-teal-700 transition-colors font-lato"
+              className="flex-1 w-full sm:w-auto bg-white border border-gray-300 rounded-full px-6 sm:px-8 py-3 sm:py-4 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-teal-700 transition-colors font-dm-sans"
             />
             <button
               type="submit"

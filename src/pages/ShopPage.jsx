@@ -204,7 +204,7 @@ export default function ShopPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-neutral-50 pt-20 font-lato">
+      <main className="min-h-screen bg-neutral-50 pt-20 font-dm-sans">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm mb-6">
@@ -212,11 +212,11 @@ export default function ShopPage() {
               <div key={crumb.path} className="flex items-center gap-2">
                 {index > 0 && <ChevronRight size={14} className="text-neutral-400" />}
                 {index === breadcrumbs.length - 1 ? (
-                  <span className="text-neutral-500 font-lato">{crumb.name}</span>
+                  <span className="text-neutral-500 font-dm-sans">{crumb.name}</span>
                 ) : (
                   <Link
                     to={crumb.path}
-                    className="text-neutral-600 hover:text-teal-700 transition-colors font-lato"
+                    className="text-neutral-600 hover:text-teal-700 transition-colors font-dm-sans"
                   >
                     {crumb.name}
                   </Link>
@@ -244,7 +244,7 @@ export default function ShopPage() {
                   </>
                 )}
               </h1>
-              <p className="text-neutral-500 font-lato mt-1">
+              <p className="text-neutral-500 font-dm-sans mt-1">
                 Showing <span className="font-semibold text-neutral-700">{totalProducts}</span>{" "}
                 products
                 {currentCategory?.description && (
@@ -264,7 +264,7 @@ export default function ShopPage() {
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
                     placeholder="Search products..."
-                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-neutral-200 bg-white text-sm font-lato placeholder:text-neutral-400 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-colors"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-neutral-200 bg-white text-sm font-dm-sans placeholder:text-neutral-400 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-colors"
                   />
                 </div>
               </form>
@@ -273,7 +273,7 @@ export default function ShopPage() {
               <div className="relative">
                 <button
                   onClick={() => setShowSortDropdown(!showSortDropdown)}
-                  className="w-full sm:w-auto flex items-center justify-between sm:justify-start gap-2 px-4 py-2.5 rounded-lg border border-neutral-200 bg-white text-sm font-lato hover:border-neutral-300 transition-colors"
+                  className="w-full sm:w-auto flex items-center justify-between sm:justify-start gap-2 px-4 py-2.5 rounded-lg border border-neutral-200 bg-white text-sm font-dm-sans hover:border-neutral-300 transition-colors"
                 >
                   <span className="text-neutral-500">Sort by:</span>
                   <span className="font-medium text-neutral-700">
@@ -293,7 +293,7 @@ export default function ShopPage() {
                         <button
                           key={option.value}
                           onClick={() => handleSortChange(option.value)}
-                          className={`w-full text-left px-4 py-2 text-sm font-lato hover:bg-neutral-50 transition-colors ${
+                          className={`w-full text-left px-4 py-2 text-sm font-dm-sans hover:bg-neutral-50 transition-colors ${
                             sortBy === option.value ? "text-teal-700 bg-teal-50" : "text-neutral-700"
                           }`}
                         >
@@ -360,7 +360,7 @@ export default function ShopPage() {
                 </div>
               ) : products.length === 0 ? (
                 <div className="text-center py-16 bg-white rounded-xl border border-neutral-100">
-                  <p className="text-neutral-500 font-lato">
+                  <p className="text-neutral-500 font-dm-sans">
                     {searchQuery
                       ? `No products found for "${searchQuery}"`
                       : "No products found in this category."
@@ -372,14 +372,14 @@ export default function ShopPage() {
                         setSearchInput("");
                         setSearchQuery("");
                       }}
-                      className="inline-block mt-4 text-teal-700 font-semibold hover:underline font-lato"
+                      className="inline-block mt-4 text-teal-700 font-semibold hover:underline font-dm-sans"
                     >
                       Clear search
                     </button>
                   )}
                   <Link
                     to="/shop"
-                    className="inline-block mt-4 ml-4 text-teal-700 font-semibold hover:underline font-lato"
+                    className="inline-block mt-4 ml-4 text-teal-700 font-semibold hover:underline font-dm-sans"
                   >
                     Browse all products
                   </Link>
@@ -402,7 +402,7 @@ export default function ShopPage() {
                   {/* Pagination */}
                   {pagination.pages > 1 && (
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 pt-8 border-t border-neutral-100">
-                      <p className="text-sm text-neutral-500 font-lato">
+                      <p className="text-sm text-neutral-500 font-dm-sans">
                         Showing {(pagination.page - 1) * pagination.limit + 1} to{" "}
                         {Math.min(pagination.page * pagination.limit, pagination.total)} of{" "}
                         {pagination.total} results
@@ -413,7 +413,7 @@ export default function ShopPage() {
                         <button
                           onClick={() => handlePageChange(page - 1)}
                           disabled={page === 1}
-                          className="px-3 py-2 text-sm font-medium rounded-lg border border-neutral-200 text-neutral-600 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-lato"
+                          className="px-3 py-2 text-sm font-medium rounded-lg border border-neutral-200 text-neutral-600 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-dm-sans"
                         >
                           &lt;
                         </button>
@@ -430,7 +430,7 @@ export default function ShopPage() {
                               <button
                                 key={pageNum}
                                 onClick={() => handlePageChange(pageNum)}
-                                className={`w-10 h-10 text-sm font-medium rounded-lg transition-colors font-lato ${
+                                className={`w-10 h-10 text-sm font-medium rounded-lg transition-colors font-dm-sans ${
                                   pageNum === page
                                     ? "bg-teal-700 text-white"
                                     : "border border-neutral-200 text-neutral-600 hover:bg-neutral-50"
@@ -454,7 +454,7 @@ export default function ShopPage() {
                         <button
                           onClick={() => handlePageChange(page + 1)}
                           disabled={page === pagination.pages}
-                          className="px-3 py-2 text-sm font-medium rounded-lg border border-neutral-200 text-neutral-600 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-lato"
+                          className="px-3 py-2 text-sm font-medium rounded-lg border border-neutral-200 text-neutral-600 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-dm-sans"
                         >
                           &gt;
                         </button>
@@ -462,10 +462,10 @@ export default function ShopPage() {
 
                       {/* Items per page */}
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-neutral-500 font-lato">Show:</span>
+                        <span className="text-sm text-neutral-500 font-dm-sans">Show:</span>
                         <select
                           value={limit}
-                          className="px-3 py-2 text-sm rounded-lg border border-neutral-200 bg-white font-lato focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none"
+                          className="px-3 py-2 text-sm rounded-lg border border-neutral-200 bg-white font-dm-sans focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none"
                           disabled
                         >
                           <option value={12}>12</option>

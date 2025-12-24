@@ -82,7 +82,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
       <div className="min-h-full flex items-center justify-center p-4 sm:p-6">
         {/* Modal */}
         <div
-          className="relative w-full max-w-[420px] bg-white rounded-2xl shadow-2xl p-6 sm:p-8 animate-fadeInScale font-lato"
+          className="relative w-full max-w-[420px] bg-white rounded-2xl shadow-2xl p-6 sm:p-8 animate-fadeInScale font-dm-sans"
           style={{
             animation: "fadeInScale 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards",
           }}
@@ -101,7 +101,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
               <span className="font-bold">Welcome</span>{" "}
               <span className="italic text-teal-700">back!</span>
             </h2>
-            <p className="text-neutral-500 mt-1 font-lato text-sm sm:text-base">
+            <p className="text-neutral-500 mt-1 font-dm-sans text-sm sm:text-base">
               Sign in to continue using Aura Interiors
             </p>
           </div>
@@ -110,7 +110,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email Field */}
             <div>
-              <label className="block text-sm font-medium text-neutral-800 mb-1 font-lato">
+              <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
                 Email Address <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -125,14 +125,14 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
                   onChange={handleChange}
                   placeholder="you@example.com"
                   required
-                  className="w-full pl-11 pr-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
+                  className="w-full pl-11 pr-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
                 />
               </div>
             </div>
 
             {/* Password Field */}
             <div>
-              <label className="block text-sm font-medium text-neutral-800 mb-1 font-lato">
+              <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
                 Password <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -147,7 +147,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
                   onChange={handleChange}
                   placeholder="Enter your password"
                   required
-                  className="w-full pl-11 pr-11 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-lato text-neutral-900 placeholder:text-neutral-400"
+                  className="w-full pl-11 pr-11 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
                 />
                 <button
                   type="button"
@@ -169,14 +169,14 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
                   onChange={handleChange}
                   className="w-4 h-4 rounded border-neutral-300 accent-teal-700 focus:ring-teal-700 cursor-pointer"
                 />
-                <label className="text-sm text-neutral-700 font-lato">
+                <label className="text-sm text-neutral-700 font-dm-sans">
                   Remember me
                 </label>
               </div>
               <button
                 type="button"
                 onClick={() => setShowForgotPassword(true)}
-                className="text-sm text-teal-700 font-semibold hover:underline font-lato"
+                className="text-sm text-teal-700 font-semibold hover:underline font-dm-sans"
               >
                 Forgot password?
               </button>
@@ -184,14 +184,14 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
 
             {/* Error Message */}
             {isError && (
-              <p className="text-red-500 text-sm font-lato">{error}</p>
+              <p className="text-red-500 text-sm font-dm-sans">{error}</p>
             )}
 
             {/* Submit Button */}
             <button
               type="submit"
               disabled={isPending}
-              className="w-full py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-lato"
+              className="w-full py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-dm-sans"
             >
               {isPending ? "Signing in..." : "Sign In"}
             </button>
@@ -200,7 +200,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
           {/* Divider */}
           <div className="flex items-center gap-3 my-5">
             <div className="flex-1 h-px bg-neutral-200" />
-            <span className="text-sm text-neutral-400 font-lato">
+            <span className="text-sm text-neutral-400 font-dm-sans">
               or continue with email
             </span>
             <div className="flex-1 h-px bg-neutral-200" />
@@ -210,7 +210,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
           <button
             type="button"
             onClick={handleGoogleLogin}
-            className="w-full py-3 bg-white border border-neutral-200 hover:bg-neutral-50 rounded-full flex items-center justify-center gap-3 transition-all duration-300 font-lato"
+            className="w-full py-3 bg-white border border-neutral-200 hover:bg-neutral-50 rounded-full flex items-center justify-center gap-3 transition-all duration-300 font-dm-sans"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
@@ -236,7 +236,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
           </button>
 
           {/* Signup Link */}
-          <p className="text-center mt-5 text-neutral-500 font-lato">
+          <p className="text-center mt-5 text-neutral-500 font-dm-sans">
             Don't have an account?{" "}
             <button
               type="button"

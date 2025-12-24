@@ -32,7 +32,7 @@ export default function ProfilePage() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-neutral-50 pt-20 font-lato">
+      <div className="min-h-screen bg-neutral-50 pt-20 font-dm-sans">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Sidebar */}
@@ -48,15 +48,15 @@ export default function ProfilePage() {
                       className="w-14 h-14 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="w-14 h-14 rounded-full bg-teal-700 flex items-center justify-center text-white text-lg font-semibold font-lato">
+                    <div className="w-14 h-14 rounded-full bg-teal-700 flex items-center justify-center text-white text-lg font-semibold font-dm-sans">
                       {getInitials(user?.firstName, user?.lastName)}
                     </div>
                   )}
                   <div className="min-w-0">
-                    <h2 className="text-lg font-semibold text-neutral-900 font-lato truncate">
+                    <h2 className="text-lg font-semibold text-neutral-900 font-dm-sans truncate">
                       {user?.firstName} {user?.lastName}
                     </h2>
-                    <p className="text-sm text-neutral-500 font-lato truncate flex items-center gap-1">
+                    <p className="text-sm text-neutral-500 font-dm-sans truncate flex items-center gap-1">
                       <span className="text-neutral-400">@</span>
                       {user?.email}
                     </p>
@@ -79,7 +79,7 @@ export default function ProfilePage() {
                         }`}
                       >
                         <Icon size={20} />
-                        <span className="font-lato">{item.label}</span>
+                        <span className="font-dm-sans">{item.label}</span>
                       </button>
                     );
                   })}

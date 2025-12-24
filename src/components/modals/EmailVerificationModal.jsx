@@ -134,10 +134,10 @@ export default function EmailVerificationModal({ isOpen, onClose, email, onSucce
               <span className="font-bold">Verify your</span>{" "}
               <span className="italic text-teal-700">email</span>
             </h2>
-            <p className="text-neutral-500 mt-2 font-lato text-sm sm:text-base">
+            <p className="text-neutral-500 mt-2 font-dm-sans text-sm sm:text-base">
               We've sent a 6-digit code to
             </p>
-            <p className="text-neutral-800 font-semibold font-lato">
+            <p className="text-neutral-800 font-semibold font-dm-sans">
               {email || "your email"}
             </p>
           </div>
@@ -157,28 +157,28 @@ export default function EmailVerificationModal({ isOpen, onClose, email, onSucce
                   onChange={(e) => handleChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
                   onPaste={handlePaste}
-                  className="w-11 h-13 sm:w-12 sm:h-14 text-center text-xl font-semibold rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-lato text-neutral-900"
+                  className="w-11 h-13 sm:w-12 sm:h-14 text-center text-xl font-semibold rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900"
                 />
               ))}
             </div>
 
             {/* Error Message */}
             {isError && (
-              <p className="text-red-500 text-sm font-lato text-center">{error}</p>
+              <p className="text-red-500 text-sm font-dm-sans text-center">{error}</p>
             )}
 
             {/* Submit Button */}
             <button
               type="submit"
               disabled={isPending || !isCodeComplete}
-              className="w-full py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-lato"
+              className="w-full py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-dm-sans"
             >
               {isPending ? "Verifying..." : "Verify Email"}
             </button>
           </form>
 
           {/* Resend Code */}
-          <p className="text-center mt-5 text-neutral-500 font-lato">
+          <p className="text-center mt-5 text-neutral-500 font-dm-sans">
             Didn't receive the code?{" "}
             <button
               type="button"

@@ -140,7 +140,7 @@ export default function Wishlist() {
             <span className="font-bold">My</span>{" "}
             <span className="italic text-teal-700">Wishlist</span>
           </h1>
-          <p className="text-neutral-500 font-lato text-sm mt-1">
+          <p className="text-neutral-500 font-dm-sans text-sm mt-1">
             Items you love, saved for later
           </p>
         </div>
@@ -154,7 +154,7 @@ export default function Wishlist() {
             <button
               onClick={handleAddAllToCart}
               disabled={isAddingToCart}
-              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-lg transition-all duration-300 font-lato text-sm disabled:opacity-50"
+              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-lg transition-all duration-300 font-dm-sans text-sm disabled:opacity-50"
             >
               <ShoppingCart size={18} />
               {isAddingToCart ? "Adding..." : "Add All to Cart"}
@@ -177,7 +177,7 @@ export default function Wishlist() {
                   placeholder="Search your wishlist..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-lato text-sm"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-sm"
                 />
               </div>
 
@@ -186,7 +186,7 @@ export default function Wishlist() {
                 <select
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="appearance-none px-4 py-2.5 pr-10 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-lato text-sm bg-white cursor-pointer"
+                  className="appearance-none px-4 py-2.5 pr-10 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-sm bg-white cursor-pointer"
                 >
                   <option value="all">All Categories</option>
                   {categories.map((cat) => (
@@ -203,7 +203,7 @@ export default function Wishlist() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none px-4 py-2.5 pr-10 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-lato text-sm bg-white cursor-pointer"
+                  className="appearance-none px-4 py-2.5 pr-10 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-sm bg-white cursor-pointer"
                 >
                   <option value="recent">Recently Added</option>
                   <option value="price-low">Price: Low to High</option>
@@ -215,7 +215,7 @@ export default function Wishlist() {
             </div>
 
             {/* Right: Item Count */}
-            <span className="text-sm text-neutral-500 font-lato whitespace-nowrap">
+            <span className="text-sm text-neutral-500 font-dm-sans whitespace-nowrap">
               {filteredItems.length} item{filteredItems.length !== 1 ? "s" : ""} in wishlist
             </span>
           </div>
@@ -228,15 +228,15 @@ export default function Wishlist() {
           <div className="w-20 h-20 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Heart size={32} className="text-neutral-400" />
           </div>
-          <h3 className="text-lg font-semibold text-neutral-900 font-lato mb-2">
+          <h3 className="text-lg font-semibold text-neutral-900 font-dm-sans mb-2">
             Your wishlist is empty
           </h3>
-          <p className="text-neutral-500 font-lato mb-6">
+          <p className="text-neutral-500 font-dm-sans mb-6">
             Start adding products you love to your wishlist
           </p>
           <Link
             to="/shop"
-            className="inline-flex items-center gap-2 px-6 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-full transition-all font-lato"
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-full transition-all font-dm-sans"
           >
             Browse Products
           </Link>
@@ -246,7 +246,7 @@ export default function Wishlist() {
       {/* No Results */}
       {wishlistItems.length > 0 && filteredItems.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-neutral-500 font-lato">
+          <p className="text-neutral-500 font-dm-sans">
             No items match your search criteria
           </p>
         </div>
@@ -281,7 +281,7 @@ export default function Wishlist() {
                   {/* Badges */}
                   <div className="absolute top-3 left-3 flex flex-col gap-2">
                     {discount && (
-                      <span className="px-2.5 py-1 bg-teal-700 text-white text-xs font-semibold rounded-md font-lato">
+                      <span className="px-2.5 py-1 bg-teal-700 text-white text-xs font-semibold rounded-md font-dm-sans">
                         {discount}% OFF
                       </span>
                     )}
@@ -301,7 +301,7 @@ export default function Wishlist() {
                 <div className="p-4">
                   {/* Category */}
                   {product.category?.name && (
-                    <span className="text-xs font-semibold text-teal-700 uppercase tracking-wide font-lato">
+                    <span className="text-xs font-semibold text-teal-700 uppercase tracking-wide font-dm-sans">
                       {product.category.name}
                     </span>
                   )}
@@ -318,11 +318,11 @@ export default function Wishlist() {
                     <div className="flex items-center">
                       <Star size={14} className="fill-amber-400 text-amber-400" />
                     </div>
-                    <span className="text-sm text-neutral-700 font-lato font-medium">
+                    <span className="text-sm text-neutral-700 font-dm-sans font-medium">
                       {rating.toFixed(1)}
                     </span>
                     {reviewCount > 0 && (
-                      <span className="text-sm text-neutral-400 font-lato">
+                      <span className="text-sm text-neutral-400 font-dm-sans">
                         ({reviewCount})
                       </span>
                     )}
@@ -334,7 +334,7 @@ export default function Wishlist() {
                       NRs. {product.price?.toLocaleString()}
                     </p>
                     {product.originalPrice && product.originalPrice > product.price && (
-                      <p className="text-neutral-400 line-through text-sm font-lato">
+                      <p className="text-neutral-400 line-through text-sm font-dm-sans">
                         NRs. {product.originalPrice?.toLocaleString()}
                       </p>
                     )}
@@ -345,7 +345,7 @@ export default function Wishlist() {
                     <button
                       onClick={() => handleAddToCart(product)}
                       disabled={isAddingToCart}
-                      className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-lg transition-colors font-lato text-sm disabled:opacity-50"
+                      className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-lg transition-colors font-dm-sans text-sm disabled:opacity-50"
                     >
                       <ShoppingCart size={16} />
                       {isAddingToCart ? "Adding..." : "Add to Cart"}

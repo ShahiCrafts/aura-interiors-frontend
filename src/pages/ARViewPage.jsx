@@ -160,7 +160,7 @@ export default function ARViewPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center font-lato">
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center font-dm-sans">
         <Loader2 size={40} className="text-teal-700 animate-spin" />
       </div>
     );
@@ -168,7 +168,7 @@ export default function ARViewPage() {
 
   if (error || !product) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-4 font-lato">
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-4 font-dm-sans">
         <div className="text-center">
           <AlertCircle size={48} className="text-neutral-400 mx-auto mb-4" />
           <h1 className="text-xl font-playfair text-neutral-900 mb-2">Product Not Found</h1>
@@ -188,7 +188,7 @@ export default function ARViewPage() {
   const hasARModel = product.modelFiles?.length > 0 || product.modelUrl;
 
   return (
-    <div className="min-h-screen bg-neutral-50 font-lato">
+    <div className="min-h-screen bg-neutral-50 font-dm-sans">
       {/* Header */}
       <header className="bg-white border-b border-neutral-100 px-4 py-4">
         <div className="max-w-lg mx-auto flex items-center gap-3">
