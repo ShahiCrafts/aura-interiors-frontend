@@ -18,6 +18,7 @@ import NativeARPage from "./pages/NativeARPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderConfirmationPage from "./pages/OrderConfirmationPage";
 import PaymentFailedPage from "./pages/PaymentFailedPage";
+import TrackOrderPage from "./pages/TrackOrderPage";
 import useAuthStore from "./store/authStore";
 
 // Admin imports
@@ -64,6 +65,7 @@ function App() {
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/checkout/payment-failed" element={<PaymentFailedPage />} />
         <Route path="/order-confirmation/:orderId" element={<OrderConfirmationPage />} />
+        <Route path="/track-order" element={<TrackOrderPage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         <Route
           path="/profile"

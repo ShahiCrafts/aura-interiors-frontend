@@ -148,19 +148,55 @@ const useCheckoutStore = create((set, get) => ({
 
   getAuthenticatedCheckoutData: () => {
     const state = get();
-    return {
-      shippingAddressId: state.shippingAddressId,
-      shippingAddress: state.shippingAddressId ? undefined : state.shippingAddress,
-      billingAddressId: state.useSameAddress ? undefined : state.billingAddressId,
-      billingAddress:
-        state.useSameAddress || state.billingAddressId
-          ? undefined
-          : state.billingAddress,
+
+    // Construct full shipping address with name and phone from guestInfo
+    const fullShippingAddress = state.shippingAddressId
+      ? undefined
+      : {
+          ...state.shippingAddress,
+          fullName: `${state.guestInfo.firstName} ${state.guestInfo.lastName}`.trim(),
+          phone: state.guestInfo.phone,
+        };
+
+    // Construct full billing address if needed
+    const fullBillingAddress =
+      state.useSameAddress || state.billingAddressId
+        ? undefined
+        : state.billingAddress
+        ? {
+            ...state.billingAddress,
+            fullName: `${state.guestInfo.firstName} ${state.guestInfo.lastName}`.trim(),
+            phone: state.guestInfo.phone,
+          }
+        : undefined;
+
+    // Build checkout data, only including fields that have values
+    const checkoutData = {
       useSameAddress: state.useSameAddress,
       paymentMethod: state.paymentMethod,
-      discountCode: state.appliedDiscount?.code || "",
       customerNote: state.customerNote,
     };
+
+    // Only include shippingAddressId if it's a valid string
+    if (state.shippingAddressId) {
+      checkoutData.shippingAddressId = state.shippingAddressId;
+    } else {
+      checkoutData.shippingAddress = fullShippingAddress;
+    }
+
+    // Only include billingAddressId if not using same address and it's valid
+    if (!state.useSameAddress && state.billingAddressId) {
+      checkoutData.billingAddressId = state.billingAddressId;
+    } else if (!state.useSameAddress && fullBillingAddress) {
+      checkoutData.billingAddress = fullBillingAddress;
+    }
+
+    // Only include discountCode if it exists
+    if (state.appliedDiscount?.code) {
+      checkoutData.discountCode = state.appliedDiscount.code;
+    }
+
+    return checkoutData;
   },
 }));
 

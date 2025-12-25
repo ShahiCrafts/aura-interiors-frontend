@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { MapPin, User, Heart } from "lucide-react";
+import { MapPin, User, Heart, Package } from "lucide-react";
 import useAuthStore from "../store/authStore";
 import Navbar from "../layouts/Navbar";
 import SavedAddresses from "../components/profile/SavedAddresses";
 import PersonalInformation from "../components/profile/PersonalInformation";
 import Wishlist from "../components/profile/Wishlist";
+import OrdersSection from "../components/profile/OrdersSection";
 
 export default function ProfilePage() {
   const { user } = useAuthStore();
@@ -25,6 +26,7 @@ export default function ProfilePage() {
 
   const navItems = [
     { id: "personal-information", label: "Personal Information", icon: User },
+    { id: "orders", label: "Orders", icon: Package },
     { id: "wishlist", label: "Wishlist", icon: Heart },
     { id: "saved-addresses", label: "Saved Addresses", icon: MapPin },
   ];
@@ -90,6 +92,7 @@ export default function ProfilePage() {
             {/* Main Content */}
             <div className="flex-1">
               {activeTab === "personal-information" && <PersonalInformation />}
+              {activeTab === "orders" && <OrdersSection />}
               {activeTab === "wishlist" && <Wishlist />}
               {activeTab === "saved-addresses" && <SavedAddresses />}
             </div>
