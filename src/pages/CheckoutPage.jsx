@@ -261,7 +261,11 @@ export default function CheckoutPage() {
       }
 
       reset();
-      navigate(`/order-confirmation/${order.orderId}`);
+
+      // Redirect to order confirmation with email and emailSent status
+      const customerEmail = order.email || guestInfo.email;
+      const emailSent = result.data?.emailSent ? 'true' : 'false';
+      navigate(`/order-confirmation/${order.orderId}?email=${encodeURIComponent(customerEmail)}&emailSent=${emailSent}`);
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to place order");
       setIsSubmitting(false);

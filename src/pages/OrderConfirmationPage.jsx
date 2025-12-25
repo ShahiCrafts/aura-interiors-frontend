@@ -1,26 +1,75 @@
-import { useParams, Link } from "react-router-dom";
-import { Check, Package, MessageSquare, HelpCircle, Mail } from "lucide-react";
+import { useParams, Link, useSearchParams } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
+import {
+  Check,
+  Package,
+  MessageSquare,
+  HelpCircle,
+  Mail,
+} from "lucide-react";
 import Navbar from "../layouts/Navbar";
 import Footer from "../layouts/Footer";
+import { useTrackOrder } from "../hooks/useOrderTan";
+import { toast } from "../components/ui/Toast";
 
 export default function OrderConfirmationPage() {
   const { orderId } = useParams();
+  const [searchParams] = useSearchParams();
+  const email = searchParams.get("email");
+  const emailSentParam = searchParams.get("emailSent");
 
-  // Mock order data - in production, fetch from API using orderId
-  const orderDate = new Date().toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  const [order, setOrder] = useState(null);
+  const toastShownRef = useRef(false);
 
-  // Estimate delivery date (7-10 days from now)
-  const deliveryDate = new Date();
-  deliveryDate.setDate(deliveryDate.getDate() + 10);
-  const estimatedDelivery = deliveryDate.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  const trackOrderMutation = useTrackOrder();
+
+  // Show toast notification for email confirmation (only once)
+  useEffect(() => {
+    if (emailSentParam === "true" && email && !toastShownRef.current) {
+      toastShownRef.current = true;
+      toast.success(`Confirmation email sent to ${email}`);
+    }
+  }, [emailSentParam, email]);
+
+  // Fetch order details when component mounts
+  useEffect(() => {
+    if (orderId && email) {
+      trackOrderMutation.mutate(
+        { orderId, email },
+        {
+          onSuccess: (data) => {
+            setOrder(data.data.order);
+          },
+        }
+      );
+    }
+  }, [orderId, email]);
+
+  // Format date helper
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  // Calculate estimated delivery (7-10 days from order date)
+  const getEstimatedDelivery = () => {
+    const baseDate = order?.orderedAt ? new Date(order.orderedAt) : new Date();
+    const deliveryDate = new Date(baseDate);
+    deliveryDate.setDate(deliveryDate.getDate() + 10);
+    return deliveryDate.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  const orderDate = order?.orderedAt ? formatDate(order.orderedAt) : formatDate(new Date());
+  const estimatedDelivery = getEstimatedDelivery();
+  const customerEmail = order?.guestInfo?.email || email || "your email address";
 
   return (
     <>
@@ -39,11 +88,11 @@ export default function OrderConfirmationPage() {
               Thank you for your{" "}
               <span className="italic text-teal-700">purchase!</span>
             </h1>
+
             <p className="text-neutral-600 font-dm-sans mb-8">
               We've sent a confirmation email to{" "}
-              <span className="font-semibold text-neutral-900">
-                your email address
-              </span>
+              <span className="font-semibold text-neutral-900">{customerEmail}</span>
+              {" "}with your order details and tracking information.
             </p>
 
             {/* Order Details */}
@@ -53,7 +102,7 @@ export default function OrderConfirmationPage() {
                   Order Number
                 </p>
                 <p className="text-sm md:text-base font-semibold text-teal-700 font-dm-sans">
-                  #{orderId || "ORD-2024-001"}
+                  #{orderId || "N/A"}
                 </p>
               </div>
               <div className="w-px h-10 bg-neutral-200" />
@@ -76,10 +125,46 @@ export default function OrderConfirmationPage() {
               </div>
             </div>
 
+            {/* Order Summary (if loaded) */}
+            {order && (
+              <div className="mb-8 p-4 bg-neutral-50 rounded-xl text-left">
+                <h3 className="font-semibold text-neutral-900 font-dm-sans mb-3">
+                  Order Summary
+                </h3>
+                <div className="space-y-2 text-sm">
+                  {order.items?.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex justify-between items-center text-neutral-600 font-dm-sans"
+                    >
+                      <span>
+                        {item.name} x {item.quantity}
+                      </span>
+                      <span className="font-medium text-neutral-900">
+                        Rs. {(item.price * item.quantity).toLocaleString()}
+                      </span>
+                    </div>
+                  ))}
+                  {order.discountAmount > 0 && (
+                    <div className="flex justify-between items-center text-green-600 font-dm-sans pt-2 border-t border-neutral-200">
+                      <span>Discount</span>
+                      <span>-Rs. {order.discountAmount.toLocaleString()}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between items-center font-semibold text-neutral-900 font-dm-sans pt-2 border-t border-neutral-200">
+                    <span>Total</span>
+                    <span className="text-teal-700">
+                      Rs. {order.total?.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8">
               <Link
-                to={`/track-order?orderId=${orderId}`}
+                to={`/track-order?orderId=${orderId}${email ? `&email=${encodeURIComponent(email)}` : ""}`}
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-teal-700 text-white font-medium rounded-xl hover:bg-teal-800 transition-colors font-dm-sans"
               >
                 <Package size={18} />
