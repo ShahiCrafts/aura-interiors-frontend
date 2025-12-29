@@ -29,6 +29,7 @@ import SignupModal from "../components/modals/SignupModal";
 import LoginModal from "../components/modals/LoginModal";
 import CartSlider from "../components/cart/CartSlider";
 import { useCart } from "../hooks/useCartTan";
+import useNotificationSocket from "../hooks/useNotificationSocket";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -47,6 +48,12 @@ export default function Navbar() {
 
   const { data: cartData } = useCart({ enabled: isAuthenticated });
   const { getCartTotals: getGuestCartTotals } = useGuestCartStore();
+  
+  // Get unread notification count
+  const { unreadCount } = useNotificationSocket(
+    localStorage.getItem('authToken'),
+    user?._id
+  );
 
   // Use appropriate cart count based on authentication status
   const guestTotals = getGuestCartTotals();
@@ -329,10 +336,15 @@ export default function Navbar() {
                     <a
                       href="/notifications"
                       onClick={() => setUserDropdownOpen(false)}
-                      className="flex items-center gap-2.5 px-4 py-2.5 text-neutral-700 hover:bg-neutral-50 transition-colors font-dm-sans text-sm"
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-neutral-700 hover:bg-neutral-50 transition-colors font-dm-sans text-sm group relative"
                     >
                       <Bell size={16} className="text-neutral-400" />
-                      Notifications
+                      <span className="flex-1">Notifications</span>
+                      {unreadCount > 0 && (
+                        <span className="ml-2 px-2 py-0.5 bg-amber-500 text-white text-xs font-semibold rounded-full">
+                          {unreadCount}
+                        </span>
+                      )}
                     </a>
                     {user?.role === "admin" && (
                       <a
