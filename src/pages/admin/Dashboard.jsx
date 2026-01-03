@@ -10,14 +10,19 @@ import {
 import { Link } from 'react-router-dom';
 import { useProducts } from '../../hooks/useProductTan';
 import { useCategories } from '../../hooks/useCategoryTan';
+import { useAllOrders } from '../../hooks/useOrderTan';
 
 export default function Dashboard() {
   const { data: productsData } = useProducts({ limit: 5 });
   const { data: categoriesData } = useCategories();
+  const { data: ordersData } = useAllOrders({ limit: 100 });
 
   const products = productsData?.data?.products || [];
   const totalProducts = productsData?.data?.pagination?.total || 0;
   const categories = categoriesData?.data?.categories || [];
+  const orders = ordersData?.data?.orders || [];
+  const totalOrders = ordersData?.data?.pagination?.total || 0;
+  const totalRevenue = orders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
 
   const stats = [
     {
@@ -37,18 +42,18 @@ export default function Dashboard() {
       color: 'bg-emerald-500',
     },
     {
-      label: 'Active Users',
-      value: '1,234',
-      change: '+8%',
+      label: 'Total Orders',
+      value: totalOrders,
+      change: '+15%',
       trend: 'up',
       icon: Users,
       color: 'bg-purple-500',
     },
     {
       label: 'Revenue',
-      value: 'Rs. 125K',
-      change: '-2%',
-      trend: 'down',
+      value: `Rs. ${(totalRevenue / 1000).toFixed(0)}K`,
+      change: '+8%',
+      trend: 'up',
       icon: DollarSign,
       color: 'bg-amber-500',
     },
