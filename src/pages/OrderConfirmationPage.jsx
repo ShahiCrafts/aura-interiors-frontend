@@ -141,20 +141,20 @@ export default function OrderConfirmationPage() {
                         {item.name} x {item.quantity}
                       </span>
                       <span className="font-medium text-neutral-900">
-                        Rs. {(item.price * item.quantity).toLocaleString()}
+                        NRs. {(item.price * item.quantity).toLocaleString()}
                       </span>
                     </div>
                   ))}
                   {order.discountAmount > 0 && (
                     <div className="flex justify-between items-center text-green-600 font-dm-sans pt-2 border-t border-neutral-200">
                       <span>Discount</span>
-                      <span>-Rs. {order.discountAmount.toLocaleString()}</span>
+                      <span>-NRs. {order.discountAmount.toLocaleString()}</span>
                     </div>
                   )}
                   <div className="flex justify-between items-center font-semibold text-neutral-900 font-dm-sans pt-2 border-t border-neutral-200">
                     <span>Total</span>
                     <span className="text-teal-700">
-                      Rs. {order.total?.toLocaleString()}
+                      NRs. {order.total?.toLocaleString()}
                     </span>
                   </div>
                 </div>

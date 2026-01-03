@@ -10,7 +10,6 @@ import {
   Truck,
   ShieldCheck,
   Loader2,
-  ThumbsUp,
   Heart,
   Share2,
 } from "lucide-react";
@@ -25,10 +24,13 @@ import { toast } from "../components/ui/Toast";
 import ProductCard from "../components/shop/ProductCard";
 import ImageMagnifier from "../components/shop/ImageMagnifier";
 import ARViewModal from "../components/modals/ARViewModal";
+import ReviewSection from "../components/shop/ReviewSection";
 import arIcon from "../assets/icons/ar_icon.png";
 
 export default function ProductDetailsPage() {
   const { productSlug } = useParams();
+  const { isAuthenticated } = useAuthStore();
+
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
@@ -36,9 +38,6 @@ export default function ProductDetailsPage() {
   const [expandedSections, setExpandedSections] = useState({});
   const [isARModalOpen, setIsARModalOpen] = useState(false);
   const reviewsSectionRef = useRef(null);
-
-  // Auth state
-  const { isAuthenticated } = useAuthStore();
 
   // Fetch product data
   const { data: productData, isLoading, error } = useProduct(productSlug);
@@ -201,54 +200,6 @@ export default function ProductDetailsPage() {
     if (newQuantity >= 1 && newQuantity <= (product?.stock || 10)) {
       setQuantity(newQuantity);
     }
-  };
-
-  // Mock reviews data (would come from API in production)
-  const mockReviews = {
-    average: product?.rating?.average || 4.5,
-    total: product?.rating?.count || 150,
-    breakdown: [
-      { stars: 5, count: 98 },
-      { stars: 4, count: 22 },
-      { stars: 3, count: 12 },
-      { stars: 2, count: 4 },
-      { stars: 1, count: 2 },
-    ],
-    reviews: [
-      {
-        id: 1,
-        user: "Shristi Shrestha",
-        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100",
-        verified: true,
-        rating: 5,
-        date: "2 weeks ago",
-        title: "Elegant and comfortable",
-        content: "This furniture adds such elegance to my home. It's not only beautiful but also incredibly comfortable.",
-        helpful: 24,
-      },
-      {
-        id: 2,
-        user: "Krishna Bhandari",
-        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100",
-        verified: true,
-        rating: 4,
-        date: "1 month ago",
-        title: "Great quality, minor assembly needed",
-        content: "Beautiful piece with excellent quality. Assembly was straightforward but took about 30 minutes.",
-        helpful: 15,
-      },
-      {
-        id: 3,
-        user: "Akash Chaudhary",
-        avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100",
-        verified: true,
-        rating: 5,
-        date: "2 months ago",
-        title: "Loved the AR experience!",
-        content: "Beautiful piece with excellent quality. Assembly was straightforward but took about 30 minutes.",
-        helpful: 24,
-      },
-    ],
   };
 
   // Product details sections - only include sections with actual content
@@ -415,7 +366,7 @@ export default function ProductDetailsPage() {
                       key={i}
                       size={18}
                       className={
-                        i < Math.round(mockReviews.average)
+                        i < Math.round(product?.rating?.average || 0)
                           ? "fill-amber-400 text-amber-400"
                           : "fill-neutral-200 text-neutral-200"
                       }
@@ -423,10 +374,10 @@ export default function ProductDetailsPage() {
                   ))}
                 </div>
                 <span className="text-sm font-semibold text-neutral-900 font-dm-sans">
-                  {mockReviews.average.toFixed(2)}
+                  {(product?.rating?.average || 0).toFixed(1)}
                 </span>
                 <span className="text-sm text-neutral-500 font-dm-sans">
-                  ({mockReviews.total} reviews)
+                  ({product?.rating?.count || 0} reviews)
                 </span>
                 <span className="text-sm text-neutral-500 font-dm-sans">
                   {product.soldCount || "2.5k"} Sold
@@ -638,124 +589,11 @@ export default function ProductDetailsPage() {
                 </div>
               </div>
             )}
+          </div>
 
-            {/* Customer Reviews */}
-            <div ref={reviewsSectionRef}>
-              <h2 className="text-xl font-playfair font-semibold text-neutral-900 mb-4">
-                Customer Reviews
-              </h2>
-
-              {/* Rating Summary */}
-              <div className="flex items-start gap-8 mb-6">
-                {/* Overall Rating */}
-                <div className="text-center">
-                  <div className="text-4xl font-bold text-neutral-900 font-playfair">
-                    {mockReviews.average.toFixed(1)}
-                  </div>
-                  <div className="flex items-center justify-center gap-0.5 mt-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        size={14}
-                        className={
-                          i < Math.round(mockReviews.average)
-                            ? "fill-amber-400 text-amber-400"
-                            : "fill-neutral-200 text-neutral-200"
-                        }
-                      />
-                    ))}
-                  </div>
-                  <p className="text-sm text-neutral-500 font-dm-sans mt-1">
-                    {mockReviews.total} reviews
-                  </p>
-                </div>
-
-                {/* Rating Breakdown */}
-                <div className="flex-1 space-y-1.5">
-                  {mockReviews.breakdown.map((item) => (
-                    <div key={item.stars} className="flex items-center gap-2">
-                      <span className="text-sm text-neutral-600 font-dm-sans w-12">
-                        {item.stars} star
-                      </span>
-                      <div className="flex-1 h-2 bg-neutral-100 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-amber-400 rounded-full"
-                          style={{
-                            width: `${(item.count / mockReviews.total) * 100}%`,
-                          }}
-                        />
-                      </div>
-                      <span className="text-sm text-neutral-500 font-dm-sans w-8 text-right">
-                        {item.count}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Individual Reviews */}
-              <div className="space-y-4">
-                {mockReviews.reviews.map((review) => (
-                  <div
-                    key={review.id}
-                    className="bg-white border border-neutral-100 rounded-xl p-4"
-                  >
-                    <div className="flex items-start gap-3">
-                      <img
-                        src={review.avatar}
-                        alt={review.user}
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-neutral-900 font-dm-sans">
-                            {review.user}
-                          </span>
-                          {review.verified && (
-                            <span className="text-xs bg-teal-50 text-teal-700 px-2 py-0.5 rounded font-dm-sans">
-                              Verified
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="flex items-center">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                size={12}
-                                className={
-                                  i < review.rating
-                                    ? "fill-amber-400 text-amber-400"
-                                    : "fill-neutral-200 text-neutral-200"
-                                }
-                              />
-                            ))}
-                          </div>
-                          <span className="text-xs text-neutral-400 font-dm-sans">
-                            {review.date}
-                          </span>
-                        </div>
-                        <p className="font-medium text-neutral-900 font-dm-sans mb-1">
-                          {review.title}
-                        </p>
-                        <p className="text-sm text-neutral-600 font-dm-sans leading-relaxed">
-                          {review.content}
-                        </p>
-                        <button className="flex items-center gap-1.5 mt-3 text-sm text-neutral-500 hover:text-teal-700 transition-colors font-dm-sans">
-                          <ThumbsUp size={14} />
-                          Helpful ({review.helpful})
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* View All Reviews Button */}
-              <button className="w-full mt-4 py-3 border border-neutral-200 rounded-full text-neutral-700 font-semibold hover:bg-neutral-50 transition-colors font-dm-sans">
-                View All Reviews
-              </button>
-            </div>
+          {/* Customer Reviews Section */}
+          <div ref={reviewsSectionRef} className="mb-12">
+            <ReviewSection productId={product._id} />
           </div>
 
           {/* Related Products */}

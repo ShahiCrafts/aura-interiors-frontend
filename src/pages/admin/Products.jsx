@@ -683,11 +683,11 @@ export default function Products() {
                     <td className="px-5 py-4">
                       <div>
                         <span className="font-semibold text-gray-900">
-                          Rs. {product.price?.toLocaleString()}
+                          NRs. {product.price?.toLocaleString()}
                         </span>
                         {product.originalPrice && (
                           <span className="text-xs text-gray-400 line-through ml-2">
-                            Rs. {product.originalPrice?.toLocaleString()}
+                            NRs. {product.originalPrice?.toLocaleString()}
                           </span>
                         )}
                       </div>

@@ -16,7 +16,6 @@ import {
   Box,
   Heart,
   LogOut,
-  LayoutDashboard,
   FileText,
   Phone,
   Sparkles,
@@ -346,16 +345,6 @@ export default function Navbar() {
                         </span>
                       )}
                     </a>
-                    {user?.role === "admin" && (
-                      <a
-                        href="/admin"
-                        onClick={() => setUserDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-4 py-2.5 text-neutral-700 hover:bg-neutral-50 transition-colors font-dm-sans text-sm"
-                      >
-                        <LayoutDashboard size={16} className="text-neutral-400" />
-                        Admin Dashboard
-                      </a>
-                    )}
                     <hr className="my-1 border-neutral-100" />
                     <button
                       onClick={handleSignOut}
@@ -607,19 +596,6 @@ export default function Navbar() {
                       <span className="flex-1 font-medium font-dm-sans">My Profile</span>
                       <ChevronRight size={18} className="text-neutral-400" />
                     </a>
-                    {user?.role === "admin" && (
-                      <a
-                        href="/admin"
-                        onClick={closeMobileMenu}
-                        className="flex items-center gap-3 px-3 py-3 text-neutral-700 hover:bg-neutral-50 rounded-xl transition-colors"
-                      >
-                        <div className="w-9 h-9 bg-teal-100 rounded-lg flex items-center justify-center">
-                          <LayoutDashboard size={18} className="text-teal-700" />
-                        </div>
-                        <span className="flex-1 font-medium font-dm-sans">Admin Dashboard</span>
-                        <ChevronRight size={18} className="text-neutral-400" />
-                      </a>
-                    )}
                     <button
                       onClick={handleSignOut}
                       className="w-full flex items-center gap-3 px-3 py-3 text-neutral-700 hover:bg-neutral-50 rounded-xl transition-colors"

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Package,
@@ -16,13 +16,20 @@ import {
   FileText,
   Layers,
   Percent,
+  LogOut,
 } from 'lucide-react';
 import useAuthStore from '../store/authStore';
 
 export default function AdminLayout() {
   const location = useLocation();
-  const { user } = useAuthStore();
+  const navigate = useNavigate();
+  const { user, signOut } = useAuthStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleSignOut = () => {
+    signOut();
+    navigate('/');
+  };
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/admin' },
@@ -84,7 +91,7 @@ export default function AdminLayout() {
         </div>
 
         {/* Navigation */}
-        <nav className="p-4 space-y-2 overflow-y-auto h-[calc(100vh-4rem)] sidebar-scroll">
+        <nav className="p-4 space-y-2 overflow-y-auto h-[calc(100vh-8rem)] sidebar-scroll">
           {menuItems.map((item) => (
             <Link
               key={item.id}
@@ -106,6 +113,17 @@ export default function AdminLayout() {
             </Link>
           ))}
         </nav>
+
+        {/* Logout Button */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100 bg-white">
+          <button
+            onClick={handleSignOut}
+            className="flex items-center gap-4 px-4 py-3 w-full rounded-xl text-gray-500 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
+          >
+            <LogOut className="w-5 h-5 flex-shrink-0" />
+            <span className="font-medium">Logout</span>
+          </button>
+        </div>
       </aside>
 
       {/* Main Content */}

@@ -15,14 +15,23 @@ import { useAllOrders } from '../../hooks/useOrderTan';
 export default function Dashboard() {
   const { data: productsData } = useProducts({ limit: 5 });
   const { data: categoriesData } = useCategories();
-  const { data: ordersData } = useAllOrders({ limit: 100 });
+  const { data: ordersData } = useAllOrders({ limit: 1 }); // Only need 1 order since we use stats
 
   const products = productsData?.data?.products || [];
   const totalProducts = productsData?.data?.pagination?.total || 0;
   const categories = categoriesData?.data?.categories || [];
-  const orders = ordersData?.data?.orders || [];
   const totalOrders = ordersData?.data?.pagination?.total || 0;
-  const totalRevenue = orders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
+  const totalRevenue = ordersData?.data?.stats?.totalRevenue || 0;
+
+  // Format revenue display
+  const formatRevenue = (amount) => {
+    if (amount >= 100000) {
+      return `NRs. ${(amount / 100000).toFixed(1)}L`; // Lakhs
+    } else if (amount >= 1000) {
+      return `NRs. ${(amount / 1000).toFixed(0)}K`;
+    }
+    return `NRs. ${amount.toLocaleString()}`;
+  };
 
   const stats = [
     {
@@ -51,7 +60,7 @@ export default function Dashboard() {
     },
     {
       label: 'Revenue',
-      value: `Rs. ${(totalRevenue / 1000).toFixed(0)}K`,
+      value: formatRevenue(totalRevenue),
       change: '+8%',
       trend: 'up',
       icon: DollarSign,
@@ -125,7 +134,7 @@ export default function Dashboard() {
                     <p className="font-medium text-gray-900 truncate">{product.name}</p>
                     <p className="text-sm text-gray-500">{product.category?.name || 'Uncategorized'}</p>
                   </div>
-                  <p className="font-semibold text-gray-900">Rs. {product.price?.toLocaleString()}</p>
+                  <p className="font-semibold text-gray-900">NRs. {product.price?.toLocaleString()}</p>
                 </div>
               ))
             ) : (

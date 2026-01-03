@@ -9,6 +9,7 @@ import Footer from "./layouts/Footer";
 import AuthCallback from "./components/AuthCallback";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
+import CustomerRoute from "./components/CustomerRoute";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ProfilePage from "./pages/ProfilePage";
 import NotificationsPage from "./pages/NotificationsPage";
@@ -29,6 +30,7 @@ import AdminCategories from "./pages/admin/Categories";
 import AdminProducts from "./pages/admin/Products";
 import AdminOrders from "./pages/admin/Orders";
 import AdminDiscounts from "./pages/admin/Discounts";
+import AdminReviews from "./pages/admin/Reviews";
 
 function HomePage() {
   const { isAuthenticated, user } = useAuthStore();
@@ -59,16 +61,22 @@ function App() {
       <AuthCallback />
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/shop" element={<ShopPage />} />
-        <Route path="/shop/:categorySlug" element={<ShopPage />} />
-        <Route path="/product/:productSlug" element={<ProductDetailsPage />} />
-        <Route path="/ar/:productSlug" element={<ARViewPage />} />
-        <Route path="/native-ar" element={<NativeARPage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/checkout/payment-failed" element={<PaymentFailedPage />} />
-        <Route path="/order-confirmation/:orderId" element={<OrderConfirmationPage />} />
-        <Route path="/track-order" element={<TrackOrderPage />} />
+        
+        {/* Customer-facing routes - redirect admins to admin dashboard */}
+        <Route path="/shop" element={<CustomerRoute><ShopPage /></CustomerRoute>} />
+        <Route path="/shop/:categorySlug" element={<CustomerRoute><ShopPage /></CustomerRoute>} />
+        <Route path="/product/:productSlug" element={<CustomerRoute><ProductDetailsPage /></CustomerRoute>} />
+        <Route path="/ar/:productSlug" element={<CustomerRoute><ARViewPage /></CustomerRoute>} />
+        <Route path="/native-ar" element={<CustomerRoute><NativeARPage /></CustomerRoute>} />
+        <Route path="/checkout" element={<CustomerRoute><CheckoutPage /></CustomerRoute>} />
+        <Route path="/checkout/payment-failed" element={<CustomerRoute><PaymentFailedPage /></CustomerRoute>} />
+        <Route path="/order-confirmation/:orderId" element={<CustomerRoute><OrderConfirmationPage /></CustomerRoute>} />
+        <Route path="/track-order" element={<CustomerRoute><TrackOrderPage /></CustomerRoute>} />
+        
+        {/* Public route - password reset */}
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+        
+        {/* Protected customer routes - requires auth + not admin */}
         <Route
           path="/profile"
           element={
@@ -100,6 +108,7 @@ function App() {
           <Route path="products" element={<AdminProducts />} />
           <Route path="orders" element={<AdminOrders />} />
           <Route path="discounts" element={<AdminDiscounts />} />
+          <Route path="reviews" element={<AdminReviews />} />
         </Route>
       </Routes>
     </>

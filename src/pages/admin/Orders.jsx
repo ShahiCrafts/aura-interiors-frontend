@@ -43,6 +43,7 @@ export default function Orders() {
 
   const orders = ordersData?.data?.orders || [];
   const pagination = ordersData?.data?.pagination || { total: 0, pages: 1 };
+  const stats = ordersData?.data?.stats || { totalRevenue: 0, paidRevenue: 0, pendingRevenue: 0 };
 
   const handleStatusChange = (order) => {
     setSelectedOrder(order);
@@ -143,15 +144,6 @@ export default function Orders() {
     }
   };
 
-  const calculateTotalStats = () => {
-    const totalRevenue = pagination.total > 0 
-      ? orders.reduce((sum, order) => sum + (order.total || 0), 0)
-      : 0;
-    return { totalRevenue };
-  };
-
-  const stats = calculateTotalStats();
-
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
@@ -196,7 +188,7 @@ export default function Orders() {
                 <div>
                   <p className="text-gray-600 text-sm font-medium">Total Revenue</p>
                   <p className="text-2xl font-bold text-gray-900 mt-1">
-                    Rs. {stats.totalRevenue.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                    NRs. {stats.totalRevenue.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                   </p>
                 </div>
                 <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
@@ -349,7 +341,7 @@ export default function Orders() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right">
                           <span className="font-bold text-gray-900">
-                            Rs. {(order.total || 0).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                            NRs. {(order.total || 0).toLocaleString('en-US', { maximumFractionDigits: 0 })}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">

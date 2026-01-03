@@ -2,7 +2,7 @@ import React from "react";
 import { IoCheckmarkCircle, IoFilter } from "react-icons/io5";
 import { HiOutlineCube } from "react-icons/hi2";
 
-const formatNPR = (amount) => `Nrs. ${amount?.toLocaleString("en-IN") || "0"}`;
+const formatNPR = (amount) => `NRs. ${amount?.toLocaleString("en-NP") || "0"}`;
 
 const ProductCatalog = ({
   products,

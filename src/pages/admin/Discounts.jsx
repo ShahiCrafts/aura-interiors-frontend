@@ -298,7 +298,7 @@ export default function Discounts() {
                       </span>
                     </td>
                     <td className="px-5 py-4 text-gray-600 font-dm-sans">
-                      Rs. {discount.minimumOrderAmount?.toLocaleString() || 0}
+                      NRs. {discount.minimumOrderAmount?.toLocaleString() || 0}
                     </td>
                     <td className="px-5 py-4 text-gray-600 font-dm-sans">
                       {discount.currentUsageCount}
@@ -413,7 +413,7 @@ export default function Discounts() {
                       })
                     }
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all font-dm-sans"
-                    placeholder="20% off on orders above Rs. 5000"
+                    placeholder="20% off on orders above NRs. 5000"
                   />
                 </div>
 
