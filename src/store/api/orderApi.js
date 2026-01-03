@@ -50,6 +50,12 @@ const orderApi = {
     const response = await api.patch(`/orders/${id}/status`, data);
     return response.data;
   },
+
+  // Cancel order (user)
+  cancelOrder: async (id, data) => {
+    const response = await api.patch(`/orders/${id}/cancel`, data);
+    return response.data;
+  },
 };
 
 export default orderApi;

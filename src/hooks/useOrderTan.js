@@ -82,3 +82,15 @@ export const useUpdateOrderStatus = () => {
     },
   });
 };
+
+export const useCancelOrder = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }) => orderApi.cancelOrder(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ORDER_KEYS.all });
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+    },
+  });
+};

@@ -10,7 +10,7 @@ import {
   CheckCircle,
   Clock,
 } from "lucide-react";
-import { useMyOrders } from "../../hooks/useOrderTan";
+import { useMyOrders, useCancelOrder } from "../../hooks/useOrderTan";
 import OrderCard from "./OrderCard";
 import { toast } from "../ui/Toast";
 
@@ -41,6 +41,8 @@ export default function OrdersSection() {
     { page, limit: ITEMS_PER_PAGE, status: statusFilter || undefined },
     { keepPreviousData: true }
   );
+
+  const cancelOrderMutation = useCancelOrder();
 
   const orders = data?.data?.orders || [];
   const pagination = data?.data?.pagination || { total: 0, pages: 1 };
@@ -89,8 +91,19 @@ export default function OrdersSection() {
   }, [orders, searchQuery, sortBy]);
 
   const handleCancelOrder = async (orderId) => {
-    // TODO: Implement cancel order API
-    toast.error("Cancel order feature coming soon");
+    if (!window.confirm("Are you sure you want to cancel this order? Stock will be restored.")) {
+      return;
+    }
+
+    try {
+      await cancelOrderMutation.mutateAsync({
+        id: orderId,
+        data: { reason: "Cancelled by user" },
+      });
+      toast.success("Order cancelled successfully");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to cancel order");
+    }
   };
 
   const handleStatusFilterClick = (status) => {

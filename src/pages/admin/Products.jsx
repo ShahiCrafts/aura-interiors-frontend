@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
   Search,
@@ -14,59 +14,94 @@ import {
   CheckCircle,
   AlertCircle,
   Loader2,
-} from 'lucide-react';
-import { useProducts, useCreateProduct, useUpdateProduct, useDeleteProduct } from '../../hooks/useProductTan';
-import { useCategories } from '../../hooks/useCategoryTan';
-import { toast } from '../../components/ui/Toast';
-import ImageWithFallback from '../../components/fallbacks/ImageWithFallback';
+} from "lucide-react";
+import {
+  useProducts,
+  useCreateProduct,
+  useUpdateProduct,
+  useDeleteProduct,
+} from "../../hooks/useProductTan";
+import { useCategories } from "../../hooks/useCategoryTan";
+import { toast } from "../../components/ui/Toast";
+import ImageWithFallback from "../../components/fallbacks/ImageWithFallback";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
+const API_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
 
 export default function Products() {
   const fileInputRef = useRef(null);
   const modelFileInputRef = useRef(null);
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-  const [activeTab, setActiveTab] = useState('basic');
-  const [modelInputType, setModelInputType] = useState('url');
+  const [activeTab, setActiveTab] = useState("basic");
+  const [modelInputType, setModelInputType] = useState("url");
   const [imageFiles, setImageFiles] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
   const [modelFiles, setModelFiles] = useState([]); // New file uploads
   const [modelUrls, setModelUrls] = useState([]); // New URL entries
   const [existingModelFiles, setExistingModelFiles] = useState([]); // Existing models (both files and URLs)
   const [isDraggingModel, setIsDraggingModel] = useState(false);
-  const [newModelUrl, setNewModelUrl] = useState(''); // For URL input field
+  const [newModelUrl, setNewModelUrl] = useState(""); // For URL input field
   const [productForm, setProductForm] = useState({
-    name: '',
-    category: '',
-    price: '',
-    originalPrice: '',
-    stock: '',
-    description: '',
-    shortDescription: '',
-    status: 'active',
-    modelUrl: '',
-    sku: '',
-    style: '',
+    name: "",
+    category: "",
+    price: "",
+    originalPrice: "",
+    stock: "",
+    description: "",
+    shortDescription: "",
+    status: "active",
+    modelUrl: "",
+    sku: "",
+    style: "",
     isFeatured: false,
     isNewArrival: false,
-    dimensions: { width: '', height: '', depth: '' },
-    weight: { value: '', unit: 'kg' },
+    dimensions: { width: "", height: "", depth: "" },
+    weight: { value: "", unit: "kg" },
     materials: [],
     colors: [],
   });
 
-  const colorOptions = ['White', 'Black', 'Gray', 'Brown', 'Beige', 'Navy', 'Green', 'Red', 'Blue', 'Natural'];
-  const materialOptions = ['Wood', 'Metal', 'Fabric', 'Leather', 'Glass', 'Marble', 'Velvet', 'Rattan'];
-  const styleOptions = ['Modern', 'Contemporary', 'Traditional', 'Minimalist', 'Industrial', 'Scandinavian', 'Bohemian', 'Rustic'];
+  const colorOptions = [
+    "White",
+    "Black",
+    "Gray",
+    "Brown",
+    "Beige",
+    "Navy",
+    "Green",
+    "Red",
+    "Blue",
+    "Natural",
+  ];
+  const materialOptions = [
+    "Wood",
+    "Metal",
+    "Fabric",
+    "Leather",
+    "Glass",
+    "Marble",
+    "Velvet",
+    "Rattan",
+  ];
+  const styleOptions = [
+    "Modern",
+    "Contemporary",
+    "Traditional",
+    "Minimalist",
+    "Industrial",
+    "Scandinavian",
+    "Bohemian",
+    "Rustic",
+  ];
 
   // Fetch products
   const { data: productsData, isLoading } = useProducts({
     search: searchQuery || undefined,
-    category: selectedCategory !== 'all' ? selectedCategory : undefined,
+    category: selectedCategory !== "all" ? selectedCategory : undefined,
   });
   const products = productsData?.data?.products || [];
 
@@ -84,77 +119,89 @@ export default function Products() {
       setEditingProduct(product);
       setProductForm({
         name: product.name,
-        category: product.category?._id || product.category || '',
-        price: product.price?.toString() || '',
-        originalPrice: product.originalPrice?.toString() || '',
-        stock: product.stock?.toString() || '',
-        description: product.description || '',
-        shortDescription: product.shortDescription || '',
-        status: product.status || 'active',
-        modelUrl: product.modelUrl || '',
-        sku: product.sku || '',
-        style: product.style || '',
+        category: product.category?._id || product.category || "",
+        price: product.price?.toString() || "",
+        originalPrice: product.originalPrice?.toString() || "",
+        stock: product.stock?.toString() || "",
+        description: product.description || "",
+        shortDescription: product.shortDescription || "",
+        status: product.status || "active",
+        modelUrl: product.modelUrl || "",
+        sku: product.sku || "",
+        style: product.style || "",
         isFeatured: product.isFeatured || false,
         isNewArrival: product.isNewArrival || false,
-        dimensions: product.dimensions || { width: '', height: '', depth: '' },
-        weight: product.weight || { value: '', unit: 'kg' },
+        dimensions: product.dimensions || { width: "", height: "", depth: "" },
+        weight: product.weight || { value: "", unit: "kg" },
         materials: product.materials || [],
         colors: product.colors || [],
       });
-      setModelInputType(product.modelUrl || product.modelFiles?.length > 0 ? (product.modelUrl ? 'url' : 'upload') : 'url');
+      setModelInputType(
+        product.modelUrl || product.modelFiles?.length > 0
+          ? product.modelUrl
+            ? "url"
+            : "upload"
+          : "url"
+      );
       // Set existing images as previews
       if (product.images?.length > 0) {
-        setImagePreviews(product.images.map(img => ({
-          url: `${API_URL.replace('/api/v1', '')}/uploads/products/${img.url}`,
-          existing: true,
-          originalUrl: img.url,
-        })));
+        setImagePreviews(
+          product.images.map((img) => ({
+            url: `${API_URL.replace("/api/v1", "")}/uploads/products/${
+              img.url
+            }`,
+            existing: true,
+            originalUrl: img.url,
+          }))
+        );
       } else {
         setImagePreviews([]);
       }
       setImageFiles([]);
       // Set existing model files (both uploaded and URL-based)
       if (product.modelFiles?.length > 0) {
-        setExistingModelFiles(product.modelFiles.map(model => ({
-          ...model,
-          existing: true,
-        })));
+        setExistingModelFiles(
+          product.modelFiles.map((model) => ({
+            ...model,
+            existing: true,
+          }))
+        );
       } else {
         setExistingModelFiles([]);
       }
       setModelFiles([]);
       setModelUrls([]);
-      setNewModelUrl('');
+      setNewModelUrl("");
     } else {
       setEditingProduct(null);
       setProductForm({
-        name: '',
-        category: categories[0]?._id || '',
-        price: '',
-        originalPrice: '',
-        stock: '',
-        description: '',
-        shortDescription: '',
-        status: 'active',
-        modelUrl: '',
-        sku: '',
-        style: '',
+        name: "",
+        category: categories[0]?._id || "",
+        price: "",
+        originalPrice: "",
+        stock: "",
+        description: "",
+        shortDescription: "",
+        status: "active",
+        modelUrl: "",
+        sku: "",
+        style: "",
         isFeatured: false,
         isNewArrival: false,
-        dimensions: { width: '', height: '', depth: '' },
-        weight: { value: '', unit: 'kg' },
+        dimensions: { width: "", height: "", depth: "" },
+        weight: { value: "", unit: "kg" },
         materials: [],
         colors: [],
       });
-      setModelInputType('url');
+      setModelInputType("url");
       setImageFiles([]);
       setImagePreviews([]);
       setModelFiles([]);
       setModelUrls([]);
       setExistingModelFiles([]);
-      setNewModelUrl('');
+      setNewModelUrl("");
     }
-    setActiveTab('basic');
+    setActiveTab("basic");
     setModalOpen(true);
   };
 
@@ -164,10 +211,13 @@ export default function Products() {
     setImageFiles(newFiles);
 
     // Create previews for new files
-    files.forEach(file => {
+    files.forEach((file) => {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreviews(prev => [...prev, { url: reader.result, existing: false, file }]);
+        setImagePreviews((prev) => [
+          ...prev,
+          { url: reader.result, existing: false, file },
+        ]);
       };
       reader.readAsDataURL(file);
     });
@@ -179,14 +229,18 @@ export default function Products() {
   };
 
   const addModelFiles = (files) => {
-    const validExtensions = ['.glb', '.gltf', '.usdz'];
+    const validExtensions = [".glb", ".gltf", ".usdz"];
     const validFiles = [];
 
     for (const file of files) {
-      const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+      const fileExtension = file.name
+        .substring(file.name.lastIndexOf("."))
+        .toLowerCase();
 
       if (!validExtensions.includes(fileExtension)) {
-        toast.error(`Invalid file format: ${file.name}. Please upload .glb, .gltf, or .usdz files`);
+        toast.error(
+          `Invalid file format: ${file.name}. Please upload .glb, .gltf, or .usdz files`
+        );
         continue;
       }
 
@@ -196,12 +250,18 @@ export default function Products() {
       }
 
       // Check for duplicate formats (including URL entries)
-      const format = fileExtension.replace('.', '');
-      const existingFormat = [...existingModelFiles, ...modelFiles, ...modelUrls].find(
-        f => f.format === format || (f.name && f.name.endsWith(fileExtension))
+      const format = fileExtension.replace(".", "");
+      const existingFormat = [
+        ...existingModelFiles,
+        ...modelFiles,
+        ...modelUrls,
+      ].find(
+        (f) => f.format === format || (f.name && f.name.endsWith(fileExtension))
       );
       if (existingFormat) {
-        toast.error(`A ${format.toUpperCase()} model already exists. Remove it first to add a new one.`);
+        toast.error(
+          `A ${format.toUpperCase()} model already exists. Remove it first to add a new one.`
+        );
         continue;
       }
 
@@ -210,14 +270,14 @@ export default function Products() {
         name: file.name,
         size: file.size,
         format,
-        platform: format === 'usdz' ? 'ios' : 'android',
+        platform: format === "usdz" ? "ios" : "android",
       });
     }
 
     if (validFiles.length > 0) {
-      setModelFiles(prev => [...prev, ...validFiles]);
+      setModelFiles((prev) => [...prev, ...validFiles]);
       // Clear the URL input when files are uploaded
-      setProductForm(prev => ({ ...prev, modelUrl: '' }));
+      setProductForm((prev) => ({ ...prev, modelUrl: "" }));
     }
   };
 
@@ -244,20 +304,20 @@ export default function Products() {
 
   const removeModelFile = (index, isExisting = false, isUrl = false) => {
     if (isExisting) {
-      setExistingModelFiles(prev => prev.filter((_, i) => i !== index));
+      setExistingModelFiles((prev) => prev.filter((_, i) => i !== index));
     } else if (isUrl) {
-      setModelUrls(prev => prev.filter((_, i) => i !== index));
+      setModelUrls((prev) => prev.filter((_, i) => i !== index));
     } else {
-      setModelFiles(prev => prev.filter((_, i) => i !== index));
+      setModelFiles((prev) => prev.filter((_, i) => i !== index));
     }
     if (modelFileInputRef.current) {
-      modelFileInputRef.current.value = '';
+      modelFileInputRef.current.value = "";
     }
   };
 
   const addModelUrl = () => {
     if (!newModelUrl.trim()) {
-      toast.error('Please enter a URL');
+      toast.error("Please enter a URL");
       return;
     }
 
@@ -265,59 +325,70 @@ export default function Products() {
     try {
       new URL(newModelUrl);
     } catch {
-      toast.error('Please enter a valid URL');
+      toast.error("Please enter a valid URL");
       return;
     }
 
     // Detect format from URL
     const url = newModelUrl.toLowerCase();
-    let format = '';
-    if (url.includes('.glb')) {
-      format = 'glb';
-    } else if (url.includes('.gltf')) {
-      format = 'gltf';
-    } else if (url.includes('.usdz')) {
-      format = 'usdz';
+    let format = "";
+    if (url.includes(".glb")) {
+      format = "glb";
+    } else if (url.includes(".gltf")) {
+      format = "gltf";
+    } else if (url.includes(".usdz")) {
+      format = "usdz";
     } else {
-      toast.error('URL must point to a .glb, .gltf, or .usdz file');
+      toast.error("URL must point to a .glb, .gltf, or .usdz file");
       return;
     }
 
     // Check for duplicate formats
-    const existingFormat = [...existingModelFiles, ...modelFiles, ...modelUrls].find(
-      f => f.format === format
-    );
+    const existingFormat = [
+      ...existingModelFiles,
+      ...modelFiles,
+      ...modelUrls,
+    ].find((f) => f.format === format);
     if (existingFormat) {
-      toast.error(`A ${format.toUpperCase()} model already exists. Remove it first to add a new one.`);
+      toast.error(
+        `A ${format.toUpperCase()} model already exists. Remove it first to add a new one.`
+      );
       return;
     }
 
-    const platform = format === 'usdz' ? 'ios' : 'android';
+    const platform = format === "usdz" ? "ios" : "android";
 
-    setModelUrls(prev => [...prev, {
-      url: newModelUrl.trim(),
-      format,
-      platform,
-      isExternal: true,
-    }]);
-    setNewModelUrl('');
+    setModelUrls((prev) => [
+      ...prev,
+      {
+        url: newModelUrl.trim(),
+        format,
+        platform,
+        isExternal: true,
+      },
+    ]);
+    setNewModelUrl("");
   };
 
   const removeImage = (index) => {
     const preview = imagePreviews[index];
     if (preview.existing) {
       // Mark for removal on save
-      setImagePreviews(prev => prev.filter((_, i) => i !== index));
+      setImagePreviews((prev) => prev.filter((_, i) => i !== index));
     } else {
       // Remove from new files
-      setImageFiles(prev => prev.filter((_, i) => i !== index - imagePreviews.filter(p => p.existing).length));
-      setImagePreviews(prev => prev.filter((_, i) => i !== index));
+      setImageFiles((prev) =>
+        prev.filter(
+          (_, i) => i !== index - imagePreviews.filter((p) => p.existing).length
+        )
+      );
+      setImagePreviews((prev) => prev.filter((_, i) => i !== index));
     }
   };
 
   const handleSaveProduct = async () => {
     if (!productForm.name || !productForm.price || !productForm.category) {
-      toast.error('Please fill in required fields');
+      toast.error("Please fill in required fields");
       return;
     }
 
@@ -329,16 +400,22 @@ export default function Products() {
       status: productForm.status,
     };
 
-    if (productForm.originalPrice) formData.originalPrice = productForm.originalPrice;
+    if (productForm.originalPrice)
+      formData.originalPrice = productForm.originalPrice;
     if (productForm.description) formData.description = productForm.description;
-    if (productForm.shortDescription) formData.shortDescription = productForm.shortDescription;
+    if (productForm.shortDescription)
+      formData.shortDescription = productForm.shortDescription;
     if (productForm.modelUrl) formData.modelUrl = productForm.modelUrl;
     if (productForm.sku) formData.sku = productForm.sku;
     if (productForm.style) formData.style = productForm.style;
     formData.isFeatured = productForm.isFeatured;
     formData.isNewArrival = productForm.isNewArrival;
 
-    if (productForm.dimensions.width || productForm.dimensions.height || productForm.dimensions.depth) {
+    if (
+      productForm.dimensions.width ||
+      productForm.dimensions.height ||
+      productForm.dimensions.depth
+    ) {
       formData.dimensions = productForm.dimensions;
     }
     if (productForm.weight.value) {
@@ -358,12 +435,12 @@ export default function Products() {
 
     // Add 3D model files if uploaded
     if (modelFiles.length > 0) {
-      formData.modelFiles = modelFiles.map(m => m.file);
+      formData.modelFiles = modelFiles.map((m) => m.file);
     }
 
     // Add 3D model URLs
     if (modelUrls.length > 0) {
-      formData.modelUrls = modelUrls.map(m => ({
+      formData.modelUrls = modelUrls.map((m) => ({
         url: m.url,
         format: m.format,
         platform: m.platform,
@@ -372,17 +449,24 @@ export default function Products() {
 
     // Track removed images for update
     if (editingProduct) {
-      const existingUrls = editingProduct.images?.map(img => img.url) || [];
-      const remainingUrls = imagePreviews.filter(p => p.existing).map(p => p.originalUrl);
-      const removedImages = existingUrls.filter(url => !remainingUrls.includes(url));
+      const existingUrls = editingProduct.images?.map((img) => img.url) || [];
+      const remainingUrls = imagePreviews
+        .filter((p) => p.existing)
+        .map((p) => p.originalUrl);
+      const removedImages = existingUrls.filter(
+        (url) => !remainingUrls.includes(url)
+      );
       if (removedImages.length > 0) {
         formData.removeImages = removedImages;
       }
 
       // Track removed model files for update
-      const existingModelUrls = editingProduct.modelFiles?.map(m => m.url) || [];
-      const remainingModelUrls = existingModelFiles.map(m => m.url);
-      const removedModelFiles = existingModelUrls.filter(url => !remainingModelUrls.includes(url));
+      const existingModelUrls =
+        editingProduct.modelFiles?.map((m) => m.url) || [];
+      const remainingModelUrls = existingModelFiles.map((m) => m.url);
+      const removedModelFiles = existingModelUrls.filter(
+        (url) => !remainingModelUrls.includes(url)
+      );
       if (removedModelFiles.length > 0) {
         formData.removeModelFiles = removedModelFiles;
       }
@@ -390,62 +474,76 @@ export default function Products() {
 
     try {
       if (editingProduct) {
-        await updateMutation.mutateAsync({ id: editingProduct._id, data: formData });
-        toast.success('Product updated successfully');
+        await updateMutation.mutateAsync({
+          id: editingProduct._id,
+          data: formData,
+        });
+        toast.success("Product updated successfully");
       } else {
         await createMutation.mutateAsync(formData);
-        toast.success('Product created successfully');
+        toast.success("Product created successfully");
       }
       setModalOpen(false);
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Something went wrong');
+      toast.error(err.response?.data?.message || "Something went wrong");
     }
   };
 
   const handleDeleteProduct = async (id) => {
-    if (confirm('Are you sure you want to delete this product?')) {
+    if (confirm("Are you sure you want to delete this product?")) {
       try {
         await deleteMutation.mutateAsync(id);
-        toast.success('Product deleted successfully');
+        toast.success("Product deleted successfully");
       } catch (err) {
-        toast.error(err.response?.data?.message || 'Failed to delete product');
+        toast.error(err.response?.data?.message || "Failed to delete product");
       }
     }
   };
 
   const handleToggle = (field, value) => {
-    if (field === 'colors' || field === 'materials') {
-      setProductForm(prev => ({
+    if (field === "colors" || field === "materials") {
+      setProductForm((prev) => ({
         ...prev,
         [field]: prev[field].includes(value)
-          ? prev[field].filter(v => v !== value)
-          : [...prev[field], value]
+          ? prev[field].filter((v) => v !== value)
+          : [...prev[field], value],
       }));
     }
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'active': return 'bg-emerald-100 text-emerald-700';
-      case 'out_of_stock': return 'bg-red-100 text-red-700';
-      case 'draft': return 'bg-gray-100 text-gray-700';
-      default: return 'bg-gray-100 text-gray-700';
+      case "active":
+        return "bg-emerald-100 text-emerald-700";
+      case "out_of_stock":
+        return "bg-red-100 text-red-700";
+      case "draft":
+        return "bg-gray-100 text-gray-700";
+      default:
+        return "bg-gray-100 text-gray-700";
     }
   };
 
   const getStatusLabel = (status) => {
     switch (status) {
-      case 'active': return 'Active';
-      case 'out_of_stock': return 'Out of Stock';
-      case 'draft': return 'Draft';
-      default: return status;
+      case "active":
+        return "Active";
+      case "out_of_stock":
+        return "Out of Stock";
+      case "draft":
+        return "Draft";
+      default:
+        return status;
     }
   };
 
   const getProductImage = (product) => {
     if (product.images?.length > 0) {
-      const primaryImage = product.images.find(img => img.isPrimary) || product.images[0];
-      return `${API_URL.replace('/api/v1', '')}/uploads/products/${primaryImage.url}`;
+      const primaryImage =
+        product.images.find((img) => img.isPrimary) || product.images[0];
+      return `${API_URL.replace("/api/v1", "")}/uploads/products/${
+        primaryImage.url
+      }`;
     }
     return null;
   };
@@ -456,7 +554,9 @@ export default function Products() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Products</h1>
-          <p className="text-gray-500 mt-1">{productsData?.data?.pagination?.total || 0} total products</p>
+          <p className="text-gray-500 mt-1">
+            {productsData?.data?.pagination?.total || 0} total products
+          </p>
         </div>
         <button
           onClick={() => handleOpenModal()}
@@ -482,11 +582,11 @@ export default function Products() {
           </div>
           <div className="flex gap-2 overflow-x-auto pb-1">
             <button
-              onClick={() => setSelectedCategory('all')}
+              onClick={() => setSelectedCategory("all")}
               className={`px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-colors ${
-                selectedCategory === 'all'
-                  ? 'bg-[#025E5D] text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                selectedCategory === "all"
+                  ? "bg-[#025E5D] text-white"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
               All
@@ -497,8 +597,8 @@ export default function Products() {
                 onClick={() => setSelectedCategory(cat._id)}
                 className={`px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-colors ${
                   selectedCategory === cat._id
-                    ? 'bg-[#025E5D] text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    ? "bg-[#025E5D] text-white"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
                 {cat.name}
@@ -519,13 +619,27 @@ export default function Products() {
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4">Product</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4">Category</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4">Price</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4">Stock</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4">3D Model</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4">Status</th>
-                  <th className="text-right text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4">Actions</th>
+                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4">
+                    Product
+                  </th>
+                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4">
+                    Category
+                  </th>
+                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4">
+                    Price
+                  </th>
+                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4">
+                    Stock
+                  </th>
+                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4">
+                    3D Model
+                  </th>
+                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4">
+                    Status
+                  </th>
+                  <th className="text-right text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -538,7 +652,7 @@ export default function Products() {
                   >
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
+                        <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-100 shrink-0">
                           {getProductImage(product) ? (
                             <ImageWithFallback
                               src={getProductImage(product)}
@@ -552,17 +666,25 @@ export default function Products() {
                           )}
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900">{product.name}</p>
-                          <p className="text-xs text-gray-500">{product.sku || product._id?.slice(-8)}</p>
+                          <p className="font-medium text-gray-900">
+                            {product.name}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {product.sku || product._id?.slice(-8)}
+                          </p>
                         </div>
                       </div>
                     </td>
                     <td className="px-5 py-4">
-                      <span className="text-gray-600">{product.category?.name || 'Uncategorized'}</span>
+                      <span className="text-gray-600">
+                        {product.category?.name || "Uncategorized"}
+                      </span>
                     </td>
                     <td className="px-5 py-4">
                       <div>
-                        <span className="font-semibold text-gray-900">Rs. {product.price?.toLocaleString()}</span>
+                        <span className="font-semibold text-gray-900">
+                          Rs. {product.price?.toLocaleString()}
+                        </span>
                         {product.originalPrice && (
                           <span className="text-xs text-gray-400 line-through ml-2">
                             Rs. {product.originalPrice?.toLocaleString()}
@@ -571,7 +693,15 @@ export default function Products() {
                       </div>
                     </td>
                     <td className="px-5 py-4">
-                      <span className={`${product.stock === 0 ? 'text-red-500' : product.stock < 10 ? 'text-amber-500' : 'text-gray-600'}`}>
+                      <span
+                        className={`${
+                          product.stock === 0
+                            ? "text-red-500"
+                            : product.stock < 10
+                            ? "text-amber-500"
+                            : "text-gray-600"
+                        }`}
+                      >
                         {product.stock} units
                       </span>
                     </td>
@@ -579,7 +709,11 @@ export default function Products() {
                       {product.modelUrl || product.modelFiles?.length > 0 ? (
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
                           <Box className="w-3.5 h-3.5" />
-                          {product.modelFiles?.length > 0 ? `${product.modelFiles.length} Model${product.modelFiles.length > 1 ? 's' : ''}` : 'Available'}
+                          {product.modelFiles?.length > 0
+                            ? `${product.modelFiles.length} Model${
+                                product.modelFiles.length > 1 ? "s" : ""
+                              }`
+                            : "Available"}
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
@@ -588,7 +722,11 @@ export default function Products() {
                       )}
                     </td>
                     <td className="px-5 py-4">
-                      <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(product.status)}`}>
+                      <span
+                        className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                          product.status
+                        )}`}
+                      >
                         {getStatusLabel(product.status)}
                       </span>
                     </td>
@@ -621,8 +759,12 @@ export default function Products() {
         {!isLoading && products.length === 0 && (
           <div className="p-12 text-center">
             <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <h3 className="font-medium text-gray-900 mb-1">No products found</h3>
-            <p className="text-sm text-gray-500">Try adjusting your search or filters</p>
+            <h3 className="font-medium text-gray-900 mb-1">
+              No products found
+            </h3>
+            <p className="text-sm text-gray-500">
+              Try adjusting your search or filters
+            </p>
           </div>
         )}
       </div>
@@ -647,7 +789,7 @@ export default function Products() {
               {/* Modal Header */}
               <div className="flex items-center justify-between p-6 border-b border-gray-100">
                 <h2 className="text-xl font-bold text-gray-900">
-                  {editingProduct ? 'Edit Product' : 'Add New Product'}
+                  {editingProduct ? "Edit Product" : "Add New Product"}
                 </h2>
                 <button
                   onClick={() => setModalOpen(false)}
@@ -660,17 +802,17 @@ export default function Products() {
               {/* Tabs */}
               <div className="flex border-b border-gray-100 px-6">
                 {[
-                  { id: 'basic', label: 'Basic Info' },
-                  { id: '3dmodel', label: '3D Model' },
-                  { id: 'details', label: 'Details' },
+                  { id: "basic", label: "Basic Info" },
+                  { id: "3dmodel", label: "3D Model" },
+                  { id: "details", label: "Details" },
                 ].map((tab) => (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                       activeTab === tab.id
-                        ? 'border-[#025E5D] text-[#025E5D]'
-                        : 'border-transparent text-gray-500 hover:text-gray-700'
+                        ? "border-[#025E5D] text-[#025E5D]"
+                        : "border-transparent text-gray-500 hover:text-gray-700"
                     }`}
                   >
                     {tab.label}
@@ -681,18 +823,24 @@ export default function Products() {
               {/* Modal Content */}
               <div className="p-6 overflow-y-auto flex-1">
                 {/* Basic Info Tab */}
-                {activeTab === 'basic' && (
+                {activeTab === "basic" && (
                   <div className="space-y-4">
                     {/* Image Upload */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Product Images</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Product Images
+                      </label>
                       <div
                         onClick={() => fileInputRef.current?.click()}
                         className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:border-[#025E5D] transition-colors cursor-pointer"
                       >
                         <Image className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                        <p className="text-sm text-gray-500">Click to upload or drag and drop</p>
-                        <p className="text-xs text-gray-400 mt-1">PNG, JPG, WEBP up to 5MB</p>
+                        <p className="text-sm text-gray-500">
+                          Click to upload or drag and drop
+                        </p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          PNG, JPG, WEBP up to 5MB
+                        </p>
                         <input
                           ref={fileInputRef}
                           type="file"
@@ -725,11 +873,18 @@ export default function Products() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Product Name *</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Product Name *
+                      </label>
                       <input
                         type="text"
                         value={productForm.name}
-                        onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
+                        onChange={(e) =>
+                          setProductForm({
+                            ...productForm,
+                            name: e.target.value,
+                          })
+                        }
                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#025E5D] focus:ring-2 focus:ring-[#025E5D]/20 outline-none transition-all"
                         placeholder="Enter product name"
                       />
@@ -737,23 +892,39 @@ export default function Products() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Category *</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Category *
+                        </label>
                         <select
                           value={productForm.category}
-                          onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
+                          onChange={(e) =>
+                            setProductForm({
+                              ...productForm,
+                              category: e.target.value,
+                            })
+                          }
                           className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#025E5D] focus:ring-2 focus:ring-[#025E5D]/20 outline-none transition-all bg-white"
                         >
                           <option value="">Select Category</option>
                           {categories.map((cat) => (
-                            <option key={cat._id} value={cat._id}>{cat.name}</option>
+                            <option key={cat._id} value={cat._id}>
+                              {cat.name}
+                            </option>
                           ))}
                         </select>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Status
+                        </label>
                         <select
                           value={productForm.status}
-                          onChange={(e) => setProductForm({ ...productForm, status: e.target.value })}
+                          onChange={(e) =>
+                            setProductForm({
+                              ...productForm,
+                              status: e.target.value,
+                            })
+                          }
                           className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#025E5D] focus:ring-2 focus:ring-[#025E5D]/20 outline-none transition-all bg-white"
                         >
                           <option value="active">Active</option>
@@ -765,37 +936,62 @@ export default function Products() {
 
                     <div className="grid grid-cols-3 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Price *</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Price *
+                        </label>
                         <div className="relative">
-                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">Rs.</span>
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">
+                            Rs.
+                          </span>
                           <input
                             type="number"
                             value={productForm.price}
-                            onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
+                            onChange={(e) =>
+                              setProductForm({
+                                ...productForm,
+                                price: e.target.value,
+                              })
+                            }
                             className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-[#025E5D] focus:ring-2 focus:ring-[#025E5D]/20 outline-none transition-all"
                             placeholder="0"
                           />
                         </div>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Original Price</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Original Price
+                        </label>
                         <div className="relative">
-                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">Rs.</span>
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">
+                            Rs.
+                          </span>
                           <input
                             type="number"
                             value={productForm.originalPrice}
-                            onChange={(e) => setProductForm({ ...productForm, originalPrice: e.target.value })}
+                            onChange={(e) =>
+                              setProductForm({
+                                ...productForm,
+                                originalPrice: e.target.value,
+                              })
+                            }
                             className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-[#025E5D] focus:ring-2 focus:ring-[#025E5D]/20 outline-none transition-all"
                             placeholder="0"
                           />
                         </div>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Stock</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Stock
+                        </label>
                         <input
                           type="number"
                           value={productForm.stock}
-                          onChange={(e) => setProductForm({ ...productForm, stock: e.target.value })}
+                          onChange={(e) =>
+                            setProductForm({
+                              ...productForm,
+                              stock: e.target.value,
+                            })
+                          }
                           className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#025E5D] focus:ring-2 focus:ring-[#025E5D]/20 outline-none transition-all"
                           placeholder="0"
                         />
@@ -804,46 +1000,76 @@ export default function Products() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">SKU</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          SKU
+                        </label>
                         <input
                           type="text"
                           value={productForm.sku}
-                          onChange={(e) => setProductForm({ ...productForm, sku: e.target.value })}
+                          onChange={(e) =>
+                            setProductForm({
+                              ...productForm,
+                              sku: e.target.value,
+                            })
+                          }
                           className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#025E5D] focus:ring-2 focus:ring-[#025E5D]/20 outline-none transition-all"
                           placeholder="SKU-001"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Style</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Style
+                        </label>
                         <select
                           value={productForm.style}
-                          onChange={(e) => setProductForm({ ...productForm, style: e.target.value })}
+                          onChange={(e) =>
+                            setProductForm({
+                              ...productForm,
+                              style: e.target.value,
+                            })
+                          }
                           className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#025E5D] focus:ring-2 focus:ring-[#025E5D]/20 outline-none transition-all bg-white"
                         >
                           <option value="">Select Style</option>
                           {styleOptions.map((style) => (
-                            <option key={style} value={style.toLowerCase()}>{style}</option>
+                            <option key={style} value={style.toLowerCase()}>
+                              {style}
+                            </option>
                           ))}
                         </select>
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Short Description</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Short Description
+                      </label>
                       <input
                         type="text"
                         value={productForm.shortDescription}
-                        onChange={(e) => setProductForm({ ...productForm, shortDescription: e.target.value })}
+                        onChange={(e) =>
+                          setProductForm({
+                            ...productForm,
+                            shortDescription: e.target.value,
+                          })
+                        }
                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#025E5D] focus:ring-2 focus:ring-[#025E5D]/20 outline-none transition-all"
                         placeholder="Brief description for listings"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Description
+                      </label>
                       <textarea
                         value={productForm.description}
-                        onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
+                        onChange={(e) =>
+                          setProductForm({
+                            ...productForm,
+                            description: e.target.value,
+                          })
+                        }
                         rows={3}
                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#025E5D] focus:ring-2 focus:ring-[#025E5D]/20 outline-none transition-all resize-none"
                         placeholder="Enter product description"
@@ -856,35 +1082,52 @@ export default function Products() {
                         <input
                           type="checkbox"
                           checked={productForm.isFeatured}
-                          onChange={(e) => setProductForm({ ...productForm, isFeatured: e.target.checked })}
+                          onChange={(e) =>
+                            setProductForm({
+                              ...productForm,
+                              isFeatured: e.target.checked,
+                            })
+                          }
                           className="w-4 h-4 rounded border-gray-300 text-[#025E5D] focus:ring-[#025E5D]"
                         />
-                        <span className="text-sm text-gray-700">Featured Product</span>
+                        <span className="text-sm text-gray-700">
+                          Featured Product
+                        </span>
                       </label>
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input
                           type="checkbox"
                           checked={productForm.isNewArrival}
-                          onChange={(e) => setProductForm({ ...productForm, isNewArrival: e.target.checked })}
+                          onChange={(e) =>
+                            setProductForm({
+                              ...productForm,
+                              isNewArrival: e.target.checked,
+                            })
+                          }
                           className="w-4 h-4 rounded border-gray-300 text-[#025E5D] focus:ring-[#025E5D]"
                         />
-                        <span className="text-sm text-gray-700">New Arrival</span>
+                        <span className="text-sm text-gray-700">
+                          New Arrival
+                        </span>
                       </label>
                     </div>
                   </div>
                 )}
 
                 {/* 3D Model Tab */}
-                {activeTab === '3dmodel' && (
+                {activeTab === "3dmodel" && (
                   <div className="space-y-6">
                     <div className="bg-purple-50 border border-purple-200 rounded-xl p-4">
                       <div className="flex items-start gap-3">
-                        <Box className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                        <Box className="w-5 h-5 text-purple-600 shrink-0 mt-0.5" />
                         <div>
-                          <p className="text-sm font-medium text-purple-800">3D Model for AR/VR Experience</p>
+                          <p className="text-sm font-medium text-purple-800">
+                            3D Model for AR/VR Experience
+                          </p>
                           <p className="text-sm text-purple-700 mt-0.5">
-                            Upload a 3D model to enable customers to view this product in AR on their devices.
-                            Supported formats: .glb, .gltf, .usdz (for iOS)
+                            Upload a 3D model to enable customers to view this
+                            product in AR on their devices. Supported formats:
+                            .glb, .gltf, .usdz (for iOS)
                           </p>
                         </div>
                       </div>
@@ -892,15 +1135,17 @@ export default function Products() {
 
                     {/* Input Type Toggle */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-3">Add 3D Model</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-3">
+                        Add 3D Model
+                      </label>
                       <div className="flex gap-2">
                         <button
                           type="button"
-                          onClick={() => setModelInputType('url')}
+                          onClick={() => setModelInputType("url")}
                           className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border transition-all ${
-                            modelInputType === 'url'
-                              ? 'border-[#025E5D] bg-[#025E5D]/5 text-[#025E5D]'
-                              : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                            modelInputType === "url"
+                              ? "border-[#025E5D] bg-[#025E5D]/5 text-[#025E5D]"
+                              : "border-gray-200 text-gray-600 hover:border-gray-300"
                           }`}
                         >
                           <LinkIcon className="w-4 h-4" />
@@ -908,11 +1153,11 @@ export default function Products() {
                         </button>
                         <button
                           type="button"
-                          onClick={() => setModelInputType('upload')}
+                          onClick={() => setModelInputType("upload")}
                           className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border transition-all ${
-                            modelInputType === 'upload'
-                              ? 'border-[#025E5D] bg-[#025E5D]/5 text-[#025E5D]'
-                              : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                            modelInputType === "upload"
+                              ? "border-[#025E5D] bg-[#025E5D]/5 text-[#025E5D]"
+                              : "border-gray-200 text-gray-600 hover:border-gray-300"
                           }`}
                         >
                           <Upload className="w-4 h-4" />
@@ -922,73 +1167,119 @@ export default function Products() {
                     </div>
 
                     {/* URL Input */}
-                    {modelInputType === 'url' && (
+                    {modelInputType === "url" && (
                       <div className="space-y-4">
-                        <label className="block text-sm font-medium text-gray-700">Add 3D Model URLs</label>
+                        <label className="block text-sm font-medium text-gray-700">
+                          Add 3D Model URLs
+                        </label>
 
                         {/* Existing and new URL entries list */}
-                        {(existingModelFiles.length > 0 || modelUrls.length > 0) && (
+                        {(existingModelFiles.length > 0 ||
+                          modelUrls.length > 0) && (
                           <div className="space-y-2">
                             {/* Existing model entries (URL-based) */}
-                            {existingModelFiles.filter(m => m.isExternal).map((model, index) => (
-                              <div key={`existing-url-${index}`} className="border border-gray-200 rounded-xl p-4">
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center gap-3">
-                                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                                      model.platform === 'ios' ? 'bg-blue-100' : 'bg-green-100'
-                                    }`}>
-                                      <LinkIcon className={`w-5 h-5 ${
-                                        model.platform === 'ios' ? 'text-blue-600' : 'text-green-600'
-                                      }`} />
-                                    </div>
-                                    <div className="min-w-0 flex-1">
-                                      <p className="text-sm font-medium text-gray-900 truncate">{model.url}</p>
-                                      <div className="flex items-center gap-2">
-                                        <span className={`text-xs px-2 py-0.5 rounded-full ${
-                                          model.platform === 'ios'
-                                            ? 'bg-blue-100 text-blue-700'
-                                            : 'bg-green-100 text-green-700'
-                                        }`}>
-                                          {model.format?.toUpperCase()} - {model.platform === 'ios' ? 'iOS' : 'Android/Web'}
-                                        </span>
-                                        <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">
-                                          URL
-                                        </span>
+                            {existingModelFiles
+                              .filter((m) => m.isExternal)
+                              .map((model, index) => (
+                                <div
+                                  key={`existing-url-${index}`}
+                                  className="border border-gray-200 rounded-xl p-4"
+                                >
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                      <div
+                                        className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                                          model.platform === "ios"
+                                            ? "bg-blue-100"
+                                            : "bg-green-100"
+                                        }`}
+                                      >
+                                        <LinkIcon
+                                          className={`w-5 h-5 ${
+                                            model.platform === "ios"
+                                              ? "text-blue-600"
+                                              : "text-green-600"
+                                          }`}
+                                        />
+                                      </div>
+                                      <div className="min-w-0 flex-1">
+                                        <p className="text-sm font-medium text-gray-900 truncate">
+                                          {model.url}
+                                        </p>
+                                        <div className="flex items-center gap-2">
+                                          <span
+                                            className={`text-xs px-2 py-0.5 rounded-full ${
+                                              model.platform === "ios"
+                                                ? "bg-blue-100 text-blue-700"
+                                                : "bg-green-100 text-green-700"
+                                            }`}
+                                          >
+                                            {model.format?.toUpperCase()} -{" "}
+                                            {model.platform === "ios"
+                                              ? "iOS"
+                                              : "Android/Web"}
+                                          </span>
+                                          <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">
+                                            URL
+                                          </span>
+                                        </div>
                                       </div>
                                     </div>
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        removeModelFile(
+                                          existingModelFiles.indexOf(model),
+                                          true
+                                        )
+                                      }
+                                      className="p-2 hover:bg-red-50 rounded-lg transition-colors shrink-0"
+                                    >
+                                      <X className="w-4 h-4 text-red-500" />
+                                    </button>
                                   </div>
-                                  <button
-                                    type="button"
-                                    onClick={() => removeModelFile(existingModelFiles.indexOf(model), true)}
-                                    className="p-2 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
-                                  >
-                                    <X className="w-4 h-4 text-red-500" />
-                                  </button>
                                 </div>
-                              </div>
-                            ))}
+                              ))}
 
                             {/* New URL entries */}
                             {modelUrls.map((model, index) => (
-                              <div key={`new-url-${index}`} className="border border-gray-200 rounded-xl p-4">
+                              <div
+                                key={`new-url-${index}`}
+                                className="border border-gray-200 rounded-xl p-4"
+                              >
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center gap-3">
-                                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                                      model.platform === 'ios' ? 'bg-blue-100' : 'bg-green-100'
-                                    }`}>
-                                      <LinkIcon className={`w-5 h-5 ${
-                                        model.platform === 'ios' ? 'text-blue-600' : 'text-green-600'
-                                      }`} />
+                                    <div
+                                      className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                                        model.platform === "ios"
+                                          ? "bg-blue-100"
+                                          : "bg-green-100"
+                                      }`}
+                                    >
+                                      <LinkIcon
+                                        className={`w-5 h-5 ${
+                                          model.platform === "ios"
+                                            ? "text-blue-600"
+                                            : "text-green-600"
+                                        }`}
+                                      />
                                     </div>
                                     <div className="min-w-0 flex-1">
-                                      <p className="text-sm font-medium text-gray-900 truncate">{model.url}</p>
+                                      <p className="text-sm font-medium text-gray-900 truncate">
+                                        {model.url}
+                                      </p>
                                       <div className="flex items-center gap-2">
-                                        <span className={`text-xs px-2 py-0.5 rounded-full ${
-                                          model.platform === 'ios'
-                                            ? 'bg-blue-100 text-blue-700'
-                                            : 'bg-green-100 text-green-700'
-                                        }`}>
-                                          {model.format?.toUpperCase()} - {model.platform === 'ios' ? 'iOS' : 'Android/Web'}
+                                        <span
+                                          className={`text-xs px-2 py-0.5 rounded-full ${
+                                            model.platform === "ios"
+                                              ? "bg-blue-100 text-blue-700"
+                                              : "bg-green-100 text-green-700"
+                                          }`}
+                                        >
+                                          {model.format?.toUpperCase()} -{" "}
+                                          {model.platform === "ios"
+                                            ? "iOS"
+                                            : "Android/Web"}
                                         </span>
                                         <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
                                           New
@@ -998,8 +1289,10 @@ export default function Products() {
                                   </div>
                                   <button
                                     type="button"
-                                    onClick={() => removeModelFile(index, false, true)}
-                                    className="p-2 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+                                    onClick={() =>
+                                      removeModelFile(index, false, true)
+                                    }
+                                    className="p-2 hover:bg-red-50 rounded-lg transition-colors shrink-0"
                                   >
                                     <X className="w-4 h-4 text-red-500" />
                                   </button>
@@ -1015,7 +1308,10 @@ export default function Products() {
                             type="url"
                             value={newModelUrl}
                             onChange={(e) => setNewModelUrl(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addModelUrl())}
+                            onKeyDown={(e) =>
+                              e.key === "Enter" &&
+                              (e.preventDefault(), addModelUrl())
+                            }
                             className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:border-[#025E5D] focus:ring-2 focus:ring-[#025E5D]/20 outline-none transition-all"
                             placeholder="https://example.com/model.glb"
                           />
@@ -1028,84 +1324,139 @@ export default function Products() {
                           </button>
                         </div>
                         <p className="text-xs text-gray-500">
-                          Enter URLs to .glb, .gltf, or .usdz files. Format is auto-detected from URL.
+                          Enter URLs to .glb, .gltf, or .usdz files. Format is
+                          auto-detected from URL.
                         </p>
                       </div>
                     )}
 
                     {/* File Upload */}
-                    {modelInputType === 'upload' && (
+                    {modelInputType === "upload" && (
                       <div className="space-y-4">
-                        <label className="block text-sm font-medium text-gray-700">Upload 3D Models</label>
+                        <label className="block text-sm font-medium text-gray-700">
+                          Upload 3D Models
+                        </label>
 
                         {/* Uploaded files list */}
-                        {(existingModelFiles.filter(m => !m.isExternal).length > 0 || modelFiles.length > 0) && (
+                        {(existingModelFiles.filter((m) => !m.isExternal)
+                          .length > 0 ||
+                          modelFiles.length > 0) && (
                           <div className="space-y-2">
                             {/* Existing model files (uploaded, not URL) */}
-                            {existingModelFiles.filter(m => !m.isExternal).map((model, index) => (
-                              <div key={`existing-${index}`} className="border border-gray-200 rounded-xl p-4">
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center gap-3">
-                                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                                      model.platform === 'ios' ? 'bg-blue-100' : 'bg-green-100'
-                                    }`}>
-                                      <Box className={`w-5 h-5 ${
-                                        model.platform === 'ios' ? 'text-blue-600' : 'text-green-600'
-                                      }`} />
-                                    </div>
-                                    <div>
-                                      <p className="text-sm font-medium text-gray-900">{model.url}</p>
-                                      <div className="flex items-center gap-2">
-                                        <span className={`text-xs px-2 py-0.5 rounded-full ${
-                                          model.platform === 'ios'
-                                            ? 'bg-blue-100 text-blue-700'
-                                            : 'bg-green-100 text-green-700'
-                                        }`}>
-                                          {model.format?.toUpperCase()} - {model.platform === 'ios' ? 'iOS' : 'Android/Web'}
-                                        </span>
-                                        {model.fileSize && (
-                                          <span className="text-xs text-gray-500">
-                                            {(model.fileSize / (1024 * 1024)).toFixed(2)} MB
+                            {existingModelFiles
+                              .filter((m) => !m.isExternal)
+                              .map((model, index) => (
+                                <div
+                                  key={`existing-${index}`}
+                                  className="border border-gray-200 rounded-xl p-4"
+                                >
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                      <div
+                                        className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                                          model.platform === "ios"
+                                            ? "bg-blue-100"
+                                            : "bg-green-100"
+                                        }`}
+                                      >
+                                        <Box
+                                          className={`w-5 h-5 ${
+                                            model.platform === "ios"
+                                              ? "text-blue-600"
+                                              : "text-green-600"
+                                          }`}
+                                        />
+                                      </div>
+                                      <div>
+                                        <p className="text-sm font-medium text-gray-900">
+                                          {model.url}
+                                        </p>
+                                        <div className="flex items-center gap-2">
+                                          <span
+                                            className={`text-xs px-2 py-0.5 rounded-full ${
+                                              model.platform === "ios"
+                                                ? "bg-blue-100 text-blue-700"
+                                                : "bg-green-100 text-green-700"
+                                            }`}
+                                          >
+                                            {model.format?.toUpperCase()} -{" "}
+                                            {model.platform === "ios"
+                                              ? "iOS"
+                                              : "Android/Web"}
                                           </span>
-                                        )}
+                                          {model.fileSize && (
+                                            <span className="text-xs text-gray-500">
+                                              {(
+                                                model.fileSize /
+                                                (1024 * 1024)
+                                              ).toFixed(2)}{" "}
+                                              MB
+                                            </span>
+                                          )}
+                                        </div>
                                       </div>
                                     </div>
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        removeModelFile(
+                                          existingModelFiles.indexOf(model),
+                                          true
+                                        )
+                                      }
+                                      className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                                    >
+                                      <X className="w-4 h-4 text-red-500" />
+                                    </button>
                                   </div>
-                                  <button
-                                    type="button"
-                                    onClick={() => removeModelFile(existingModelFiles.indexOf(model), true)}
-                                    className="p-2 hover:bg-red-50 rounded-lg transition-colors"
-                                  >
-                                    <X className="w-4 h-4 text-red-500" />
-                                  </button>
                                 </div>
-                              </div>
-                            ))}
+                              ))}
 
                             {/* New model files */}
                             {modelFiles.map((model, index) => (
-                              <div key={`new-${index}`} className="border border-gray-200 rounded-xl p-4">
+                              <div
+                                key={`new-${index}`}
+                                className="border border-gray-200 rounded-xl p-4"
+                              >
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center gap-3">
-                                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                                      model.platform === 'ios' ? 'bg-blue-100' : 'bg-green-100'
-                                    }`}>
-                                      <Box className={`w-5 h-5 ${
-                                        model.platform === 'ios' ? 'text-blue-600' : 'text-green-600'
-                                      }`} />
+                                    <div
+                                      className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                                        model.platform === "ios"
+                                          ? "bg-blue-100"
+                                          : "bg-green-100"
+                                      }`}
+                                    >
+                                      <Box
+                                        className={`w-5 h-5 ${
+                                          model.platform === "ios"
+                                            ? "text-blue-600"
+                                            : "text-green-600"
+                                        }`}
+                                      />
                                     </div>
                                     <div>
-                                      <p className="text-sm font-medium text-gray-900">{model.name}</p>
+                                      <p className="text-sm font-medium text-gray-900">
+                                        {model.name}
+                                      </p>
                                       <div className="flex items-center gap-2">
-                                        <span className={`text-xs px-2 py-0.5 rounded-full ${
-                                          model.platform === 'ios'
-                                            ? 'bg-blue-100 text-blue-700'
-                                            : 'bg-green-100 text-green-700'
-                                        }`}>
-                                          {model.format?.toUpperCase()} - {model.platform === 'ios' ? 'iOS' : 'Android/Web'}
+                                        <span
+                                          className={`text-xs px-2 py-0.5 rounded-full ${
+                                            model.platform === "ios"
+                                              ? "bg-blue-100 text-blue-700"
+                                              : "bg-green-100 text-green-700"
+                                          }`}
+                                        >
+                                          {model.format?.toUpperCase()} -{" "}
+                                          {model.platform === "ios"
+                                            ? "iOS"
+                                            : "Android/Web"}
                                         </span>
                                         <span className="text-xs text-gray-500">
-                                          {(model.size / (1024 * 1024)).toFixed(2)} MB
+                                          {(model.size / (1024 * 1024)).toFixed(
+                                            2
+                                          )}{" "}
+                                          MB
                                         </span>
                                         <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
                                           New
@@ -1115,7 +1466,9 @@ export default function Products() {
                                   </div>
                                   <button
                                     type="button"
-                                    onClick={() => removeModelFile(index, false)}
+                                    onClick={() =>
+                                      removeModelFile(index, false)
+                                    }
                                     className="p-2 hover:bg-red-50 rounded-lg transition-colors"
                                   >
                                     <X className="w-4 h-4 text-red-500" />
@@ -1134,19 +1487,22 @@ export default function Products() {
                           onDrop={handleModelDrop}
                           className={`border-2 border-dashed rounded-xl p-6 text-center transition-colors cursor-pointer ${
                             isDraggingModel
-                              ? 'border-[#025E5D] bg-[#025E5D]/5'
-                              : 'border-gray-200 hover:border-[#025E5D]'
+                              ? "border-[#025E5D] bg-[#025E5D]/5"
+                              : "border-gray-200 hover:border-[#025E5D]"
                           }`}
                         >
                           <Box className="w-10 h-10 text-gray-400 mx-auto mb-2" />
                           <p className="text-sm font-medium text-gray-700">
                             {existingModelFiles.length + modelFiles.length > 0
-                              ? 'Add more 3D models'
-                              : 'Drop your 3D models here'}
+                              ? "Add more 3D models"
+                              : "Drop your 3D models here"}
                           </p>
-                          <p className="text-sm text-gray-500 mt-1">or click to browse</p>
+                          <p className="text-sm text-gray-500 mt-1">
+                            or click to browse
+                          </p>
                           <p className="text-xs text-gray-400 mt-2">
-                            Supported: .glb, .gltf (Android/Web), .usdz (iOS) - max 50MB each
+                            Supported: .glb, .gltf (Android/Web), .usdz (iOS) -
+                            max 50MB each
                           </p>
                           <input
                             ref={modelFileInputRef}
@@ -1163,15 +1519,23 @@ export default function Products() {
                     {/* Cross-platform AR Note */}
                     <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
                       <div className="flex items-start gap-3">
-                        <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                        <AlertCircle className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
                         <div>
-                          <p className="text-sm font-medium text-blue-800">Cross-Platform AR Support</p>
+                          <p className="text-sm font-medium text-blue-800">
+                            Cross-Platform AR Support
+                          </p>
                           <p className="text-sm text-blue-700 mt-0.5">
                             For the best AR experience across all devices:
                           </p>
                           <ul className="text-sm text-blue-700 mt-1 list-disc list-inside">
-                            <li><strong>.glb/.gltf</strong> - For Android devices and web browsers</li>
-                            <li><strong>.usdz</strong> - For iOS devices (iPhone/iPad)</li>
+                            <li>
+                              <strong>.glb/.gltf</strong> - For Android devices
+                              and web browsers
+                            </li>
+                            <li>
+                              <strong>.usdz</strong> - For iOS devices
+                              (iPhone/iPad)
+                            </li>
                           </ul>
                         </div>
                       </div>
@@ -1180,20 +1544,27 @@ export default function Products() {
                 )}
 
                 {/* Details Tab */}
-                {activeTab === 'details' && (
+                {activeTab === "details" && (
                   <div className="space-y-4">
                     {/* Dimensions */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Dimensions (cm)</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Dimensions (cm)
+                      </label>
                       <div className="grid grid-cols-3 gap-4">
                         <div>
                           <input
                             type="number"
                             value={productForm.dimensions.width}
-                            onChange={(e) => setProductForm({
-                              ...productForm,
-                              dimensions: { ...productForm.dimensions, width: e.target.value }
-                            })}
+                            onChange={(e) =>
+                              setProductForm({
+                                ...productForm,
+                                dimensions: {
+                                  ...productForm.dimensions,
+                                  width: e.target.value,
+                                },
+                              })
+                            }
                             className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#025E5D] focus:ring-2 focus:ring-[#025E5D]/20 outline-none transition-all"
                             placeholder="Width"
                           />
@@ -1202,10 +1573,15 @@ export default function Products() {
                           <input
                             type="number"
                             value={productForm.dimensions.height}
-                            onChange={(e) => setProductForm({
-                              ...productForm,
-                              dimensions: { ...productForm.dimensions, height: e.target.value }
-                            })}
+                            onChange={(e) =>
+                              setProductForm({
+                                ...productForm,
+                                dimensions: {
+                                  ...productForm.dimensions,
+                                  height: e.target.value,
+                                },
+                              })
+                            }
                             className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#025E5D] focus:ring-2 focus:ring-[#025E5D]/20 outline-none transition-all"
                             placeholder="Height"
                           />
@@ -1214,10 +1590,15 @@ export default function Products() {
                           <input
                             type="number"
                             value={productForm.dimensions.depth}
-                            onChange={(e) => setProductForm({
-                              ...productForm,
-                              dimensions: { ...productForm.dimensions, depth: e.target.value }
-                            })}
+                            onChange={(e) =>
+                              setProductForm({
+                                ...productForm,
+                                dimensions: {
+                                  ...productForm.dimensions,
+                                  depth: e.target.value,
+                                },
+                              })
+                            }
                             className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#025E5D] focus:ring-2 focus:ring-[#025E5D]/20 outline-none transition-all"
                             placeholder="Depth"
                           />
@@ -1227,24 +1608,36 @@ export default function Products() {
 
                     {/* Weight */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Weight</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Weight
+                      </label>
                       <div className="flex gap-4">
                         <input
                           type="number"
                           value={productForm.weight.value}
-                          onChange={(e) => setProductForm({
-                            ...productForm,
-                            weight: { ...productForm.weight, value: e.target.value }
-                          })}
+                          onChange={(e) =>
+                            setProductForm({
+                              ...productForm,
+                              weight: {
+                                ...productForm.weight,
+                                value: e.target.value,
+                              },
+                            })
+                          }
                           className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:border-[#025E5D] focus:ring-2 focus:ring-[#025E5D]/20 outline-none transition-all"
                           placeholder="0"
                         />
                         <select
                           value={productForm.weight.unit}
-                          onChange={(e) => setProductForm({
-                            ...productForm,
-                            weight: { ...productForm.weight, unit: e.target.value }
-                          })}
+                          onChange={(e) =>
+                            setProductForm({
+                              ...productForm,
+                              weight: {
+                                ...productForm.weight,
+                                unit: e.target.value,
+                              },
+                            })
+                          }
                           className="w-24 px-4 py-3 rounded-xl border border-gray-200 focus:border-[#025E5D] focus:ring-2 focus:ring-[#025E5D]/20 outline-none transition-all bg-white"
                         >
                           <option value="kg">kg</option>
@@ -1255,17 +1648,23 @@ export default function Products() {
 
                     {/* Materials */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Materials</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Materials
+                      </label>
                       <div className="flex flex-wrap gap-2">
                         {materialOptions.map((material) => (
                           <button
                             key={material}
                             type="button"
-                            onClick={() => handleToggle('materials', material.toLowerCase())}
+                            onClick={() =>
+                              handleToggle("materials", material.toLowerCase())
+                            }
                             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                              productForm.materials.includes(material.toLowerCase())
-                                ? 'bg-[#025E5D] text-white'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                              productForm.materials.includes(
+                                material.toLowerCase()
+                              )
+                                ? "bg-[#025E5D] text-white"
+                                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                             }`}
                           >
                             {material}
@@ -1276,17 +1675,21 @@ export default function Products() {
 
                     {/* Colors */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Available Colors</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Available Colors
+                      </label>
                       <div className="flex flex-wrap gap-2">
                         {colorOptions.map((color) => (
                           <button
                             key={color}
                             type="button"
-                            onClick={() => handleToggle('colors', color.toLowerCase())}
+                            onClick={() =>
+                              handleToggle("colors", color.toLowerCase())
+                            }
                             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                               productForm.colors.includes(color.toLowerCase())
-                                ? 'bg-[#025E5D] text-white'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                ? "bg-[#025E5D] text-white"
+                                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                             }`}
                           >
                             {color}
@@ -1308,13 +1711,21 @@ export default function Products() {
                 </button>
                 <button
                   onClick={handleSaveProduct}
-                  disabled={!productForm.name || !productForm.price || !productForm.category || createMutation.isPending || updateMutation.isPending}
+                  disabled={
+                    !productForm.name ||
+                    !productForm.price ||
+                    !productForm.category ||
+                    createMutation.isPending ||
+                    updateMutation.isPending
+                  }
                   className="flex-1 bg-[#025E5D] text-white px-6 py-3 rounded-xl font-medium hover:bg-[#014d4b] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {(createMutation.isPending || updateMutation.isPending) ? (
+                  {createMutation.isPending || updateMutation.isPending ? (
                     <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+                  ) : editingProduct ? (
+                    "Update Product"
                   ) : (
-                    editingProduct ? 'Update Product' : 'Add Product'
+                    "Add Product"
                   )}
                 </button>
               </div>
