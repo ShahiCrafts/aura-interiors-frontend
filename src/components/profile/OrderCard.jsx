@@ -113,7 +113,7 @@ export default function OrderCard({ order, onCancelOrder }) {
         <div className="space-y-4">
           {visibleItems?.map((item, index) => (
             <div key={index} className="flex gap-4">
-              <div className="w-16 h-16 rounded-xl overflow-hidden bg-neutral-100 flex-shrink-0">
+              <div className="w-16 h-16 rounded-xl overflow-hidden bg-neutral-100 shrink-0">
                 <img
                   src={getImageUrl(item)}
                   alt={item.name}
