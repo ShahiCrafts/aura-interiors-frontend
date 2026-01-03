@@ -10,7 +10,7 @@ import {
   CheckCircle,
   Clock,
 } from "lucide-react";
-import { useMyOrders, useCancelOrder } from "../../hooks/useOrderTan";
+import { useMyOrders, useCancelOrder, useRequestReturn } from "../../hooks/useOrderTan";
 import OrderCard from "./OrderCard";
 import { toast } from "../ui/Toast";
 
@@ -43,6 +43,7 @@ export default function OrdersSection() {
   );
 
   const cancelOrderMutation = useCancelOrder();
+  const requestReturnMutation = useRequestReturn();
 
   const orders = data?.data?.orders || [];
   const pagination = data?.data?.pagination || { total: 0, pages: 1 };
@@ -103,6 +104,24 @@ export default function OrdersSection() {
       toast.success("Order cancelled successfully");
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to cancel order");
+    }
+  };
+
+  const handleRequestReturn = async (orderId) => {
+    const reason = window.prompt("Please provide a reason for return (e.g., defective product, wrong item):");
+    
+    if (!reason) {
+      return;
+    }
+
+    try {
+      await requestReturnMutation.mutateAsync({
+        id: orderId,
+        data: { reason, description: "" },
+      });
+      toast.success("Return request submitted successfully");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to submit return request");
     }
   };
 
@@ -366,6 +385,7 @@ export default function OrdersSection() {
               key={order._id}
               order={order}
               onCancelOrder={handleCancelOrder}
+              onRequestReturn={handleRequestReturn}
             />
           ))}
         </div>

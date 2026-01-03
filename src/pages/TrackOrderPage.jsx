@@ -114,7 +114,7 @@ export default function TrackOrderPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-gradient-to-b from-teal-50/50 to-white pt-20">
+      <main className="min-h-screen bg-linear-to-b from-teal-50/50 to-white pt-20">
         <div className="max-w-4xl mx-auto px-4 py-12">
           {/* Back Link */}
           <Link
@@ -292,7 +292,7 @@ export default function TrackOrderPage() {
                       key={index}
                       className="flex gap-4 pb-4 border-b border-neutral-100 last:border-0 last:pb-0"
                     >
-                      <div className="w-20 h-20 rounded-xl overflow-hidden bg-neutral-100 flex-shrink-0">
+                      <div className="w-20 h-20 rounded-xl overflow-hidden bg-neutral-100 shrink-0">
                         <img
                           src={getImageUrl(item)}
                           alt={item.name}

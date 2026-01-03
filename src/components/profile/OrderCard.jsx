@@ -9,6 +9,7 @@ import {
   ChevronDown,
   ChevronUp,
   MapPin,
+  RotateCcw,
 } from "lucide-react";
 import OrderTrackingTimeline from "./OrderTrackingTimeline";
 
@@ -30,7 +31,21 @@ const STATUS_LABELS = {
   cancelled: "Cancelled",
 };
 
-export default function OrderCard({ order, onCancelOrder }) {
+const RETURN_STATUS_COLORS = {
+  requested: "bg-amber-50 text-amber-600 border-amber-200",
+  approved: "bg-green-50 text-green-600 border-green-200",
+  rejected: "bg-red-50 text-red-600 border-red-200",
+  completed: "bg-blue-50 text-blue-600 border-blue-200",
+};
+
+const RETURN_STATUS_LABELS = {
+  requested: "Return Requested",
+  approved: "Return Approved",
+  rejected: "Return Rejected",
+  completed: "Return Completed",
+};
+
+export default function OrderCard({ order, onCancelOrder, onRequestReturn }) {
   const [showTracking, setShowTracking] = useState(false);
   const [showAllItems, setShowAllItems] = useState(false);
 
@@ -69,6 +84,18 @@ export default function OrderCard({ order, onCancelOrder }) {
   const canCancel = ["pending", "confirmed"].includes(order.orderStatus);
   const canTrack = !isDelivered && !isCancelled;
 
+  // Return request logic
+  const returnStatus = order.returnRequest?.status;
+  const hasReturnRequest = returnStatus && returnStatus !== "none";
+  const canRequestReturn = isDelivered && !hasReturnRequest;
+
+  // Check if return window is still open (7 days)
+  const deliveredDate = order.deliveredAt || order.updatedAt;
+  const daysSinceDelivery = deliveredDate
+    ? Math.floor((Date.now() - new Date(deliveredDate)) / (1000 * 60 * 60 * 24))
+    : 0;
+  const returnWindowOpen = daysSinceDelivery <= 7;
+
   // Show only first 2 items, rest expandable
   const visibleItems = showAllItems ? order.items : order.items?.slice(0, 2);
   const hasMoreItems = order.items?.length > 2;
@@ -100,6 +127,15 @@ export default function OrderCard({ order, onCancelOrder }) {
           >
             {STATUS_LABELS[order.orderStatus]}
           </span>
+          {hasReturnRequest && (
+            <span
+              className={`px-3 py-1 rounded-full text-xs font-medium border ${
+                RETURN_STATUS_COLORS[returnStatus]
+              }`}
+            >
+              {RETURN_STATUS_LABELS[returnStatus]}
+            </span>
+          )}
           {!isCancelled && (
             <span className="text-sm text-neutral-500 font-dm-sans hidden sm:block">
               {getEstimatedDelivery()}
@@ -192,6 +228,20 @@ export default function OrderCard({ order, onCancelOrder }) {
         <div className="flex items-center gap-2 flex-wrap">
           {isDelivered && (
             <>
+              {canRequestReturn && returnWindowOpen && (
+                <button
+                  onClick={() => onRequestReturn?.(order._id)}
+                  className="flex items-center gap-1.5 px-4 py-2 border border-amber-200 rounded-lg text-sm font-medium text-amber-600 hover:bg-amber-50 transition-colors font-dm-sans"
+                >
+                  <RotateCcw size={16} />
+                  Request Return
+                </button>
+              )}
+              {canRequestReturn && !returnWindowOpen && (
+                <span className="text-sm text-neutral-400 font-dm-sans">
+                  Return window expired
+                </span>
+              )}
               <button className="flex items-center gap-1.5 px-4 py-2 border border-neutral-200 rounded-lg text-sm font-medium text-neutral-700 hover:bg-white transition-colors font-dm-sans">
                 <FileText size={16} />
                 Invoice

@@ -56,6 +56,18 @@ const orderApi = {
     const response = await api.patch(`/orders/${id}/cancel`, data);
     return response.data;
   },
+
+  // Request return (user)
+  requestReturn: async (id, data) => {
+    const response = await api.post(`/orders/${id}/return`, data);
+    return response.data;
+  },
+
+  // Process return request (admin)
+  processReturnRequest: async (id, data) => {
+    const response = await api.patch(`/orders/${id}/return`, data);
+    return response.data;
+  },
 };
 
 export default orderApi;

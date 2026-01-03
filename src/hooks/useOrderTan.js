@@ -94,3 +94,27 @@ export const useCancelOrder = () => {
     },
   });
 };
+
+// Request return (user)
+export const useRequestReturn = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }) => orderApi.requestReturn(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ORDER_KEYS.all });
+    },
+  });
+};
+
+// Process return request (admin)
+export const useProcessReturnRequest = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }) => orderApi.processReturnRequest(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ORDER_KEYS.all });
+    },
+  });
+};

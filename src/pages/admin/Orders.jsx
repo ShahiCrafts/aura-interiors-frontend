@@ -9,8 +9,9 @@ import {
   Calendar,
   DollarSign,
   TrendingUp,
+  RotateCcw,
 } from 'lucide-react';
-import { useAllOrders, useUpdateOrderStatus } from '../../hooks/useOrderTan';
+import { useAllOrders, useUpdateOrderStatus, useProcessReturnRequest } from '../../hooks/useOrderTan';
 import { toast } from '../../components/ui/Toast';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
@@ -23,7 +24,10 @@ export default function Orders() {
   const [pageSize, setPageSize] = useState(10);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showStatusModal, setShowStatusModal] = useState(false);
+  const [showReturnModal, setShowReturnModal] = useState(false);
   const [newStatus, setNewStatus] = useState('');
+  const [returnDecision, setReturnDecision] = useState('');
+  const [adminNote, setAdminNote] = useState('');
 
   const queryParams = {
     page,
@@ -35,6 +39,7 @@ export default function Orders() {
 
   const { data: ordersData, isLoading, error } = useAllOrders(queryParams);
   const updateStatusMutation = useUpdateOrderStatus();
+  const processReturnMutation = useProcessReturnRequest();
 
   const orders = ordersData?.data?.orders || [];
   const pagination = ordersData?.data?.pagination || { total: 0, pages: 1 };
@@ -58,6 +63,46 @@ export default function Orders() {
       setSelectedOrder(null);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to update order status');
+    }
+  };
+
+  const handleReturnAction = (order) => {
+    setSelectedOrder(order);
+    setReturnDecision('');
+    setAdminNote('');
+    setShowReturnModal(true);
+  };
+
+  const handleProcessReturn = async () => {
+    if (!selectedOrder || !returnDecision) return;
+
+    try {
+      await processReturnMutation.mutateAsync({
+        id: selectedOrder._id,
+        data: { status: returnDecision, adminNote },
+      });
+      toast.success(`Return request ${returnDecision} successfully`);
+      setShowReturnModal(false);
+      setSelectedOrder(null);
+      setReturnDecision('');
+      setAdminNote('');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to process return request');
+    }
+  };
+
+  const getReturnStatusColor = (status) => {
+    switch (status) {
+      case 'requested':
+        return 'bg-amber-100 text-amber-800 border border-amber-300';
+      case 'approved':
+        return 'bg-green-100 text-green-800 border border-green-300';
+      case 'rejected':
+        return 'bg-red-100 text-red-800 border border-red-300';
+      case 'completed':
+        return 'bg-blue-100 text-blue-800 border border-blue-300';
+      default:
+        return '';
     }
   };
 
@@ -252,6 +297,7 @@ export default function Orders() {
                     <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Amount</th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Order Status</th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Payment</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Return</th>
                     <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
@@ -319,6 +365,15 @@ export default function Orders() {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
+                          {order.returnRequest?.status && order.returnRequest.status !== 'none' ? (
+                            <span className={`px-3 py-1.5 rounded-full text-xs font-semibold ${getReturnStatusColor(order.returnRequest.status)}`}>
+                              {order.returnRequest.status.charAt(0).toUpperCase() + order.returnRequest.status.slice(1)}
+                            </span>
+                          ) : (
+                            <span className="text-gray-400 text-xs">—</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center justify-center gap-1">
                             <button
                               onClick={() => handleStatusChange(order)}
@@ -327,6 +382,15 @@ export default function Orders() {
                             >
                               <ChevronDown className="w-4 h-4" />
                             </button>
+                            {order.returnRequest?.status === 'requested' && (
+                              <button
+                                onClick={() => handleReturnAction(order)}
+                                className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                                title="Process return request"
+                              >
+                                <RotateCcw className="w-4 h-4" />
+                              </button>
+                            )}
                             <button
                               className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                               title="View details"
@@ -442,6 +506,100 @@ export default function Orders() {
                 >
                   {updateStatusMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
                   Update
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {showReturnModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowReturnModal(false)}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.95 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.95 }}
+              onClick={e => e.stopPropagation()}
+              className="bg-white rounded-2xl max-w-md w-full p-6 border border-gray-200"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">Process Return Request</h3>
+                <button
+                  onClick={() => setShowReturnModal(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600 mb-1">Order: <span className="font-medium">{selectedOrder?.orderId}</span></p>
+                <p className="text-sm text-gray-600 mb-1">Reason: <span className="font-medium">{selectedOrder?.returnRequest?.reason}</span></p>
+                {selectedOrder?.returnRequest?.description && (
+                  <p className="text-sm text-gray-600">Description: {selectedOrder.returnRequest.description}</p>
+                )}
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Decision
+                </label>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setReturnDecision('approved')}
+                    className={`flex-1 px-4 py-2 rounded-lg border-2 transition-colors ${
+                      returnDecision === 'approved'
+                        ? 'border-green-500 bg-green-50 text-green-700'
+                        : 'border-gray-200 hover:border-green-300'
+                    }`}
+                  >
+                    Approve
+                  </button>
+                  <button
+                    onClick={() => setReturnDecision('rejected')}
+                    className={`flex-1 px-4 py-2 rounded-lg border-2 transition-colors ${
+                      returnDecision === 'rejected'
+                        ? 'border-red-500 bg-red-50 text-red-700'
+                        : 'border-gray-200 hover:border-red-300'
+                    }`}
+                  >
+                    Reject
+                  </button>
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Admin Note (optional)
+                </label>
+                <textarea
+                  value={adminNote}
+                  onChange={(e) => setAdminNote(e.target.value)}
+                  placeholder="Add a note for the customer..."
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#025E5D] focus:ring-2 focus:ring-[#025E5D]/20 resize-none"
+                  rows={3}
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowReturnModal(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleProcessReturn}
+                  disabled={!returnDecision || processReturnMutation.isPending}
+                  className="flex-1 px-4 py-2 bg-[#025E5D] text-white rounded-lg hover:bg-[#024240] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {processReturnMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+                  Process
                 </button>
               </div>
             </motion.div>
