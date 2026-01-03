@@ -27,6 +27,7 @@ import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminCategories from "./pages/admin/Categories";
 import AdminProducts from "./pages/admin/Products";
+import AdminOrders from "./pages/admin/Orders";
 import AdminDiscounts from "./pages/admin/Discounts";
 
 function HomePage() {
@@ -97,6 +98,7 @@ function App() {
           <Route index element={<AdminDashboard />} />
           <Route path="categories" element={<AdminCategories />} />
           <Route path="products" element={<AdminProducts />} />
+          <Route path="orders" element={<AdminOrders />} />
           <Route path="discounts" element={<AdminDiscounts />} />
         </Route>
       </Routes>
