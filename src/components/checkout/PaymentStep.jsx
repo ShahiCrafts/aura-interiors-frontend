@@ -1,7 +1,6 @@
 import { CreditCard, Truck, Check, Shield } from "lucide-react";
 import useCheckoutStore from "../../store/checkoutStore";
 
-// eSewa Logo Component
 const EsewaLogo = () => (
   <div className="w-12 h-12 rounded-full bg-[#60BB46] flex items-center justify-center">
     <span className="text-white font-bold text-xs">eSewa</span>
@@ -23,9 +22,7 @@ export default function PaymentStep() {
         </h2>
       </div>
 
-      {/* Payment Methods */}
       <div className="space-y-3">
-        {/* eSewa Option */}
         <button
           type="button"
           onClick={() => setPaymentMethod("esewa")}
@@ -37,9 +34,13 @@ export default function PaymentStep() {
         >
           <EsewaLogo />
           <div className="flex-1">
-            <p className={`font-medium font-dm-sans ${
-              paymentMethod === "esewa" ? "text-neutral-900" : "text-neutral-900"
-            }`}>
+            <p
+              className={`font-medium font-dm-sans ${
+                paymentMethod === "esewa"
+                  ? "text-neutral-900"
+                  : "text-neutral-900"
+              }`}
+            >
               eSewa
             </p>
             <p className="text-sm text-neutral-500 font-dm-sans">
@@ -53,7 +54,6 @@ export default function PaymentStep() {
           )}
         </button>
 
-        {/* Credit/Debit Card Option */}
         <button
           type="button"
           onClick={() => setPaymentMethod("card")}
@@ -63,10 +63,17 @@ export default function PaymentStep() {
               : "border-neutral-200 hover:border-neutral-300"
           }`}
         >
-          <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-            paymentMethod === "card" ? "bg-teal-100" : "bg-neutral-100"
-          }`}>
-            <CreditCard size={24} className={paymentMethod === "card" ? "text-teal-600" : "text-neutral-500"} />
+          <div
+            className={`w-12 h-12 rounded-full flex items-center justify-center ${
+              paymentMethod === "card" ? "bg-teal-100" : "bg-neutral-100"
+            }`}
+          >
+            <CreditCard
+              size={24}
+              className={
+                paymentMethod === "card" ? "text-teal-600" : "text-neutral-500"
+              }
+            />
           </div>
           <div className="flex-1">
             <p className="font-medium text-neutral-900 font-dm-sans">
@@ -83,7 +90,6 @@ export default function PaymentStep() {
           )}
         </button>
 
-        {/* Cash on Delivery Option */}
         <button
           type="button"
           onClick={() => setPaymentMethod("cod")}
@@ -93,10 +99,17 @@ export default function PaymentStep() {
               : "border-neutral-200 hover:border-neutral-300"
           }`}
         >
-          <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-            paymentMethod === "cod" ? "bg-teal-100" : "bg-neutral-100"
-          }`}>
-            <Truck size={24} className={paymentMethod === "cod" ? "text-teal-600" : "text-neutral-500"} />
+          <div
+            className={`w-12 h-12 rounded-full flex items-center justify-center ${
+              paymentMethod === "cod" ? "bg-teal-100" : "bg-neutral-100"
+            }`}
+          >
+            <Truck
+              size={24}
+              className={
+                paymentMethod === "cod" ? "text-teal-600" : "text-neutral-500"
+              }
+            />
           </div>
           <div className="flex-1">
             <p className="font-medium text-neutral-900 font-dm-sans">
@@ -114,21 +127,23 @@ export default function PaymentStep() {
         </button>
       </div>
 
-      {/* Secure Payment Notice */}
       {(paymentMethod === "esewa" || paymentMethod === "card") && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
           <div className="flex items-start gap-3">
-            <Shield size={20} className="text-amber-600 flex-shrink-0 mt-0.5" />
+            <Shield size={20} className="text-amber-600 shrink-0 mt-0.5" />
             <div>
-              <p className="font-medium text-amber-800 font-dm-sans">Secure Payment</p>
+              <p className="font-medium text-amber-800 font-dm-sans">
+                Secure Payment
+              </p>
               <p className="text-sm text-amber-700 font-dm-sans mt-1">
-                Your payment information is encrypted and secure. You'll be redirected to {paymentMethod === "esewa" ? "eSewa" : "Stripe"} to complete your payment.
+                Your payment information is encrypted and secure. You'll be
+                redirected to {paymentMethod === "esewa" ? "eSewa" : "Stripe"}{" "}
+                to complete your payment.
               </p>
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 }

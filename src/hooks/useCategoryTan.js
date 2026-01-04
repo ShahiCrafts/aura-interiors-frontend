@@ -1,15 +1,14 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import categoryApi from '../store/api/categoryApi';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import categoryApi from "../store/api/categoryApi";
 
 const CATEGORY_KEYS = {
-  all: ['categories'],
-  list: (params) => [...CATEGORY_KEYS.all, 'list', params],
-  tree: () => [...CATEGORY_KEYS.all, 'tree'],
-  detail: (id) => [...CATEGORY_KEYS.all, 'detail', id],
-  products: (id, params) => [...CATEGORY_KEYS.all, 'products', id, params],
+  all: ["categories"],
+  list: (params) => [...CATEGORY_KEYS.all, "list", params],
+  tree: () => [...CATEGORY_KEYS.all, "tree"],
+  detail: (id) => [...CATEGORY_KEYS.all, "detail", id],
+  products: (id, params) => [...CATEGORY_KEYS.all, "products", id, params],
 };
 
-// Get all categories
 export const useCategories = (params = {}) => {
   return useQuery({
     queryKey: CATEGORY_KEYS.list(params),
@@ -17,7 +16,6 @@ export const useCategories = (params = {}) => {
   });
 };
 
-// Get category tree
 export const useCategoryTree = () => {
   return useQuery({
     queryKey: CATEGORY_KEYS.tree(),
@@ -25,7 +23,6 @@ export const useCategoryTree = () => {
   });
 };
 
-// Get single category
 export const useCategory = (id, options = {}) => {
   return useQuery({
     queryKey: CATEGORY_KEYS.detail(id),
@@ -35,7 +32,6 @@ export const useCategory = (id, options = {}) => {
   });
 };
 
-// Get category products
 export const useCategoryProducts = (id, params = {}) => {
   return useQuery({
     queryKey: CATEGORY_KEYS.products(id, params),
@@ -44,7 +40,6 @@ export const useCategoryProducts = (id, params = {}) => {
   });
 };
 
-// Create category mutation
 export const useCreateCategory = () => {
   const queryClient = useQueryClient();
 
@@ -56,7 +51,6 @@ export const useCreateCategory = () => {
   });
 };
 
-// Update category mutation
 export const useUpdateCategory = () => {
   const queryClient = useQueryClient();
 
@@ -69,7 +63,6 @@ export const useUpdateCategory = () => {
   });
 };
 
-// Delete category mutation
 export const useDeleteCategory = () => {
   const queryClient = useQueryClient();
 

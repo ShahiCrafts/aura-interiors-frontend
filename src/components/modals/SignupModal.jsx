@@ -20,7 +20,6 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
   const { signIn } = useAuthStore();
   const { mutate: signup, isPending, isError, error } = useSignup();
 
-  // Lock body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -68,13 +67,13 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
   };
 
   const handleGoogleSignup = () => {
-    const backendUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
+    const backendUrl =
+      import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
     window.location.href = `${backendUrl}/auth/google`;
   };
 
   if (!isOpen) return null;
 
-  // Show only verification modal after signup success
   if (showVerificationModal) {
     return (
       <EmailVerificationModal
@@ -87,23 +86,19 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
   }
 
   return (
-    <div className="fixed inset-0 z-[100] overflow-y-auto">
-      {/* Backdrop */}
+    <div className="fixed inset-0 z-100 overflow-y-auto">
       <div
         className="fixed inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Modal Container */}
       <div className="min-h-full flex items-center justify-center p-4 sm:p-6">
-        {/* Modal */}
         <div
           className="relative w-full max-w-[420px] bg-white rounded-2xl shadow-2xl p-6 sm:p-8 animate-fadeInScale font-dm-sans"
           style={{
             animation: "fadeInScale 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards",
           }}
         >
-          {/* Close Button */}
           <button
             onClick={onClose}
             className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-100 transition-colors"
@@ -111,7 +106,6 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
             <X size={20} className="text-neutral-500" />
           </button>
 
-          {/* Header */}
           <div className="mb-5">
             <h2 className="text-2xl sm:text-3xl font-playfair text-neutral-900">
               <span className="font-bold">Create your</span>{" "}
@@ -122,9 +116,7 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
             </p>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-3">
-            {/* Name Fields */}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
@@ -156,7 +148,6 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
               </div>
             </div>
 
-            {/* Email Field */}
             <div>
               <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
                 Email Address <span className="text-red-500">*</span>
@@ -178,7 +169,6 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
               </div>
             </div>
 
-            {/* Password Field */}
             <div>
               <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
                 Password <span className="text-red-500">*</span>
@@ -207,7 +197,6 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
               </div>
             </div>
 
-            {/* Terms Checkbox */}
             <div className="flex items-start gap-3">
               <input
                 type="checkbox"
@@ -219,23 +208,27 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
               />
               <label className="text-sm text-neutral-700 font-dm-sans leading-relaxed">
                 I agree to the{" "}
-                <a href="/terms" className="text-teal-700 font-semibold hover:underline">
+                <a
+                  href="/terms"
+                  className="text-teal-700 font-semibold hover:underline"
+                >
                   Terms of Service
                 </a>{" "}
                 and{" "}
-                <a href="/privacy" className="text-teal-700 font-semibold hover:underline">
+                <a
+                  href="/privacy"
+                  className="text-teal-700 font-semibold hover:underline"
+                >
                   Privacy Policy
                 </a>{" "}
                 of Aura Interiors.
               </label>
             </div>
 
-            {/* Error Message */}
             {isError && (
               <p className="text-red-500 text-sm font-dm-sans">{error}</p>
             )}
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={isPending}
@@ -245,7 +238,6 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
             </button>
           </form>
 
-          {/* Divider */}
           <div className="flex items-center gap-3 my-4">
             <div className="flex-1 h-px bg-neutral-200" />
             <span className="text-sm text-neutral-400 font-dm-sans">
@@ -254,7 +246,6 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
             <div className="flex-1 h-px bg-neutral-200" />
           </div>
 
-          {/* Google Button */}
           <button
             type="button"
             onClick={handleGoogleSignup}
@@ -283,7 +274,6 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
             </span>
           </button>
 
-          {/* Login Link */}
           <p className="text-center mt-4 text-neutral-500 font-dm-sans">
             Already have an account?{" "}
             <button
@@ -297,7 +287,6 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
         </div>
       </div>
 
-      {/* Animation Keyframes */}
       <style>{`
         @keyframes fadeInScale {
           from {

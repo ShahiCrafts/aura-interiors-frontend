@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Star, Check } from "lucide-react";
 
-// Color options matching the design
 const colorOptions = [
   { name: "Black", hex: "#1a1a1a" },
   { name: "Brown", hex: "#8B4513" },
@@ -11,7 +10,6 @@ const colorOptions = [
   { name: "Navy", hex: "#1e3a5f" },
 ];
 
-// Material options matching the design
 const materialOptions = [
   { name: "Velvet", count: 12 },
   { name: "Leather", count: 19 },
@@ -36,8 +34,12 @@ export default function FilterSidebar({
   onResetFilters,
   materialCounts = {},
 }) {
-  const [localMinPrice, setLocalMinPrice] = useState(selectedPriceRange.min || 5000);
-  const [localMaxPrice, setLocalMaxPrice] = useState(selectedPriceRange.max || 200000);
+  const [localMinPrice, setLocalMinPrice] = useState(
+    selectedPriceRange.min || 5000
+  );
+  const [localMaxPrice, setLocalMaxPrice] = useState(
+    selectedPriceRange.max || 200000
+  );
 
   const handleCategoryToggle = (categorySlug) => {
     if (selectedCategories.includes(categorySlug)) {
@@ -73,13 +75,15 @@ export default function FilterSidebar({
     }
   };
 
-  // Flatten categories
   const flattenCategories = (cats, depth = 0) => {
     let result = [];
     cats.forEach((cat) => {
       result.push({ ...cat, depth });
       if (cat.subcategories?.length > 0) {
-        result = [...result, ...flattenCategories(cat.subcategories, depth + 1)];
+        result = [
+          ...result,
+          ...flattenCategories(cat.subcategories, depth + 1),
+        ];
       }
     });
     return result;
@@ -87,9 +91,11 @@ export default function FilterSidebar({
 
   const flatCategories = flattenCategories(categories);
 
-  // Custom Checkbox
   const Checkbox = ({ checked, onChange, label, count }) => (
-    <label className="flex items-center gap-3 py-1.5 cursor-pointer group" onClick={onChange}>
+    <label
+      className="flex items-center gap-3 py-1.5 cursor-pointer group"
+      onClick={onChange}
+    >
       <div
         className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
           checked
@@ -99,7 +105,9 @@ export default function FilterSidebar({
       >
         {checked && <Check size={14} className="text-white" strokeWidth={3} />}
       </div>
-      <span className="text-sm text-neutral-700 font-dm-sans flex-1">{label}</span>
+      <span className="text-sm text-neutral-700 font-dm-sans flex-1">
+        {label}
+      </span>
       {count !== undefined && (
         <span className="text-sm text-neutral-400 font-dm-sans">{count}</span>
       )}
@@ -108,7 +116,6 @@ export default function FilterSidebar({
 
   return (
     <div className="space-y-6">
-      {/* Categories Section */}
       <div>
         <h3 className="text-base font-semibold text-neutral-900 font-dm-sans mb-3">
           Categories
@@ -126,7 +133,6 @@ export default function FilterSidebar({
         </div>
       </div>
 
-      {/* Price Range Section */}
       <div>
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-base font-semibold text-neutral-900 font-dm-sans">
@@ -140,7 +146,6 @@ export default function FilterSidebar({
           </button>
         </div>
 
-        {/* Price Inputs */}
         <div className="flex items-center gap-3 mb-4">
           <div className="flex-1">
             <label className="text-xs text-neutral-500 font-dm-sans mb-1 block">
@@ -150,7 +155,7 @@ export default function FilterSidebar({
               type="text"
               value={`NRs. ${localMinPrice.toLocaleString()}`}
               onChange={(e) => {
-                const val = e.target.value.replace(/[^0-9]/g, '');
+                const val = e.target.value.replace(/[^0-9]/g, "");
                 setLocalMinPrice(Number(val) || 0);
               }}
               onBlur={handlePriceSubmit}
@@ -165,7 +170,7 @@ export default function FilterSidebar({
               type="text"
               value={`NRs. ${localMaxPrice.toLocaleString()}`}
               onChange={(e) => {
-                const val = e.target.value.replace(/[^0-9]/g, '');
+                const val = e.target.value.replace(/[^0-9]/g, "");
                 setLocalMaxPrice(Number(val) || 0);
               }}
               onBlur={handlePriceSubmit}
@@ -174,14 +179,17 @@ export default function FilterSidebar({
           </div>
         </div>
 
-        {/* Slider */}
         <div className="relative px-1">
           <div className="h-1 bg-neutral-200 rounded-full">
             <div
               className="h-1 bg-teal-700 rounded-full"
               style={{
-                width: `${((localMaxPrice - localMinPrice) / (priceRange.max - priceRange.min)) * 100}%`,
-                marginLeft: `${(localMinPrice / priceRange.max) * 100}%`
+                width: `${
+                  ((localMaxPrice - localMinPrice) /
+                    (priceRange.max - priceRange.min)) *
+                  100
+                }%`,
+                marginLeft: `${(localMinPrice / priceRange.max) * 100}%`,
               }}
             />
           </div>
@@ -197,12 +205,14 @@ export default function FilterSidebar({
           />
           <div
             className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-teal-700 rounded-full shadow-sm pointer-events-none"
-            style={{ left: `${(localMaxPrice / priceRange.max) * 100}%`, marginLeft: '-8px' }}
+            style={{
+              left: `${(localMaxPrice / priceRange.max) * 100}%`,
+              marginLeft: "-8px",
+            }}
           />
         </div>
       </div>
 
-      {/* Colors Section */}
       <div>
         <h3 className="text-base font-semibold text-neutral-900 font-dm-sans mb-3">
           Colors
@@ -226,7 +236,6 @@ export default function FilterSidebar({
         </div>
       </div>
 
-      {/* Materials Section */}
       <div>
         <h3 className="text-base font-semibold text-neutral-900 font-dm-sans mb-3">
           Materials
@@ -244,7 +253,6 @@ export default function FilterSidebar({
         </div>
       </div>
 
-      {/* Rating Section */}
       <div>
         <h3 className="text-base font-semibold text-neutral-900 font-dm-sans mb-3">
           Rating
@@ -253,11 +261,11 @@ export default function FilterSidebar({
           {[4, 3, 2, 1].map((rating) => (
             <button
               key={rating}
-              onClick={() => onRatingChange(selectedRating === rating ? 0 : rating)}
+              onClick={() =>
+                onRatingChange(selectedRating === rating ? 0 : rating)
+              }
               className={`flex items-center gap-2 w-full py-2 px-2 rounded-lg transition-all ${
-                selectedRating === rating
-                  ? "bg-teal-50"
-                  : "hover:bg-neutral-50"
+                selectedRating === rating ? "bg-teal-50" : "hover:bg-neutral-50"
               }`}
             >
               <div className="flex items-center">
@@ -273,7 +281,15 @@ export default function FilterSidebar({
                   />
                 ))}
               </div>
-              <span className={`text-sm font-dm-sans ${selectedRating === rating ? "text-teal-700 font-medium" : "text-neutral-600"}`}>{rating} & up</span>
+              <span
+                className={`text-sm font-dm-sans ${
+                  selectedRating === rating
+                    ? "text-teal-700 font-medium"
+                    : "text-neutral-600"
+                }`}
+              >
+                {rating} & up
+              </span>
             </button>
           ))}
         </div>

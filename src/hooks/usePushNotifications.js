@@ -5,7 +5,8 @@
  */
 
 import { useEffect, useState, useCallback } from "react";
-import NotificationService from "../../services/notificationService";
+import NotificationService from "../services/notificationService";
+import { getFCMToken, onForegroundMessage } from "../services/firebase";
 
 const usePushNotifications = (token, user) => {
   const [pushSupported, setPushSupported] = useState(false);
@@ -91,15 +92,14 @@ const usePushNotifications = (token, user) => {
       // Get device ID (unique per browser)
       const deviceId = await getOrCreateDeviceId();
 
-      // Request FCM token
-      // Note: This requires Firebase to be initialized on the page
-      // const messaging = firebase.messaging();
-      // const fcmToken = await messaging.getToken({
-      //   vapidKey: process.env.REACT_APP_FIREBASE_VAPID_KEY,
-      // });
-
-      // For now, generate a mock token (in production, use Firebase)
-      const fcmToken = generateMockToken();
+      // Get real FCM token from Firebase
+      let fcmToken = await getFCMToken();
+      
+      // Fallback to mock token if Firebase not configured
+      if (!fcmToken) {
+        console.warn("Using mock token - configure Firebase for real push notifications");
+        fcmToken = generateMockToken();
+      }
 
       // Get browser info
       const metadata = {

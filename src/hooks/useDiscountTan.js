@@ -8,9 +8,6 @@ const DISCOUNT_KEYS = {
   applied: ["discount", "applied"],
 };
 
-// ========== ADMIN HOOKS ==========
-
-// Get all discounts (Admin)
 export const useDiscounts = (params = {}) => {
   return useQuery({
     queryKey: DISCOUNT_KEYS.list(params),
@@ -64,8 +61,6 @@ export const useDeleteDiscount = () => {
     },
   });
 };
-
-// ========== USER HOOKS ==========
 
 // Apply discount to cart (User)
 export const useApplyDiscount = () => {

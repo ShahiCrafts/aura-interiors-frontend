@@ -27,8 +27,7 @@ export default function Philosophy() {
     {
       icon: Lightbulb,
       title: "Innovation",
-      description:
-        "AR technology that transforms how you visualize furniture",
+      description: "AR technology that transforms how you visualize furniture",
     },
     {
       icon: Compass,
@@ -48,7 +47,6 @@ export default function Philosophy() {
       className="bg-linear-to-b from-zinc-50 to-white py-16 sm:py-20 px-4 sm:px-6 md:px-12 lg:px-20 font-dm-sans"
     >
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div
           className={`text-center mb-10 sm:mb-14 transition-all duration-700 ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
@@ -72,7 +70,6 @@ export default function Philosophy() {
           </p>
         </div>
 
-        {/* Values Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 lg:gap-12 mb-12 sm:mb-16">
           {values.map((value, index) => {
             const Icon = value.icon;
@@ -80,21 +77,22 @@ export default function Philosophy() {
               <div
                 key={index}
                 className={`flex flex-col items-center text-center transition-all duration-700 hover:-translate-y-2 group ${
-                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+                  isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-12"
                 }`}
-                style={{ transitionDelay: isVisible ? `${200 + index * 150}ms` : "0ms" }}
+                style={{
+                  transitionDelay: isVisible ? `${200 + index * 150}ms` : "0ms",
+                }}
               >
-                {/* Icon Circle */}
                 <div className="w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 rounded-full bg-teal-50 border border-teal-200/30 flex items-center justify-center mb-4 transition-transform duration-500">
                   <Icon className="w-7 h-7 sm:w-8 sm:h-8 text-teal-700 transition-transform duration-500 group-hover:rotate-8" />
                 </div>
 
-                {/* Title */}
                 <h3 className="text-lg sm:text-xl md:text-2xl font-playfair font-medium text-gray-950 mb-2">
                   {value.title}
                 </h3>
 
-                {/* Description */}
                 <p className="text-gray-700 leading-relaxed text-sm sm:text-base md:text-lg max-w-xs font-dm-sans">
                   {value.description}
                 </p>
@@ -103,7 +101,6 @@ export default function Philosophy() {
           })}
         </div>
 
-        {/* Quote Section */}
         <div
           className={`flex items-center justify-center gap-8 max-w-4xl mx-auto relative px-4 transition-all duration-700 ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"

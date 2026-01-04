@@ -11,8 +11,18 @@ import {
 import ChangePasswordModal from "../modals/ChangePasswordModal";
 
 const months = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
 const days = Array.from({ length: 31 }, (_, i) => i + 1);
@@ -26,8 +36,10 @@ export default function PersonalInformation() {
 
   const { data, isLoading } = useProfile();
   const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfile();
-  const { mutate: updateAvatar, isPending: isUploadingAvatar } = useUpdateAvatar();
-  const { mutate: removeAvatar, isPending: isRemovingAvatar } = useRemoveAvatar();
+  const { mutate: updateAvatar, isPending: isUploadingAvatar } =
+    useUpdateAvatar();
+  const { mutate: removeAvatar, isPending: isRemovingAvatar } =
+    useRemoveAvatar();
 
   const user = data?.data?.user;
 
@@ -173,13 +185,15 @@ export default function PersonalInformation() {
   };
 
   const getInitials = (firstName, lastName) => {
-    return `${firstName?.charAt(0) || ""}${lastName?.charAt(0) || ""}`.toUpperCase();
+    return `${firstName?.charAt(0) || ""}${
+      lastName?.charAt(0) || ""
+    }`.toUpperCase();
   };
 
   const getAvatarUrl = () => {
     if (user?.avatar) {
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
-      // Extract server base URL (remove /api/v1 or similar path)
+      const baseUrl =
+        import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
       const serverUrl = baseUrl.split("/api")[0];
       return `${serverUrl}/uploads/avatars/${user.avatar}`;
     }
@@ -200,7 +214,6 @@ export default function PersonalInformation() {
 
   return (
     <div className="space-y-6">
-      {/* Profile Picture Section */}
       <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6 sm:p-8">
         <div className="mb-6">
           <h2 className="text-xl font-playfair text-neutral-900">
@@ -213,7 +226,6 @@ export default function PersonalInformation() {
         </div>
 
         <div className="flex items-center gap-6">
-          {/* Avatar */}
           <div className="relative">
             {getAvatarUrl() ? (
               <img
@@ -229,13 +241,13 @@ export default function PersonalInformation() {
             )}
           </div>
 
-          {/* Upload Info & Buttons */}
           <div className="flex-1">
             <p className="font-medium text-neutral-800 font-dm-sans mb-1">
               Upload a new photo
             </p>
             <p className="text-sm text-neutral-500 font-dm-sans mb-3">
-              Recommended: Square image, at least 400x400 pixels. Max file size: 5MB
+              Recommended: Square image, at least 400x400 pixels. Max file size:
+              5MB
             </p>
             <div className="flex items-center gap-3">
               <input
@@ -268,7 +280,6 @@ export default function PersonalInformation() {
         </div>
       </div>
 
-      {/* Personal Information Section */}
       <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6 sm:p-8">
         <div className="mb-6">
           <h2 className="text-xl font-playfair text-neutral-900">
@@ -311,7 +322,6 @@ export default function PersonalInformation() {
             </div>
           </div>
 
-          {/* Email & Phone */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
@@ -362,9 +372,7 @@ export default function PersonalInformation() {
             </div>
           </div>
 
-          {/* Gender & Date of Birth */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Gender */}
             <div>
               <label className="block text-sm font-medium text-neutral-800 mb-2 font-dm-sans">
                 Gender
@@ -392,7 +400,6 @@ export default function PersonalInformation() {
               </div>
             </div>
 
-            {/* Date of Birth */}
             <div>
               <label className="block text-sm font-medium text-neutral-800 mb-2 font-dm-sans">
                 Date of Birth
@@ -441,7 +448,6 @@ export default function PersonalInformation() {
             </div>
           </div>
 
-          {/* Buttons */}
           <div className="flex justify-end gap-3 pt-4">
             <button
               type="button"
@@ -463,7 +469,6 @@ export default function PersonalInformation() {
         </form>
       </div>
 
-      {/* Password & Security Section */}
       <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6 sm:p-8">
         <div className="mb-6">
           <h2 className="text-xl font-playfair text-neutral-900">
@@ -481,9 +486,14 @@ export default function PersonalInformation() {
               <Lock size={20} className="text-neutral-500" />
             </div>
             <div>
-              <p className="font-medium text-neutral-800 font-dm-sans">Password</p>
+              <p className="font-medium text-neutral-800 font-dm-sans">
+                Password
+              </p>
               <p className="text-sm text-neutral-500 font-dm-sans">
-                Last changed {user?.passwordChangedAt ? getTimeAgo(user.passwordChangedAt) : "recently"}
+                Last changed{" "}
+                {user?.passwordChangedAt
+                  ? getTimeAgo(user.passwordChangedAt)
+                  : "recently"}
               </p>
             </div>
           </div>
@@ -497,7 +507,6 @@ export default function PersonalInformation() {
         </div>
       </div>
 
-      {/* Change Password Modal */}
       <ChangePasswordModal
         isOpen={changePasswordModalOpen}
         onClose={() => setChangePasswordModalOpen(false)}
@@ -515,7 +524,8 @@ function getTimeAgo(date) {
   const diffYears = Math.floor(diffDays / 365);
 
   if (diffYears > 0) return `${diffYears} year${diffYears > 1 ? "s" : ""} ago`;
-  if (diffMonths > 0) return `${diffMonths} month${diffMonths > 1 ? "s" : ""} ago`;
+  if (diffMonths > 0)
+    return `${diffMonths} month${diffMonths > 1 ? "s" : ""} ago`;
   if (diffDays > 0) return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
   return "today";
 }

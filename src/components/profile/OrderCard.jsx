@@ -84,25 +84,21 @@ export default function OrderCard({ order, onCancelOrder, onRequestReturn }) {
   const canCancel = ["pending", "confirmed"].includes(order.orderStatus);
   const canTrack = !isDelivered && !isCancelled;
 
-  // Return request logic
   const returnStatus = order.returnRequest?.status;
   const hasReturnRequest = returnStatus && returnStatus !== "none";
   const canRequestReturn = isDelivered && !hasReturnRequest;
 
-  // Check if return window is still open (7 days)
   const deliveredDate = order.deliveredAt || order.updatedAt;
   const daysSinceDelivery = deliveredDate
     ? Math.floor((Date.now() - new Date(deliveredDate)) / (1000 * 60 * 60 * 24))
     : 0;
   const returnWindowOpen = daysSinceDelivery <= 7;
 
-  // Show only first 2 items, rest expandable
   const visibleItems = showAllItems ? order.items : order.items?.slice(0, 2);
   const hasMoreItems = order.items?.length > 2;
 
   return (
     <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm overflow-hidden">
-      {/* Order Header */}
       <div className="px-6 py-4 border-b border-neutral-100 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-teal-50 rounded-xl flex items-center justify-center">
@@ -129,9 +125,7 @@ export default function OrderCard({ order, onCancelOrder, onRequestReturn }) {
           </span>
           {hasReturnRequest && (
             <span
-              className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                RETURN_STATUS_COLORS[returnStatus]
-              }`}
+              className={`px-3 py-1 rounded-full text-xs font-medium border ${RETURN_STATUS_COLORS[returnStatus]}`}
             >
               {RETURN_STATUS_LABELS[returnStatus]}
             </span>
@@ -144,7 +138,6 @@ export default function OrderCard({ order, onCancelOrder, onRequestReturn }) {
         </div>
       </div>
 
-      {/* Order Items */}
       <div className="px-6 py-4">
         <div className="space-y-4">
           {visibleItems?.map((item, index) => (
@@ -181,7 +174,6 @@ export default function OrderCard({ order, onCancelOrder, onRequestReturn }) {
           ))}
         </div>
 
-        {/* Show More Items Button */}
         {hasMoreItems && (
           <button
             onClick={() => setShowAllItems(!showAllItems)}
@@ -203,7 +195,6 @@ export default function OrderCard({ order, onCancelOrder, onRequestReturn }) {
         )}
       </div>
 
-      {/* Order Tracking Timeline */}
       {showTracking && !isCancelled && (
         <div className="px-6 py-4 bg-neutral-50 border-t border-neutral-100">
           <div className="flex items-center gap-2 mb-2">
@@ -216,7 +207,6 @@ export default function OrderCard({ order, onCancelOrder, onRequestReturn }) {
         </div>
       )}
 
-      {/* Order Footer */}
       <div className="px-6 py-4 bg-neutral-50 border-t border-neutral-100 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <span className="text-sm text-neutral-500 font-dm-sans">Total:</span>

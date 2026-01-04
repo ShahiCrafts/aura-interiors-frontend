@@ -19,7 +19,6 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
   const { signIn } = useAuthStore();
   const { mutate: login, isPending, isError, error } = useLogin();
 
-  // Lock body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -51,7 +50,6 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
           toast.success(`Welcome back, ${user.firstName}!`);
           onClose();
 
-          // Redirect admin users to admin dashboard
           if (user.role === "admin") {
             navigate("/admin");
           }
@@ -64,30 +62,27 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
   };
 
   const handleGoogleLogin = () => {
-    const backendUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
+    const backendUrl =
+      import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
     window.location.href = `${backendUrl}/auth/google`;
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] overflow-y-auto">
-      {/* Backdrop */}
+    <div className="fixed inset-0 z-100 overflow-y-auto">
       <div
         className="fixed inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Modal Container */}
       <div className="min-h-full flex items-center justify-center p-4 sm:p-6">
-        {/* Modal */}
         <div
           className="relative w-full max-w-[420px] bg-white rounded-2xl shadow-2xl p-6 sm:p-8 animate-fadeInScale font-dm-sans"
           style={{
             animation: "fadeInScale 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards",
           }}
         >
-          {/* Close Button */}
           <button
             onClick={onClose}
             className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-100 transition-colors"
@@ -95,7 +90,6 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
             <X size={20} className="text-neutral-500" />
           </button>
 
-          {/* Header */}
           <div className="mb-6">
             <h2 className="text-2xl sm:text-3xl font-playfair text-neutral-900">
               <span className="font-bold">Welcome</span>{" "}
@@ -106,9 +100,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
             </p>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Email Field */}
             <div>
               <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
                 Email Address <span className="text-red-500">*</span>
@@ -130,7 +122,6 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
               </div>
             </div>
 
-            {/* Password Field */}
             <div>
               <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
                 Password <span className="text-red-500">*</span>
@@ -159,7 +150,6 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
               </div>
             </div>
 
-            {/* Remember Me & Forgot Password */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <input
@@ -182,12 +172,10 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
               </button>
             </div>
 
-            {/* Error Message */}
             {isError && (
               <p className="text-red-500 text-sm font-dm-sans">{error}</p>
             )}
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={isPending}
@@ -197,7 +185,6 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
             </button>
           </form>
 
-          {/* Divider */}
           <div className="flex items-center gap-3 my-5">
             <div className="flex-1 h-px bg-neutral-200" />
             <span className="text-sm text-neutral-400 font-dm-sans">
@@ -206,7 +193,6 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
             <div className="flex-1 h-px bg-neutral-200" />
           </div>
 
-          {/* Google Button */}
           <button
             type="button"
             onClick={handleGoogleLogin}
@@ -235,7 +221,6 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
             </span>
           </button>
 
-          {/* Signup Link */}
           <p className="text-center mt-5 text-neutral-500 font-dm-sans">
             Don't have an account?{" "}
             <button
@@ -249,7 +234,6 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
         </div>
       </div>
 
-      {/* Animation Keyframes */}
       <style>{`
         @keyframes fadeInScale {
           from {
@@ -263,7 +247,6 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
         }
       `}</style>
 
-      {/* Forgot Password Modal */}
       <ForgotPasswordModal
         isOpen={showForgotPassword}
         onClose={() => setShowForgotPassword(false)}

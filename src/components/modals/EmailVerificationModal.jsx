@@ -1,20 +1,27 @@
 import { useState, useEffect, useRef } from "react";
 import { X, Mail } from "lucide-react";
 import { toast } from "../ui/Toast";
-import { useVerifyEmail, useResendVerificationCode } from "../../hooks/useSignupTan";
+import {
+  useVerifyEmail,
+  useResendVerificationCode,
+} from "../../hooks/useSignupTan";
 
-export default function EmailVerificationModal({ isOpen, onClose, email, onSuccess }) {
+export default function EmailVerificationModal({
+  isOpen,
+  onClose,
+  email,
+  onSuccess,
+}) {
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const inputRefs = useRef([]);
 
   const { mutate: verifyEmail, isPending, isError, error } = useVerifyEmail();
-  const { mutate: resendCode, isPending: isResending } = useResendVerificationCode();
+  const { mutate: resendCode, isPending: isResending } =
+    useResendVerificationCode();
 
-  // Lock body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
-      // Focus first input when modal opens
       setTimeout(() => inputRefs.current[0]?.focus(), 100);
     } else {
       document.body.style.overflow = "";
@@ -24,7 +31,6 @@ export default function EmailVerificationModal({ isOpen, onClose, email, onSucce
     };
   }, [isOpen]);
 
-  // Reset code when modal opens
   useEffect(() => {
     if (isOpen) {
       setCode(["", "", "", "", "", ""]);
@@ -32,21 +38,18 @@ export default function EmailVerificationModal({ isOpen, onClose, email, onSucce
   }, [isOpen]);
 
   const handleChange = (index, value) => {
-    // Only allow numbers
     if (value && !/^\d$/.test(value)) return;
 
     const newCode = [...code];
     newCode[index] = value;
     setCode(newCode);
 
-    // Auto-focus next input
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
   };
 
   const handleKeyDown = (index, e) => {
-    // Handle backspace
     if (e.key === "Backspace" && !code[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
@@ -63,7 +66,6 @@ export default function EmailVerificationModal({ isOpen, onClose, email, onSucce
     }
     setCode(newCode);
 
-    // Focus last filled input or next empty one
     const focusIndex = Math.min(pastedData.length, 5);
     inputRefs.current[focusIndex]?.focus();
   };
@@ -101,23 +103,19 @@ export default function EmailVerificationModal({ isOpen, onClose, email, onSucce
   const isCodeComplete = code.every((digit) => digit !== "");
 
   return (
-    <div className="fixed inset-0 z-[110] overflow-y-auto">
-      {/* Backdrop */}
+    <div className="fixed inset-0 z-110 overflow-y-auto">
       <div
         className="fixed inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Modal Container */}
       <div className="min-h-full flex items-center justify-center p-4 sm:p-6">
-        {/* Modal */}
         <div
           className="relative w-full max-w-[420px] bg-white rounded-2xl shadow-2xl p-6 sm:p-8 animate-fadeInScale"
           style={{
             animation: "fadeInScale 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards",
           }}
         >
-          {/* Close Button */}
           <button
             onClick={onClose}
             className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-100 transition-colors"
@@ -125,7 +123,6 @@ export default function EmailVerificationModal({ isOpen, onClose, email, onSucce
             <X size={20} className="text-neutral-500" />
           </button>
 
-          {/* Header */}
           <div className="text-center mb-6">
             <div className="w-16 h-16 bg-teal-50 rounded-full flex items-center justify-center mx-auto mb-4">
               <Mail size={32} className="text-teal-700" />
@@ -142,9 +139,7 @@ export default function EmailVerificationModal({ isOpen, onClose, email, onSucce
             </p>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* OTP Input */}
             <div className="flex justify-center gap-2 sm:gap-3">
               {code.map((digit, index) => (
                 <input
@@ -162,12 +157,12 @@ export default function EmailVerificationModal({ isOpen, onClose, email, onSucce
               ))}
             </div>
 
-            {/* Error Message */}
             {isError && (
-              <p className="text-red-500 text-sm font-dm-sans text-center">{error}</p>
+              <p className="text-red-500 text-sm font-dm-sans text-center">
+                {error}
+              </p>
             )}
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={isPending || !isCodeComplete}
@@ -177,7 +172,6 @@ export default function EmailVerificationModal({ isOpen, onClose, email, onSucce
             </button>
           </form>
 
-          {/* Resend Code */}
           <p className="text-center mt-5 text-neutral-500 font-dm-sans">
             Didn't receive the code?{" "}
             <button
@@ -192,7 +186,6 @@ export default function EmailVerificationModal({ isOpen, onClose, email, onSucce
         </div>
       </div>
 
-      {/* Animation Keyframes */}
       <style>{`
         @keyframes fadeInScale {
           from {

@@ -3,9 +3,14 @@ import { Star, X, Loader2 } from "lucide-react";
 import { useCreateReview, useUpdateReview } from "../../hooks/useReviewTan";
 import { toast } from "../ui/Toast";
 
-export default function ReviewForm({ productId, existingReview, onClose, onSuccess }) {
+export default function ReviewForm({
+  productId,
+  existingReview,
+  onClose,
+  onSuccess,
+}) {
   const isEditing = !!existingReview;
-  
+
   const [rating, setRating] = useState(existingReview?.rating || 0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [title, setTitle] = useState(existingReview?.title || "");
@@ -19,11 +24,11 @@ export default function ReviewForm({ productId, existingReview, onClose, onSucce
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!rating) {
       newErrors.rating = "Please select a rating";
     }
-    
+
     if (!comment.trim()) {
       newErrors.comment = "Please write a review";
     } else if (comment.trim().length < 10) {
@@ -42,7 +47,7 @@ export default function ReviewForm({ productId, existingReview, onClose, onSucce
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -63,7 +68,9 @@ export default function ReviewForm({ productId, existingReview, onClose, onSucce
             onClose?.();
           },
           onError: (error) => {
-            toast.error(error?.response?.data?.message || "Failed to update review");
+            toast.error(
+              error?.response?.data?.message || "Failed to update review"
+            );
           },
         }
       );
@@ -77,7 +84,9 @@ export default function ReviewForm({ productId, existingReview, onClose, onSucce
             onClose?.();
           },
           onError: (error) => {
-            toast.error(error?.response?.data?.message || "Failed to submit review");
+            toast.error(
+              error?.response?.data?.message || "Failed to submit review"
+            );
           },
         }
       );
@@ -109,7 +118,6 @@ export default function ReviewForm({ productId, existingReview, onClose, onSucce
       </div>
 
       <form onSubmit={handleSubmit}>
-        {/* Rating */}
         <div className="mb-6">
           <label className="block text-sm font-medium text-neutral-700 mb-2 font-dm-sans">
             Your Rating *
@@ -143,11 +151,12 @@ export default function ReviewForm({ productId, existingReview, onClose, onSucce
             )}
           </div>
           {errors.rating && (
-            <p className="mt-1 text-sm text-red-500 font-dm-sans">{errors.rating}</p>
+            <p className="mt-1 text-sm text-red-500 font-dm-sans">
+              {errors.rating}
+            </p>
           )}
         </div>
 
-        {/* Title (Optional) */}
         <div className="mb-4">
           <label
             htmlFor="review-title"
@@ -165,14 +174,15 @@ export default function ReviewForm({ productId, existingReview, onClose, onSucce
             className="w-full px-4 py-3 border border-neutral-200 rounded-lg text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent font-dm-sans"
           />
           {errors.title && (
-            <p className="mt-1 text-sm text-red-500 font-dm-sans">{errors.title}</p>
+            <p className="mt-1 text-sm text-red-500 font-dm-sans">
+              {errors.title}
+            </p>
           )}
           <p className="mt-1 text-xs text-neutral-400 font-dm-sans text-right">
             {title.length}/100
           </p>
         </div>
 
-        {/* Comment */}
         <div className="mb-6">
           <label
             htmlFor="review-comment"
@@ -190,14 +200,15 @@ export default function ReviewForm({ productId, existingReview, onClose, onSucce
             className="w-full px-4 py-3 border border-neutral-200 rounded-lg text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none font-dm-sans"
           />
           {errors.comment && (
-            <p className="mt-1 text-sm text-red-500 font-dm-sans">{errors.comment}</p>
+            <p className="mt-1 text-sm text-red-500 font-dm-sans">
+              {errors.comment}
+            </p>
           )}
           <p className="mt-1 text-xs text-neutral-400 font-dm-sans text-right">
             {comment.length}/1000
           </p>
         </div>
 
-        {/* Submit Button */}
         <div className="flex gap-3">
           {onClose && (
             <button

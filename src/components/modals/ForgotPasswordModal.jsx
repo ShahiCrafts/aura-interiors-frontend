@@ -3,7 +3,11 @@ import { X, Mail, ArrowLeft } from "lucide-react";
 import { toast } from "../ui/Toast";
 import { useForgotPassword } from "../../hooks/usePasswordTan";
 
-export default function ForgotPasswordModal({ isOpen, onClose, onBackToLogin }) {
+export default function ForgotPasswordModal({
+  isOpen,
+  onClose,
+  onBackToLogin,
+}) {
   const [email, setEmail] = useState("");
   const [emailSent, setEmailSent] = useState(false);
 
@@ -38,23 +42,19 @@ export default function ForgotPasswordModal({ isOpen, onClose, onBackToLogin }) 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] overflow-y-auto">
-      {/* Backdrop */}
+    <div className="fixed inset-0 z-100 overflow-y-auto">
       <div
         className="fixed inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Modal Container */}
       <div className="min-h-full flex items-center justify-center p-4 sm:p-6">
-        {/* Modal */}
         <div
           className="relative w-full max-w-[420px] bg-white rounded-2xl shadow-2xl p-6 sm:p-8"
           style={{
             animation: "fadeInScale 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards",
           }}
         >
-          {/* Close Button */}
           <button
             onClick={onClose}
             className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-100 transition-colors"
@@ -64,7 +64,6 @@ export default function ForgotPasswordModal({ isOpen, onClose, onBackToLogin }) 
 
           {!emailSent ? (
             <>
-              {/* Header */}
               <div className="mb-6">
                 <button
                   onClick={onBackToLogin}
@@ -82,7 +81,6 @@ export default function ForgotPasswordModal({ isOpen, onClose, onBackToLogin }) 
                 </p>
               </div>
 
-              {/* Form */}
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
@@ -114,7 +112,6 @@ export default function ForgotPasswordModal({ isOpen, onClose, onBackToLogin }) 
               </form>
             </>
           ) : (
-            /* Success State */
             <div className="text-center py-4">
               <div className="w-16 h-16 bg-teal-50 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Mail size={32} className="text-teal-700" />
@@ -149,7 +146,6 @@ export default function ForgotPasswordModal({ isOpen, onClose, onBackToLogin }) 
         </div>
       </div>
 
-      {/* Animation Keyframes */}
       <style>{`
         @keyframes fadeInScale {
           from {

@@ -16,14 +16,13 @@ import {
 import { useCategoryTree } from "../hooks/useCategoryTan";
 import { useFeaturedProducts } from "../hooks/useProductTan";
 
-// Map category names/slugs to icons
 const categoryIcons = {
   "living-room": Sofa,
-  "bedroom": BedDouble,
-  "dining": UtensilsCrossed,
-  "office": Monitor,
+  bedroom: BedDouble,
+  dining: UtensilsCrossed,
+  office: Monitor,
   "accent-seating": Armchair,
-  "lighting": Lamp,
+  lighting: Lamp,
   default: Package,
 };
 
@@ -31,32 +30,42 @@ const getIconForCategory = (slug) => {
   return categoryIcons[slug] || categoryIcons.default;
 };
 
-export default function MegaMenuDropdown({ isOpen, onMouseEnter, onMouseLeave, onClose }) {
-  // Fetch categories from API
+export default function MegaMenuDropdown({
+  isOpen,
+  onMouseEnter,
+  onMouseLeave,
+  onClose,
+}) {
   const { data: categoryData } = useCategoryTree();
-  const categories = categoryData?.data?.categories?.filter(cat => !cat.parent) || [];
+  const categories =
+    categoryData?.data?.categories?.filter((cat) => !cat.parent) || [];
 
-  // Fetch featured products
   const { data: featuredData } = useFeaturedProducts(2);
   const featuredProducts = featuredData?.data?.products || [];
 
-  // Get product image URL
   const getProductImageUrl = (product) => {
-    const primaryImage = product.images?.find((img) => img.isPrimary)?.url || product.images?.[0]?.url;
+    const primaryImage =
+      product.images?.find((img) => img.isPrimary)?.url ||
+      product.images?.[0]?.url;
     if (primaryImage) {
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
-      return `${baseUrl.replace("/api/v1", "")}/uploads/products/${primaryImage}`;
+      const baseUrl =
+        import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
+      return `${baseUrl.replace(
+        "/api/v1",
+        ""
+      )}/uploads/products/${primaryImage}`;
     }
     return "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&auto=format&fit=crop";
   };
 
-  // Format price
   const formatPrice = (price) => {
     return new Intl.NumberFormat("en-NP", {
       style: "currency",
       currency: "NPR",
       minimumFractionDigits: 0,
-    }).format(price).replace("NPR", "NRs.");
+    })
+      .format(price)
+      .replace("NPR", "NRs.");
   };
 
   return (
@@ -72,7 +81,6 @@ export default function MegaMenuDropdown({ isOpen, onMouseEnter, onMouseLeave, o
       <div className="bg-white border-b border-neutral-200 shadow-2xl font-dm-sans">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
           <div className="grid grid-cols-12 gap-8">
-            {/* Categories */}
             <div className="col-span-4">
               <div className="flex items-center gap-2 mb-5">
                 <div className="w-8 h-8 bg-teal-700/10 rounded-lg flex items-center justify-center">
@@ -117,7 +125,6 @@ export default function MegaMenuDropdown({ isOpen, onMouseEnter, onMouseLeave, o
               </Link>
             </div>
 
-            {/* Trending Now */}
             <div className="col-span-4">
               <div className="flex items-center gap-2 mb-5">
                 <div className="w-8 h-8 bg-teal-700/10 rounded-lg flex items-center justify-center">
@@ -156,7 +163,6 @@ export default function MegaMenuDropdown({ isOpen, onMouseEnter, onMouseLeave, o
               </div>
             </div>
 
-            {/* Quick Links */}
             <div className="col-span-4">
               <div className="flex items-center gap-2 mb-5">
                 <div className="w-8 h-8 bg-teal-700/10 rounded-lg flex items-center justify-center">
@@ -222,7 +228,6 @@ export default function MegaMenuDropdown({ isOpen, onMouseEnter, onMouseLeave, o
             </div>
           </div>
 
-          {/* Footer */}
           <div className="flex items-center justify-between mt-8 pt-6 border-t border-neutral-100">
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2 text-sm text-neutral-600 font-dm-sans">
@@ -245,11 +250,7 @@ export default function MegaMenuDropdown({ isOpen, onMouseEnter, onMouseLeave, o
           </div>
         </div>
       </div>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/20 -z-10"
-        onClick={onMouseLeave}
-      />
+      <div className="fixed inset-0 bg-black/20 -z-10" onClick={onMouseLeave} />
     </div>
   );
 }

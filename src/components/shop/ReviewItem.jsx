@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { Star, ThumbsUp, MoreVertical, Edit2, Trash2, CheckCircle, Loader2 } from "lucide-react";
+import {
+  Star,
+  ThumbsUp,
+  MoreVertical,
+  Edit2,
+  Trash2,
+  CheckCircle,
+  Loader2,
+} from "lucide-react";
 import { useMarkHelpful, useDeleteReview } from "../../hooks/useReviewTan";
 import useAuthStore from "../../store/authStore";
 import { toast } from "../ui/Toast";
@@ -7,7 +15,7 @@ import { toast } from "../ui/Toast";
 export default function ReviewItem({ review, productId, onEdit, isOwner }) {
   const [showMenu, setShowMenu] = useState(false);
   const { isAuthenticated, user } = useAuthStore();
-  
+
   const { mutate: markHelpful, isPending: isMarkingHelpful } = useMarkHelpful();
   const { mutate: deleteReview, isPending: isDeleting } = useDeleteReview();
 
@@ -23,7 +31,9 @@ export default function ReviewItem({ review, productId, onEdit, isOwner }) {
       { productId, reviewId: review._id },
       {
         onError: (error) => {
-          toast.error(error?.response?.data?.message || "Failed to mark as helpful");
+          toast.error(
+            error?.response?.data?.message || "Failed to mark as helpful"
+          );
         },
       }
     );
@@ -38,7 +48,9 @@ export default function ReviewItem({ review, productId, onEdit, isOwner }) {
             toast.success("Review deleted successfully");
           },
           onError: (error) => {
-            toast.error(error?.response?.data?.message || "Failed to delete review");
+            toast.error(
+              error?.response?.data?.message || "Failed to delete review"
+            );
           },
         }
       );
@@ -62,11 +74,14 @@ export default function ReviewItem({ review, productId, onEdit, isOwner }) {
 
   const getUserAvatar = () => {
     if (review.user?.avatar) {
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
+      const baseUrl =
+        import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
       if (review.user.avatar.startsWith("http")) {
         return review.user.avatar;
       }
-      return `${baseUrl.replace("/api/v1", "")}/uploads/avatars/${review.user.avatar}`;
+      return `${baseUrl.replace("/api/v1", "")}/uploads/avatars/${
+        review.user.avatar
+      }`;
     }
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(
       `${review.user?.firstName || ""} ${review.user?.lastName || ""}`
@@ -74,22 +89,21 @@ export default function ReviewItem({ review, productId, onEdit, isOwner }) {
   };
 
   const getUserName = () => {
-    return `${review.user?.firstName || "Anonymous"} ${review.user?.lastName || ""}`.trim();
+    return `${review.user?.firstName || "Anonymous"} ${
+      review.user?.lastName || ""
+    }`.trim();
   };
 
   return (
     <div className="bg-white border border-neutral-100 rounded-xl p-4 sm:p-5">
       <div className="flex items-start gap-3">
-        {/* Avatar */}
         <img
           src={getUserAvatar()}
           alt={getUserName()}
           className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0"
         />
 
-        {/* Content */}
         <div className="flex-1 min-w-0">
-          {/* Header */}
           <div className="flex items-start justify-between gap-2 mb-2">
             <div>
               <div className="flex items-center gap-2 flex-wrap">
@@ -104,7 +118,6 @@ export default function ReviewItem({ review, productId, onEdit, isOwner }) {
                 )}
               </div>
 
-              {/* Rating and Date */}
               <div className="flex items-center gap-2 mt-1">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
@@ -125,7 +138,6 @@ export default function ReviewItem({ review, productId, onEdit, isOwner }) {
               </div>
             </div>
 
-            {/* Actions Menu */}
             {isOwner && (
               <div className="relative">
                 <button
@@ -171,19 +183,16 @@ export default function ReviewItem({ review, productId, onEdit, isOwner }) {
             )}
           </div>
 
-          {/* Review Title */}
           {review.title && (
             <h4 className="font-medium text-neutral-900 font-dm-sans mb-1">
               {review.title}
             </h4>
           )}
 
-          {/* Review Comment */}
           <p className="text-sm text-neutral-600 font-dm-sans leading-relaxed mb-3">
             {review.comment}
           </p>
 
-          {/* Admin Response */}
           {review.adminResponse?.comment && (
             <div className="bg-neutral-50 rounded-lg p-3 mb-3">
               <p className="text-xs font-semibold text-teal-700 mb-1 font-dm-sans">
@@ -195,7 +204,6 @@ export default function ReviewItem({ review, productId, onEdit, isOwner }) {
             </div>
           )}
 
-          {/* Helpful Button */}
           <button
             onClick={handleMarkHelpful}
             disabled={isMarkingHelpful}

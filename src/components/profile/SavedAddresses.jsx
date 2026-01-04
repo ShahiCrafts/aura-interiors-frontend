@@ -37,7 +37,8 @@ export default function SavedAddresses() {
 
   const { data, isLoading, error } = useAddresses();
   const { mutate: deleteAddress, isPending: isDeleting } = useDeleteAddress();
-  const { mutate: setDefault, isPending: isSettingDefault } = useSetDefaultAddress();
+  const { mutate: setDefault, isPending: isSettingDefault } =
+    useSetDefaultAddress();
 
   const addresses = data?.data?.addresses || [];
 
@@ -106,7 +107,6 @@ export default function SavedAddresses() {
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6 sm:p-8">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-playfair text-neutral-900">
@@ -126,7 +126,6 @@ export default function SavedAddresses() {
         </button>
       </div>
 
-      {/* Address Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {addresses.map((address) => {
           const Icon = getIcon(address.label);
@@ -141,15 +140,18 @@ export default function SavedAddresses() {
                   : "border-neutral-100 hover:border-neutral-200"
               }`}
             >
-              {/* Label & Badges */}
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${iconColor}`}>
+                  <div
+                    className={`w-9 h-9 rounded-lg flex items-center justify-center ${iconColor}`}
+                  >
                     <Icon size={18} />
                   </div>
                   <div>
                     <h3 className="font-semibold text-neutral-900 font-dm-sans capitalize">
-                      {address.label === "other" ? address.customLabel : address.label}
+                      {address.label === "other"
+                        ? address.customLabel
+                        : address.label}
                     </h3>
                     <p className="text-xs text-neutral-500 font-dm-sans capitalize">
                       {address.type} Address
@@ -170,20 +172,23 @@ export default function SavedAddresses() {
                 </div>
               </div>
 
-              {/* Address Details */}
               <div className="space-y-2 mb-4">
                 <p className="font-medium text-neutral-800 font-dm-sans">
                   {address.fullName}
                 </p>
                 <div className="flex items-start gap-2 text-sm text-neutral-600 font-dm-sans">
-                  <MapPin size={16} className="text-neutral-400 mt-0.5 shrink-0" />
+                  <MapPin
+                    size={16}
+                    className="text-neutral-400 mt-0.5 shrink-0"
+                  />
                   <span>
                     {address.addressLine1}
                     {address.addressLine2 && `, ${address.addressLine2}`}
                     <br />
                     {address.city}, {address.postalCode}
                     <br />
-                    {address.state && `${address.state}, `}{address.country}
+                    {address.state && `${address.state}, `}
+                    {address.country}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-neutral-600 font-dm-sans">
@@ -192,7 +197,6 @@ export default function SavedAddresses() {
                 </div>
               </div>
 
-              {/* Actions */}
               <div className="flex items-center justify-between pt-3 border-t border-neutral-100">
                 {!address.isDefault && (
                   <label className="flex items-center gap-2 cursor-pointer">
@@ -232,13 +236,15 @@ export default function SavedAddresses() {
           );
         })}
 
-        {/* Add New Address Card */}
         <button
           onClick={handleAddNew}
           className="p-5 rounded-xl border-2 border-dashed border-neutral-200 hover:border-teal-300 hover:bg-teal-50/30 transition-all flex flex-col items-center justify-center gap-3 min-h-[200px] group"
         >
           <div className="w-12 h-12 rounded-full bg-neutral-100 group-hover:bg-teal-100 flex items-center justify-center transition-colors">
-            <Plus size={24} className="text-neutral-400 group-hover:text-teal-700 transition-colors" />
+            <Plus
+              size={24}
+              className="text-neutral-400 group-hover:text-teal-700 transition-colors"
+            />
           </div>
           <div className="text-center">
             <p className="font-semibold text-neutral-700 group-hover:text-teal-700 font-dm-sans transition-colors">
@@ -251,7 +257,6 @@ export default function SavedAddresses() {
         </button>
       </div>
 
-      {/* Modal */}
       <AddEditAddressModal
         isOpen={modalOpen}
         onClose={() => {

@@ -6,7 +6,6 @@ const CART_KEYS = {
   list: () => [...CART_KEYS.all, 'list'],
 };
 
-// Get user's cart
 export const useCart = (options = {}) => {
   return useQuery({
     queryKey: CART_KEYS.list(),
@@ -15,7 +14,6 @@ export const useCart = (options = {}) => {
   });
 };
 
-// Add item to cart
 export const useAddToCart = () => {
   const queryClient = useQueryClient();
 
@@ -27,7 +25,6 @@ export const useAddToCart = () => {
   });
 };
 
-// Update cart item quantity
 export const useUpdateCartItem = () => {
   const queryClient = useQueryClient();
 
@@ -39,7 +36,6 @@ export const useUpdateCartItem = () => {
   });
 };
 
-// Remove item from cart
 export const useRemoveFromCart = () => {
   const queryClient = useQueryClient();
 
@@ -51,7 +47,6 @@ export const useRemoveFromCart = () => {
   });
 };
 
-// Clear entire cart
 export const useClearCart = () => {
   const queryClient = useQueryClient();
 

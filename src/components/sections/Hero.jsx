@@ -29,7 +29,6 @@ export default function Hero() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Infinite scroll animation for desktop vertical columns
   useEffect(() => {
     const leftCol = leftColumnRef.current;
     const rightCol = rightColumnRef.current;
@@ -56,7 +55,6 @@ export default function Hero() {
     return () => cancelAnimationFrame(animationId);
   }, []);
 
-  // Parallax effect for tablet horizontal rows
   useEffect(() => {
     const topRow = topRowRef.current;
     const bottomRow = bottomRowRef.current;
@@ -132,7 +130,8 @@ export default function Hero() {
         </h1>
 
         <p className="text-base md:text-lg text-gray-600 mb-2 sm:mb-3 font-dm-sans leading-relaxed max-w-sm sm:max-w-md lg:max-w-lg">
-          Premium furniture crafted for modern living. Experience pieces in your space with AR before you buy.
+          Premium furniture crafted for modern living. Experience pieces in your
+          space with AR before you buy.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6 w-full sm:w-auto font-dm-sans">

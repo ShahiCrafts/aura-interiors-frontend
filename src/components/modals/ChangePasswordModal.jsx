@@ -48,7 +48,6 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
     }));
   };
 
-  // Password strength checker
   const getPasswordStrength = (password) => {
     if (!password) return { level: 0, text: "", color: "" };
 
@@ -58,14 +57,19 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
     if (/\d/.test(password)) strength++;
     if (/[^a-zA-Z0-9]/.test(password)) strength++;
 
-    if (strength <= 1) return { level: 1, text: "Weak password", color: "text-red-500" };
-    if (strength === 2) return { level: 2, text: "Fair password", color: "text-amber-500" };
-    if (strength === 3) return { level: 3, text: "Good password", color: "text-blue-500" };
+    if (strength <= 1)
+      return { level: 1, text: "Weak password", color: "text-red-500" };
+    if (strength === 2)
+      return { level: 2, text: "Fair password", color: "text-amber-500" };
+    if (strength === 3)
+      return { level: 3, text: "Good password", color: "text-blue-500" };
     return { level: 4, text: "Strong password", color: "text-teal-600" };
   };
 
   const passwordStrength = getPasswordStrength(formData.newPassword);
-  const passwordsMatch = formData.newPassword && formData.confirmPassword &&
+  const passwordsMatch =
+    formData.newPassword &&
+    formData.confirmPassword &&
     formData.newPassword === formData.confirmPassword;
 
   const handleSubmit = (e) => {
@@ -101,23 +105,20 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] overflow-y-auto">
+    <div className="fixed inset-0 z-100 overflow-y-auto">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Modal Container */}
       <div className="min-h-full flex items-center justify-center p-4 sm:p-6">
-        {/* Modal */}
         <div
           className="relative w-full max-w-[420px] bg-white rounded-2xl shadow-2xl p-6 sm:p-8"
           style={{
             animation: "fadeInScale 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards",
           }}
         >
-          {/* Close Button */}
           <button
             onClick={onClose}
             className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-100 transition-colors"
@@ -125,7 +126,6 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
             <X size={20} className="text-neutral-500" />
           </button>
 
-          {/* Header */}
           <div className="flex items-center gap-3 mb-6">
             <div className="w-12 h-12 bg-teal-50 rounded-xl flex items-center justify-center">
               <Lock size={24} className="text-teal-700" />
@@ -141,9 +141,7 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
             </div>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Current Password */}
             <div>
               <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
                 Current Password <span className="text-red-500">*</span>
@@ -163,12 +161,15 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
                   onClick={() => togglePasswordVisibility("current")}
                   className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-neutral-400 hover:text-neutral-600 transition-colors"
                 >
-                  {showPasswords.current ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPasswords.current ? (
+                    <EyeOff size={18} />
+                  ) : (
+                    <Eye size={18} />
+                  )}
                 </button>
               </div>
             </div>
 
-            {/* New Password */}
             <div>
               <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
                 New Password <span className="text-red-500">*</span>
@@ -194,14 +195,15 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
               {formData.newPassword && (
                 <div className="flex items-center gap-1.5 mt-1.5">
                   <ShieldCheck size={14} className={passwordStrength.color} />
-                  <span className={`text-xs font-medium ${passwordStrength.color}`}>
+                  <span
+                    className={`text-xs font-medium ${passwordStrength.color}`}
+                  >
                     {passwordStrength.text}
                   </span>
                 </div>
               )}
             </div>
 
-            {/* Confirm New Password */}
             <div>
               <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
                 Confirm New Password <span className="text-red-500">*</span>
@@ -227,7 +229,11 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
                   onClick={() => togglePasswordVisibility("confirm")}
                   className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-neutral-400 hover:text-neutral-600 transition-colors"
                 >
-                  {showPasswords.confirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPasswords.confirm ? (
+                    <EyeOff size={18} />
+                  ) : (
+                    <Eye size={18} />
+                  )}
                 </button>
               </div>
               {formData.confirmPassword && (
@@ -235,16 +241,19 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
                   {passwordsMatch ? (
                     <>
                       <Check size={14} className="text-teal-600" />
-                      <span className="text-xs font-medium text-teal-600">Passwords match</span>
+                      <span className="text-xs font-medium text-teal-600">
+                        Passwords match
+                      </span>
                     </>
                   ) : (
-                    <span className="text-xs font-medium text-red-500">Passwords do not match</span>
+                    <span className="text-xs font-medium text-red-500">
+                      Passwords do not match
+                    </span>
                   )}
                 </div>
               )}
             </div>
 
-            {/* Buttons */}
             <div className="flex gap-3 pt-2">
               <button
                 type="button"
@@ -265,7 +274,6 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
         </div>
       </div>
 
-      {/* Animation Keyframes */}
       <style>{`
         @keyframes fadeInScale {
           from {

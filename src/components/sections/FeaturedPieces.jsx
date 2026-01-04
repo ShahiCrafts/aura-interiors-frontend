@@ -62,7 +62,6 @@ export default function FeaturedPieces() {
       className="bg-linear-to-b from-zinc-50 to-white py-16 sm:py-20 px-4 sm:px-6 md:px-12 lg:px-20 font-dm-sans"
     >
       <div className="max-w-7xl mx-auto">
-        {/* Heading Section */}
         <div
           className={`text-center mb-10 sm:mb-14 transition-all duration-700 ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
@@ -82,7 +81,6 @@ export default function FeaturedPieces() {
           </p>
         </div>
 
-        {/* Product Grid */}
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-x-3 gap-y-8 sm:gap-x-4 sm:gap-y-10 md:gap-x-6 md:gap-y-12 lg:gap-8">
           {products.map((p, i) => (
             <div
@@ -96,7 +94,6 @@ export default function FeaturedPieces() {
                 transitionDelay: isVisible ? `${150 + i * 100}ms` : "0ms",
               }}
             >
-              {/* Image Container */}
               <div className="relative w-full aspect-square md:aspect-4/5 lg:aspect-3/4 overflow-hidden bg-zinc-100">
                 <img
                   src={p.image}
@@ -104,7 +101,6 @@ export default function FeaturedPieces() {
                   className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
                 />
 
-                {/* Badge */}
                 {p.badge && (
                   <div className="absolute top-2 left-2 sm:top-4 sm:left-4">
                     <span
@@ -119,7 +115,6 @@ export default function FeaturedPieces() {
                   </div>
                 )}
 
-                {/* Quick Actions */}
                 <div className="absolute top-2 right-2 sm:top-4 sm:right-4 flex flex-col gap-1.5 sm:gap-2 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300">
                   <button className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-teal-700 hover:text-white transition-colors">
                     <Heart size={14} className="sm:w-[18px] sm:h-[18px]" />
@@ -133,7 +128,6 @@ export default function FeaturedPieces() {
                 </div>
               </div>
 
-              {/* Product Info */}
               <div className="mt-3 sm:mt-4 space-y-1 sm:space-y-1.5">
                 <p className="text-[10px] sm:text-xs font-semibold tracking-[0.15em] text-zinc-500 uppercase font-dm-sans">
                   {p.category}
@@ -156,7 +150,6 @@ export default function FeaturedPieces() {
           ))}
         </div>
 
-        {/* View All Button */}
         <div
           className={`text-center mt-10 sm:mt-14 transition-all duration-700 ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"

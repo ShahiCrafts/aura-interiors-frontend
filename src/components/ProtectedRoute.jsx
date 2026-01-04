@@ -8,8 +8,6 @@ export default function ProtectedRoute({ children }) {
     return <Navigate to="/" replace />;
   }
 
-  // Admin users should not access customer-only routes
-  // Redirect them to admin dashboard
   if (user?.role === "admin") {
     return <Navigate to="/admin" replace />;
   }

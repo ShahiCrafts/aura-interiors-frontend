@@ -17,21 +17,17 @@ export default function ImageMagnifier({
     const container = containerRef.current;
     const { left, top, width, height } = container.getBoundingClientRect();
 
-    // Get cursor position relative to container
     const x = e.clientX - left;
     const y = e.clientY - top;
 
-    // Don't show magnifier if cursor is outside bounds
     if (x < 0 || x > width || y < 0 || y > height) {
       setShowMagnifier(false);
       return;
     }
 
-    // Calculate magnifier position (centered on cursor)
     const magnifierX = x - magnifierSize / 2;
     const magnifierY = y - magnifierSize / 2;
 
-    // Calculate background position for zoom effect
     const bgX = (x / width) * 100;
     const bgY = (y / height) * 100;
 

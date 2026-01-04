@@ -40,20 +40,19 @@ export default function OrderTrackingTimeline({ status }) {
 
           return (
             <div key={step.key} className="flex flex-col items-center flex-1">
-              {/* Step indicator with connecting line */}
               <div className="flex items-center w-full">
-                {/* Left line */}
                 {index > 0 && (
                   <div
                     className={`flex-1 h-0.5 ${
-                      isCompleted || isCurrent ? "bg-teal-500" : "bg-neutral-200"
+                      isCompleted || isCurrent
+                        ? "bg-teal-500"
+                        : "bg-neutral-200"
                     }`}
                   />
                 )}
 
-                {/* Circle */}
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
+                  className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all ${
                     isCompleted
                       ? "bg-teal-500 text-white"
                       : isCurrent
@@ -72,7 +71,6 @@ export default function OrderTrackingTimeline({ status }) {
                   )}
                 </div>
 
-                {/* Right line */}
                 {index < TRACKING_STEPS.length - 1 && (
                   <div
                     className={`flex-1 h-0.5 ${
@@ -82,10 +80,11 @@ export default function OrderTrackingTimeline({ status }) {
                 )}
               </div>
 
-              {/* Label */}
               <span
                 className={`mt-2 text-xs font-medium font-dm-sans text-center ${
-                  isCompleted || isCurrent ? "text-teal-700" : "text-neutral-400"
+                  isCompleted || isCurrent
+                    ? "text-teal-700"
+                    : "text-neutral-400"
                 }`}
               >
                 {step.label}

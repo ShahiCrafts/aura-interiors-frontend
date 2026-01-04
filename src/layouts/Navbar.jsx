@@ -29,6 +29,7 @@ import LoginModal from "../components/modals/LoginModal";
 import CartSlider from "../components/cart/CartSlider";
 import { useCart } from "../hooks/useCartTan";
 import useNotificationSocket from "../hooks/useNotificationSocket";
+import usePushNotifications from "../hooks/usePushNotifications";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -53,6 +54,24 @@ export default function Navbar() {
     localStorage.getItem('authToken'),
     user?._id
   );
+
+  // Push notifications - will auto-request permission when user is authenticated
+  const authToken = localStorage.getItem('authToken');
+  const { requestPushPermission, pushPermission, pushSupported } = usePushNotifications(
+    authToken,
+    user
+  );
+
+  // Auto-request push permission when user logs in
+  useEffect(() => {
+    if (isAuthenticated && user && pushSupported && pushPermission === 'default') {
+      // Small delay to not overwhelm user immediately after login
+      const timer = setTimeout(() => {
+        requestPushPermission();
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated, user, pushSupported, pushPermission, requestPushPermission]);
 
   // Use appropriate cart count based on authentication status
   const guestTotals = getGuestCartTotals();

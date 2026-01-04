@@ -135,7 +135,6 @@ const NativeARView = ({
     return ["All", ...categories.map((c) => c.name)];
   }, [categories]);
 
-  // Poll for surface detection when session is active
   useEffect(() => {
     if (!isSessionActive || hasPlacedModel) {
       setSurfaceDetected(false);
@@ -559,7 +558,9 @@ const NativeARView = ({
   const downloadScreenshot = useCallback(() => {
     if (!screenshotData) return;
     const link = document.createElement("a");
-    link.download = `AR-${selectedProduct?.name || "capture"}-${Date.now()}.jpg`;
+    link.download = `AR-${
+      selectedProduct?.name || "capture"
+    }-${Date.now()}.jpg`;
     link.href = screenshotData;
     link.click();
     triggerHaptic("success");
@@ -586,7 +587,6 @@ const NativeARView = ({
     }
   }, [screenshotData, selectedProduct, downloadScreenshot, triggerHaptic]);
 
-  // Loading state
   if (isSupported === null || isLoading) {
     return (
       <div className="fixed inset-0 flex flex-col items-center justify-center gap-8 bg-black">
@@ -600,13 +600,14 @@ const NativeARView = ({
         </div>
         <div className="text-center">
           <p className="text-white font-medium">Loading AR Experience</p>
-          <p className="text-gray-500 text-sm mt-2">Checking device support...</p>
+          <p className="text-gray-500 text-sm mt-2">
+            Checking device support...
+          </p>
         </div>
       </div>
     );
   }
 
-  // AR not supported
   if (isSupported === false) {
     return (
       <div className="fixed inset-0 flex flex-col items-center justify-center gap-6 bg-white text-center p-8">
@@ -614,7 +615,10 @@ const NativeARView = ({
           <MdOutlineViewInAr size={40} className="text-gray-400" />
         </div>
         <div>
-          <h2 className="text-2xl text-gray-900" style={{ fontFamily: "Georgia, serif" }}>
+          <h2
+            className="text-2xl text-gray-900"
+            style={{ fontFamily: "Georgia, serif" }}
+          >
             AR Not Supported
           </h2>
           <p className="text-gray-500 mt-3 max-w-xs leading-relaxed">
@@ -637,7 +641,6 @@ const NativeARView = ({
     );
   }
 
-  // No products available
   if (products.length === 0 && !isLoading) {
     return (
       <div className="fixed inset-0 flex flex-col items-center justify-center gap-6 bg-white text-center p-8">
@@ -645,7 +648,10 @@ const NativeARView = ({
           <MdOutlineViewInAr size={40} className="text-gray-400" />
         </div>
         <div>
-          <h2 className="text-2xl text-gray-900" style={{ fontFamily: "Georgia, serif" }}>
+          <h2
+            className="text-2xl text-gray-900"
+            style={{ fontFamily: "Georgia, serif" }}
+          >
             No AR Products
           </h2>
           <p className="text-gray-500 mt-3 max-w-xs leading-relaxed">
@@ -669,7 +675,6 @@ const NativeARView = ({
 
   return (
     <div className="fixed inset-0 bg-black overflow-hidden">
-      {/* Camera permission screen */}
       {!isSessionActive && (
         <div className="absolute inset-0 bg-black flex items-center justify-center p-6">
           <div className="bg-zinc-900 rounded-2xl p-6 max-w-sm w-full border border-zinc-800">
@@ -689,14 +694,16 @@ const NativeARView = ({
             >
               Allow Camera Access
             </button>
-            <button onClick={onClose} className="w-full py-3 text-gray-500 text-sm mt-2">
+            <button
+              onClick={onClose}
+              className="w-full py-3 text-gray-500 text-sm mt-2"
+            >
               Not now
             </button>
           </div>
         </div>
       )}
 
-      {/* AR Overlay */}
       <div
         ref={overlayRef}
         className="absolute inset-0 pointer-events-none *:pointer-events-auto"
@@ -718,7 +725,6 @@ const NativeARView = ({
           </div>
         )}
 
-        {/* Header */}
         <div
           className="absolute top-0 left-0 right-0 flex items-center justify-between px-4 py-3 pt-[calc(12px+env(safe-area-inset-top,12px))] z-100"
           data-hide-on-capture
@@ -743,7 +749,6 @@ const NativeARView = ({
           </button>
         </div>
 
-        {/* Action Menu */}
         <ActionMenu
           show={showActions}
           hasPlacedModel={hasPlacedModel}
@@ -758,7 +763,6 @@ const NativeARView = ({
           onRemove={handleRemoveModel}
         />
 
-        {/* Tutorial Overlay */}
         <TutorialOverlay
           tutorialStep={tutorialStep}
           hasPlacedModel={hasPlacedModel}
@@ -767,7 +771,6 @@ const NativeARView = ({
           onSkip={() => setTutorialStep(2)}
         />
 
-        {/* Product Catalog */}
         {isSessionActive && !showCustomize && (
           <ProductCatalog
             products={filteredProducts}
@@ -779,7 +782,6 @@ const NativeARView = ({
           />
         )}
 
-        {/* Filter Modal */}
         <FilterModal
           show={showFilter}
           onClose={() => setShowFilter(false)}
@@ -792,7 +794,6 @@ const NativeARView = ({
           setFilterSort={setFilterSort}
         />
 
-        {/* Customize Sheet */}
         <CustomizeSheet
           show={showCustomize}
           onClose={() => setShowCustomize(false)}
@@ -806,10 +807,8 @@ const NativeARView = ({
           calculateTotalPrice={calculateTotalPrice}
         />
 
-        {/* Info Modal */}
         <InfoModal show={showInfo} onClose={() => setShowInfo(false)} />
 
-        {/* Screenshot Preview */}
         <ScreenshotPreview
           show={showScreenshotPreview}
           screenshotData={screenshotData}
@@ -819,7 +818,6 @@ const NativeARView = ({
           onShare={shareScreenshot}
         />
 
-        {/* Error Toast */}
         {error && (
           <div className="absolute top-20 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-rose-500/90 backdrop-blur-xl text-white px-5 py-3 rounded-full z-300 animate-[toast-in_0.3s_ease]">
             <span className="text-sm font-medium">{error}</span>
@@ -832,7 +830,6 @@ const NativeARView = ({
           </div>
         )}
 
-        {/* Screenshot Error Toast */}
         {screenshotError && (
           <div className="absolute top-20 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-rose-500/90 backdrop-blur-xl text-white px-5 py-3 rounded-full z-300 animate-[toast-in_0.3s_ease]">
             <IoCamera size={16} />

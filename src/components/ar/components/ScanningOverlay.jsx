@@ -4,7 +4,6 @@ import { MdOutlineViewInAr } from "react-icons/md";
 import { HiOutlineCube } from "react-icons/hi2";
 
 const ScanningOverlay = ({ hasPlacedModel, surfaceDetected, isPlacing }) => {
-  // Show scanning UI when no surface detected and no model placed
   if (!hasPlacedModel && !surfaceDetected) {
     return (
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -37,7 +36,6 @@ const ScanningOverlay = ({ hasPlacedModel, surfaceDetected, isPlacing }) => {
     );
   }
 
-  // Show minimal instruction when surface detected (reticle visible)
   if (!hasPlacedModel && surfaceDetected) {
     return (
       <div className="absolute bottom-48 left-0 right-0 flex justify-center pointer-events-none">

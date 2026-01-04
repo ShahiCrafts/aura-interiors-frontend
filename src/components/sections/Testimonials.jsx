@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Star } from "lucide-react";
-import { ImageWithFallback } from "../fallbacks/ImageWithFallback"; // adjust path
+import { ImageWithFallback } from "../fallbacks/ImageWithFallback";
 
 const testimonials = [
   {
@@ -60,7 +60,6 @@ export default function Testimonials() {
       className="bg-linear-to-b from-zinc-50 to-white py-16 sm:py-20 px-4 sm:px-6 md:px-12 lg:px-20 font-dm-sans"
     >
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div
           className={`text-center mb-10 sm:mb-14 transition-all duration-700 ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
@@ -78,7 +77,6 @@ export default function Testimonials() {
           </h2>
         </div>
 
-        {/* Testimonials Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
           {testimonials.map((testimonial, index) => (
             <div
@@ -92,12 +90,10 @@ export default function Testimonials() {
                 transitionDelay: isVisible ? `${200 + index * 150}ms` : "0ms",
               }}
             >
-              {/* Decorative Quote */}
               <span className="absolute right-4 top-4 text-[80px] sm:text-[100px] text-teal-700/10 leading-none select-none pointer-events-none">
                 &ldquo;
               </span>
 
-              {/* Rating */}
               <div className="flex gap-1 mb-4 relative z-10">
                 {[...Array(testimonial.rating)].map((_, i) => (
                   <Star
@@ -107,12 +103,10 @@ export default function Testimonials() {
                 ))}
               </div>
 
-              {/* Quote */}
               <p className="text-zinc-900 italic leading-relaxed mb-6 relative z-10 text-base md:text-lg font-playfair">
                 "{testimonial.quote}"
               </p>
 
-              {/* Profile */}
               <div className="flex items-center gap-3 relative z-10">
                 <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-zinc-100 p-0.5">
                   <ImageWithFallback

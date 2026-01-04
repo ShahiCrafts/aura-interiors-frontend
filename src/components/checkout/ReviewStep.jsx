@@ -1,4 +1,10 @@
-import { MapPin, CreditCard, Package, FileText, ClipboardCheck } from "lucide-react";
+import {
+  MapPin,
+  CreditCard,
+  Package,
+  FileText,
+  ClipboardCheck,
+} from "lucide-react";
 import useCheckoutStore from "../../store/checkoutStore";
 import { useCart } from "../../hooks/useCartTan";
 import useAuthStore from "../../store/authStore";
@@ -16,21 +22,24 @@ export default function ReviewStep() {
 
   const { isAuthenticated } = useAuthStore();
   const { data: cartData } = useCart({ enabled: isAuthenticated });
-  const { items: guestCartItems, getCartTotals: getGuestCartTotals } = useGuestCartStore();
+  const { items: guestCartItems, getCartTotals: getGuestCartTotals } =
+    useGuestCartStore();
 
-  // Use appropriate cart based on authentication status
   const cart = cartData?.data?.cart;
   const guestTotals = getGuestCartTotals();
-  const items = isAuthenticated ? (cart?.items || []) : guestCartItems;
-  const subtotal = isAuthenticated ? (cart?.subtotal || 0) : guestTotals.subtotal;
+  const items = isAuthenticated ? cart?.items || [] : guestCartItems;
+  const subtotal = isAuthenticated ? cart?.subtotal || 0 : guestTotals.subtotal;
   const discountAmount = appliedDiscount?.amount || 0;
-  const shippingCost = 0; // Free shipping for now
+  const shippingCost = 0;
   const total = subtotal - discountAmount + shippingCost;
 
-  const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
+  const baseUrl =
+    import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
 
   const getImageUrl = (product) => {
-    const primaryImage = product?.images?.find((img) => img.isPrimary)?.url || product?.images?.[0]?.url;
+    const primaryImage =
+      product?.images?.find((img) => img.isPrimary)?.url ||
+      product?.images?.[0]?.url;
     if (!primaryImage) {
       return "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&auto=format&fit=crop";
     }
@@ -45,7 +54,6 @@ export default function ReviewStep() {
         Review Your Order
       </h2>
 
-      {/* Contact Info */}
       <div className="bg-neutral-50 rounded-xl p-4 space-y-2">
         <h3 className="text-sm font-medium text-neutral-700 font-dm-sans flex items-center gap-2">
           <Package size={16} />
@@ -54,17 +62,22 @@ export default function ReviewStep() {
         <p className="text-neutral-900 font-dm-sans">
           {guestInfo.firstName} {guestInfo.lastName}
         </p>
-        <p className="text-sm text-neutral-600 font-dm-sans">{guestInfo.email}</p>
-        <p className="text-sm text-neutral-600 font-dm-sans">{guestInfo.phone}</p>
+        <p className="text-sm text-neutral-600 font-dm-sans">
+          {guestInfo.email}
+        </p>
+        <p className="text-sm text-neutral-600 font-dm-sans">
+          {guestInfo.phone}
+        </p>
       </div>
 
-      {/* Shipping Address */}
       <div className="bg-neutral-50 rounded-xl p-4 space-y-2">
         <h3 className="text-sm font-medium text-neutral-700 font-dm-sans flex items-center gap-2">
           <MapPin size={16} />
           Shipping Address
         </h3>
-        <p className="text-neutral-900 font-dm-sans">{shippingAddress.fullName}</p>
+        <p className="text-neutral-900 font-dm-sans">
+          {shippingAddress.fullName}
+        </p>
         <p className="text-sm text-neutral-600 font-dm-sans">
           {shippingAddress.addressLine1}
         </p>
@@ -86,14 +99,15 @@ export default function ReviewStep() {
         </p>
       </div>
 
-      {/* Payment Method */}
       <div className="bg-neutral-50 rounded-xl p-4 space-y-2">
         <h3 className="text-sm font-medium text-neutral-700 font-dm-sans flex items-center gap-2">
           <CreditCard size={16} />
           Payment Method
         </h3>
         <p className="text-neutral-900 font-dm-sans">
-          {paymentMethod === "cod" ? "Cash on Delivery" : "eSewa Digital Wallet"}
+          {paymentMethod === "cod"
+            ? "Cash on Delivery"
+            : "eSewa Digital Wallet"}
         </p>
         {paymentMethod === "esewa" && (
           <p className="text-sm text-neutral-500 font-dm-sans">
@@ -102,7 +116,6 @@ export default function ReviewStep() {
         )}
       </div>
 
-      {/* Order Items */}
       <div className="space-y-3">
         <h3 className="text-sm font-medium text-neutral-700 font-dm-sans">
           Order Items ({items.length})
@@ -143,7 +156,6 @@ export default function ReviewStep() {
         </div>
       </div>
 
-      {/* Pricing Summary */}
       <div className="border-t border-neutral-200 pt-4 space-y-2">
         <div className="flex justify-between text-sm font-dm-sans">
           <span className="text-neutral-600">Subtotal</span>
@@ -164,18 +176,21 @@ export default function ReviewStep() {
         <div className="flex justify-between text-sm font-dm-sans">
           <span className="text-neutral-600">Shipping</span>
           <span className="text-neutral-900">
-            {shippingCost === 0 ? "Free" : `NRs. ${shippingCost.toLocaleString()}`}
+            {shippingCost === 0
+              ? "Free"
+              : `NRs. ${shippingCost.toLocaleString()}`}
           </span>
         </div>
         <div className="flex justify-between pt-2 border-t border-neutral-200">
-          <span className="text-lg font-semibold text-neutral-900 font-dm-sans">Total</span>
+          <span className="text-lg font-semibold text-neutral-900 font-dm-sans">
+            Total
+          </span>
           <span className="text-xl font-bold text-teal-700 font-playfair">
             NRs. {total.toLocaleString()}
           </span>
         </div>
       </div>
 
-      {/* Customer Note */}
       <div className="space-y-2">
         <h3 className="text-sm font-medium text-neutral-700 font-dm-sans flex items-center gap-2">
           <FileText size={16} />

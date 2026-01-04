@@ -20,16 +20,20 @@ export default function Wishlist() {
   const [sortBy, setSortBy] = useState("recent");
 
   const { data, isLoading, error } = useWishlist();
-  const { mutate: removeFromWishlist, isPending: isRemoving } = useRemoveFromWishlist();
+  const { mutate: removeFromWishlist, isPending: isRemoving } =
+    useRemoveFromWishlist();
   const { mutate: addToCart, isPending: isAddingToCart } = useAddToCart();
 
   const wishlistItems = data?.data?.wishlist?.items || [];
-  const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
+  const baseUrl =
+    import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
 
-  // Get unique categories from wishlist items
-  const categories = [...new Set(wishlistItems.map((item) => item.product?.category?.name).filter(Boolean))];
+  const categories = [
+    ...new Set(
+      wishlistItems.map((item) => item.product?.category?.name).filter(Boolean)
+    ),
+  ];
 
-  // Filter and sort items
   const filteredItems = wishlistItems
     .filter((item) => {
       const product = item.product;
@@ -87,7 +91,8 @@ export default function Wishlist() {
         addToCart(
           { productId: item.product._id, quantity: 1 },
           {
-            onError: () => toast.error(`Failed to add ${item.product.name} to cart`),
+            onError: () =>
+              toast.error(`Failed to add ${item.product.name} to cart`),
           }
         );
       }
@@ -96,7 +101,9 @@ export default function Wishlist() {
   };
 
   const getImageUrl = (product) => {
-    const primaryImage = product?.images?.find((img) => img.isPrimary)?.url || product?.images?.[0]?.url;
+    const primaryImage =
+      product?.images?.find((img) => img.isPrimary)?.url ||
+      product?.images?.[0]?.url;
     if (!primaryImage) {
       return "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&auto=format&fit=crop";
     }
@@ -106,7 +113,9 @@ export default function Wishlist() {
 
   const getDiscountPercentage = (product) => {
     if (product?.originalPrice && product.originalPrice > product.price) {
-      return Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+      return Math.round(
+        ((product.originalPrice - product.price) / product.originalPrice) * 100
+      );
     }
     return null;
   };
@@ -133,7 +142,6 @@ export default function Wishlist() {
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6 sm:p-8">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-playfair text-neutral-900">
@@ -146,9 +154,7 @@ export default function Wishlist() {
         </div>
         {wishlistItems.length > 0 && (
           <div className="flex items-center gap-3">
-            <button
-              className="w-10 h-10 flex items-center justify-center border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors"
-            >
+            <button className="w-10 h-10 flex items-center justify-center border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors">
               <Share2 size={18} className="text-neutral-500" />
             </button>
             <button
@@ -163,15 +169,15 @@ export default function Wishlist() {
         )}
       </div>
 
-      {/* Filters */}
       {wishlistItems.length > 0 && (
         <div className="mb-6">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            {/* Left: Search and Dropdowns */}
             <div className="flex flex-col sm:flex-row gap-3">
-              {/* Search */}
               <div className="relative w-full sm:w-64">
-                <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+                <Search
+                  size={18}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+                />
                 <input
                   type="text"
                   placeholder="Search your wishlist..."
@@ -181,7 +187,6 @@ export default function Wishlist() {
                 />
               </div>
 
-              {/* Category Filter */}
               <div className="relative">
                 <select
                   value={categoryFilter}
@@ -195,10 +200,12 @@ export default function Wishlist() {
                     </option>
                   ))}
                 </select>
-                <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+                <ChevronDown
+                  size={16}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                />
               </div>
 
-              {/* Sort */}
               <div className="relative">
                 <select
                   value={sortBy}
@@ -210,19 +217,21 @@ export default function Wishlist() {
                   <option value="price-high">Price: High to Low</option>
                   <option value="name">Name</option>
                 </select>
-                <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+                <ChevronDown
+                  size={16}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                />
               </div>
             </div>
 
-            {/* Right: Item Count */}
             <span className="text-sm text-neutral-500 font-dm-sans whitespace-nowrap">
-              {filteredItems.length} item{filteredItems.length !== 1 ? "s" : ""} in wishlist
+              {filteredItems.length} item{filteredItems.length !== 1 ? "s" : ""}{" "}
+              in wishlist
             </span>
           </div>
         </div>
       )}
 
-      {/* Empty State */}
       {wishlistItems.length === 0 && (
         <div className="text-center py-16">
           <div className="w-20 h-20 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -243,7 +252,6 @@ export default function Wishlist() {
         </div>
       )}
 
-      {/* No Results */}
       {wishlistItems.length > 0 && filteredItems.length === 0 && (
         <div className="text-center py-12">
           <p className="text-neutral-500 font-dm-sans">
@@ -252,7 +260,6 @@ export default function Wishlist() {
         </div>
       )}
 
-      {/* Wishlist Grid */}
       {filteredItems.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredItems.map((item) => {
@@ -268,8 +275,7 @@ export default function Wishlist() {
                 key={item._id || product._id}
                 className="group bg-white rounded-xl border border-neutral-100 overflow-hidden hover:shadow-lg transition-all duration-300"
               >
-                {/* Image Container */}
-                <div className="relative aspect-[4/3] overflow-hidden bg-neutral-100">
+                <div className="relative aspect-4/3 overflow-hidden bg-neutral-100">
                   <Link to={`/product/${product.slug || product._id}`}>
                     <img
                       src={getImageUrl(product)}
@@ -278,7 +284,6 @@ export default function Wishlist() {
                     />
                   </Link>
 
-                  {/* Badges */}
                   <div className="absolute top-3 left-3 flex flex-col gap-2">
                     {discount && (
                       <span className="px-2.5 py-1 bg-teal-700 text-white text-xs font-semibold rounded-md font-dm-sans">
@@ -287,7 +292,6 @@ export default function Wishlist() {
                     )}
                   </div>
 
-                  {/* Heart Button */}
                   <button
                     onClick={() => handleRemove(product._id)}
                     disabled={isRemoving}
@@ -297,26 +301,25 @@ export default function Wishlist() {
                   </button>
                 </div>
 
-                {/* Content */}
                 <div className="p-4">
-                  {/* Category */}
                   {product.category?.name && (
                     <span className="text-xs font-semibold text-teal-700 uppercase tracking-wide font-dm-sans">
                       {product.category.name}
                     </span>
                   )}
 
-                  {/* Name */}
                   <Link to={`/product/${product.slug || product._id}`}>
                     <h3 className="text-neutral-900 font-semibold mt-1 line-clamp-1 font-playfair text-base hover:text-teal-700 transition-colors">
                       {product.name}
                     </h3>
                   </Link>
 
-                  {/* Rating */}
                   <div className="flex items-center gap-1.5 mt-2">
                     <div className="flex items-center">
-                      <Star size={14} className="fill-amber-400 text-amber-400" />
+                      <Star
+                        size={14}
+                        className="fill-amber-400 text-amber-400"
+                      />
                     </div>
                     <span className="text-sm text-neutral-700 font-dm-sans font-medium">
                       {rating.toFixed(1)}
@@ -328,19 +331,18 @@ export default function Wishlist() {
                     )}
                   </div>
 
-                  {/* Price */}
                   <div className="flex items-center gap-2 mt-2">
                     <p className="text-teal-700 font-bold font-playfair text-lg">
                       NRs. {product.price?.toLocaleString()}
                     </p>
-                    {product.originalPrice && product.originalPrice > product.price && (
-                      <p className="text-neutral-400 line-through text-sm font-dm-sans">
-                        NRs. {product.originalPrice?.toLocaleString()}
-                      </p>
-                    )}
+                    {product.originalPrice &&
+                      product.originalPrice > product.price && (
+                        <p className="text-neutral-400 line-through text-sm font-dm-sans">
+                          NRs. {product.originalPrice?.toLocaleString()}
+                        </p>
+                      )}
                   </div>
 
-                  {/* Actions */}
                   <div className="flex items-center gap-2 mt-4">
                     <button
                       onClick={() => handleAddToCart(product)}

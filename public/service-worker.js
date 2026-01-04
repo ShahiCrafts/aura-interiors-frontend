@@ -5,12 +5,45 @@
  * Works offline; syncs when online
  */
 
-// Firebase Messaging import (from CDN in index.html)
-// importScripts('https://www.gstatic.com/firebasejs/9.x.x/firebase-app.js');
-// importScripts('https://www.gstatic.com/firebasejs/9.x.x/firebase-messaging.js');
+// Firebase Messaging for background messages
+importScripts('https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.7.0/firebase-messaging-compat.js');
+
+// Initialize Firebase in Service Worker (needed for background messages)
+// These values must match your firebase.js config
+firebase.initializeApp({
+  apiKey: "AIzaSyBjrJpQAeZhCfWYES-PgDqs2M4IASPcPOA",
+  authDomain: "aura-interiors-7f112.firebaseapp.com",
+  projectId: "aura-interiors-7f112",
+  storageBucket: "aura-interiors-7f112.firebasestorage.app",
+  messagingSenderId: "572622226094",
+  appId: "1:572622226094:web:e532a6d29e8659e02a633f",
+});
+
+const messaging = firebase.messaging();
+
+// Handle background messages from FCM
+messaging.onBackgroundMessage((payload) => {
+  console.log('[ServiceWorker] Background message received:', payload);
+  
+  const { title, body, icon, data } = payload.notification || payload.data || {};
+  
+  const options = {
+    body: body || 'You have a new notification',
+    icon: icon || '/icons/notification-icon-192.png',
+    badge: '/icons/notification-badge-72.png',
+    data: data || payload.data || {},
+    requireInteraction: false,
+    vibrate: [200, 100, 200],
+    tag: data?.type || 'notification',
+    timestamp: Date.now(),
+  };
+
+  self.registration.showNotification(title || 'Aura Interiors', options);
+});
 
 /**
- * BACKGROUND MESSAGE HANDLER
+ * BACKGROUND MESSAGE HANDLER (Fallback for non-FCM push)
  * Called when:
  * 1. App is in background
  * 2. Browser tab is closed

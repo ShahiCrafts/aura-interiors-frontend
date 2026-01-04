@@ -15,15 +15,12 @@ export default function AuthCallback() {
       const token = params.get("token");
 
       if (token && window.location.pathname === "/auth/success") {
-        // Prevent duplicate execution (React StrictMode)
         if (isProcessing.current) return;
         isProcessing.current = true;
 
         try {
-          // Store token first so axios interceptor can use it
           localStorage.setItem("token", token);
 
-          // Fetch the full user profile from backend
           const response = await getProfile();
           const user = response.data?.data?.user;
 
@@ -31,18 +28,17 @@ export default function AuthCallback() {
             throw new Error("Failed to fetch user profile");
           }
 
-          // Now sign in with complete user data
           signIn(user, token);
-          toast.success(`Welcome${user.firstName ? `, ${user.firstName}` : ""}!`);
+          toast.success(
+            `Welcome${user.firstName ? `, ${user.firstName}` : ""}!`
+          );
 
-          // Redirect based on role
           if (user.role === "admin") {
             navigate("/admin", { replace: true });
           } else {
             navigate("/", { replace: true });
           }
         } catch (error) {
-          // Clean up on failure
           localStorage.removeItem("token");
           toast.error("Authentication failed. Please try again.");
           navigate("/", { replace: true });

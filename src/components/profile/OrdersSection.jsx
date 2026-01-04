@@ -10,7 +10,11 @@ import {
   CheckCircle,
   Clock,
 } from "lucide-react";
-import { useMyOrders, useCancelOrder, useRequestReturn } from "../../hooks/useOrderTan";
+import {
+  useMyOrders,
+  useCancelOrder,
+  useRequestReturn,
+} from "../../hooks/useOrderTan";
 import OrderCard from "./OrderCard";
 import { toast } from "../ui/Toast";
 
@@ -48,7 +52,6 @@ export default function OrdersSection() {
   const orders = data?.data?.orders || [];
   const pagination = data?.data?.pagination || { total: 0, pages: 1 };
 
-  // Calculate stats from all orders (we'll need to fetch all for accurate stats)
   const stats = useMemo(() => {
     const allOrders = orders;
     return {
@@ -61,38 +64,33 @@ export default function OrdersSection() {
     };
   }, [orders, pagination.total]);
 
-  // Filter and sort orders locally
   const filteredOrders = useMemo(() => {
     let result = [...orders];
 
-    // Search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       result = result.filter(
         (order) =>
           order.orderId?.toLowerCase().includes(query) ||
-          order.items?.some((item) =>
-            item.name?.toLowerCase().includes(query)
-          )
+          order.items?.some((item) => item.name?.toLowerCase().includes(query))
       );
     }
 
-    // Sort
     if (sortBy === "oldest") {
-      result.sort(
-        (a, b) => new Date(a.orderedAt) - new Date(b.orderedAt)
-      );
+      result.sort((a, b) => new Date(a.orderedAt) - new Date(b.orderedAt));
     } else {
-      result.sort(
-        (a, b) => new Date(b.orderedAt) - new Date(a.orderedAt)
-      );
+      result.sort((a, b) => new Date(b.orderedAt) - new Date(a.orderedAt));
     }
 
     return result;
   }, [orders, searchQuery, sortBy]);
 
   const handleCancelOrder = async (orderId) => {
-    if (!window.confirm("Are you sure you want to cancel this order? Stock will be restored.")) {
+    if (
+      !window.confirm(
+        "Are you sure you want to cancel this order? Stock will be restored."
+      )
+    ) {
       return;
     }
 
@@ -108,8 +106,10 @@ export default function OrdersSection() {
   };
 
   const handleRequestReturn = async (orderId) => {
-    const reason = window.prompt("Please provide a reason for return (e.g., defective product, wrong item):");
-    
+    const reason = window.prompt(
+      "Please provide a reason for return (e.g., defective product, wrong item):"
+    );
+
     if (!reason) {
       return;
     }
@@ -121,7 +121,9 @@ export default function OrdersSection() {
       });
       toast.success("Return request submitted successfully");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to submit return request");
+      toast.error(
+        err.response?.data?.message || "Failed to submit return request"
+      );
     }
   };
 
@@ -135,10 +137,7 @@ export default function OrdersSection() {
       <div className="space-y-6">
         <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 p-8">
           <div className="flex items-center justify-center h-64">
-            <Loader2
-              size={32}
-              className="text-teal-700 animate-spin"
-            />
+            <Loader2 size={32} className="text-teal-700 animate-spin" />
           </div>
         </div>
       </div>
@@ -162,7 +161,6 @@ export default function OrdersSection() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6 sm:p-8">
         <div className="mb-6">
           <h2 className="text-xl font-playfair text-neutral-900">
@@ -174,7 +172,6 @@ export default function OrdersSection() {
           </p>
         </div>
 
-        {/* Stats Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <button
             onClick={() => handleStatusFilterClick("")}
@@ -192,7 +189,9 @@ export default function OrdersSection() {
               >
                 <Package
                   size={20}
-                  className={statusFilter === "" ? "text-teal-600" : "text-neutral-500"}
+                  className={
+                    statusFilter === "" ? "text-teal-600" : "text-neutral-500"
+                  }
                 />
               </div>
               <div className="text-left">
@@ -307,9 +306,7 @@ export default function OrdersSection() {
           </button>
         </div>
 
-        {/* Search and Filters */}
         <div className="mt-6 flex flex-col sm:flex-row gap-4">
-          {/* Search */}
           <div className="flex-1 relative">
             <Search
               size={18}
@@ -324,7 +321,6 @@ export default function OrdersSection() {
             />
           </div>
 
-          {/* Status Filter Dropdown */}
           <div className="relative">
             <Filter
               size={16}
@@ -346,7 +342,6 @@ export default function OrdersSection() {
             </select>
           </div>
 
-          {/* Sort Dropdown */}
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
@@ -361,7 +356,6 @@ export default function OrdersSection() {
         </div>
       </div>
 
-      {/* Orders List */}
       {filteredOrders.length === 0 ? (
         <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 p-8">
           <div className="flex flex-col items-center justify-center h-64 text-center">
@@ -391,7 +385,6 @@ export default function OrdersSection() {
         </div>
       )}
 
-      {/* Pagination */}
       {pagination.pages > 1 && (
         <div className="flex items-center justify-center gap-2">
           <button

@@ -1,13 +1,17 @@
 import { Link, useParams } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 
-export default function CategorySidebar({ categories, currentCategory, productCounts }) {
+export default function CategorySidebar({
+  categories,
+  currentCategory,
+  productCounts,
+}) {
   const { categorySlug } = useParams();
 
-  // Get subcategories of current category, or root categories if none selected
-  const displayCategories = currentCategory?.subcategories?.length > 0
-    ? currentCategory.subcategories
-    : categories?.filter((cat) => !cat.parent) || [];
+  const displayCategories =
+    currentCategory?.subcategories?.length > 0
+      ? currentCategory.subcategories
+      : categories?.filter((cat) => !cat.parent) || [];
 
   if (!displayCategories.length) return null;
 
@@ -20,7 +24,8 @@ export default function CategorySidebar({ categories, currentCategory, productCo
       <div className="space-y-1">
         {displayCategories.map((category) => {
           const isActive = categorySlug === category.slug;
-          const count = productCounts?.[category._id] || category.productCount || 0;
+          const count =
+            productCounts?.[category._id] || category.productCount || 0;
 
           return (
             <Link
@@ -38,7 +43,11 @@ export default function CategorySidebar({ categories, currentCategory, productCo
                 )}
                 <span>{category.name}</span>
               </div>
-              <span className={`text-xs ${isActive ? "text-teal-600" : "text-neutral-400"}`}>
+              <span
+                className={`text-xs ${
+                  isActive ? "text-teal-600" : "text-neutral-400"
+                }`}
+              >
                 {count}
               </span>
             </Link>
@@ -46,7 +55,6 @@ export default function CategorySidebar({ categories, currentCategory, productCo
         })}
       </div>
 
-      {/* View All Link */}
       {currentCategory && (
         <Link
           to="/shop"

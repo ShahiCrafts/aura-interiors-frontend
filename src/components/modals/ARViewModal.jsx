@@ -5,7 +5,6 @@ import { QRCodeSVG } from "qrcode.react";
 export default function ARViewModal({ isOpen, onClose, product }) {
   const [isMobile, setIsMobile] = useState(false);
 
-  // Detect mobile device
   useEffect(() => {
     const checkMobile = () => {
       const userAgent = navigator.userAgent || navigator.vendor || window.opera;
@@ -16,7 +15,6 @@ export default function ARViewModal({ isOpen, onClose, product }) {
     checkMobile();
   }, []);
 
-  // Lock body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -30,7 +28,6 @@ export default function ARViewModal({ isOpen, onClose, product }) {
 
   if (!isOpen || !product) return null;
 
-  // Generate the AR view URL
   const getBaseUrl = () => {
     if (import.meta.env.VITE_APP_URL) {
       return import.meta.env.VITE_APP_URL;
@@ -57,10 +54,9 @@ export default function ARViewModal({ isOpen, onClose, product }) {
     }
   };
 
-  // Desktop View
   if (!isMobile) {
     return (
-      <div className="fixed inset-0 z-[100] overflow-y-auto">
+      <div className="fixed inset-0 z-100 overflow-y-auto">
         <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm"
           onClick={onClose}
@@ -69,10 +65,10 @@ export default function ARViewModal({ isOpen, onClose, product }) {
           <div
             className="relative w-full max-w-[400px] bg-white rounded-2xl shadow-2xl p-8 font-dm-sans"
             style={{
-              animation: "fadeInScale 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards",
+              animation:
+                "fadeInScale 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards",
             }}
           >
-            {/* Close Button */}
             <button
               onClick={onClose}
               className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-lg bg-neutral-100 hover:bg-neutral-200 transition-colors"
@@ -80,17 +76,14 @@ export default function ARViewModal({ isOpen, onClose, product }) {
               <X size={18} strokeWidth={1.5} className="text-neutral-500" />
             </button>
 
-            {/* Title */}
             <h2 className="text-center text-[22px] font-playfair text-neutral-900 mb-1">
               View in <span className="italic text-teal-700">Your Space</span>
             </h2>
 
-            {/* Subtitle */}
             <p className="text-center text-neutral-500 text-[15px] mb-6">
               Scan this QR code with your mobile device
             </p>
 
-            {/* QR Code */}
             <div className="flex justify-center mb-6">
               <div className="p-4 rounded-xl border border-neutral-200 bg-white">
                 <QRCodeSVG
@@ -104,7 +97,6 @@ export default function ARViewModal({ isOpen, onClose, product }) {
               </div>
             </div>
 
-            {/* Help Link */}
             <p className="text-center text-neutral-500 text-[15px]">
               Having trouble scanning?{" "}
               <button className="text-teal-700 font-semibold underline hover:text-teal-800">
@@ -123,9 +115,8 @@ export default function ARViewModal({ isOpen, onClose, product }) {
     );
   }
 
-  // Mobile View - Matches the design image exactly
   return (
-    <div className="fixed inset-0 z-[100] overflow-y-auto">
+    <div className="fixed inset-0 z-100 overflow-y-auto">
       <div
         className="fixed inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
@@ -137,7 +128,6 @@ export default function ARViewModal({ isOpen, onClose, product }) {
             animation: "fadeInScale 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards",
           }}
         >
-          {/* Close Button */}
           <button
             onClick={onClose}
             className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-lg bg-neutral-100 hover:bg-neutral-200 transition-colors"
@@ -145,7 +135,6 @@ export default function ARViewModal({ isOpen, onClose, product }) {
             <X size={18} strokeWidth={1.5} className="text-neutral-500" />
           </button>
 
-          {/* QR Code with light border */}
           <div className="flex justify-center mb-6">
             <div className="p-3 rounded-lg border border-neutral-200">
               <QRCodeSVG
@@ -159,17 +148,14 @@ export default function ARViewModal({ isOpen, onClose, product }) {
             </div>
           </div>
 
-          {/* Title */}
           <h2 className="text-center text-[22px] font-playfair text-neutral-900 mb-2">
             View in <span className="italic text-teal-700">Your Space</span>
           </h2>
 
-          {/* Subtitle */}
           <p className="text-center text-neutral-500 text-[15px] mb-6">
             Scan this QR code with your mobile device
           </p>
 
-          {/* Buttons */}
           <div className="flex gap-3 mb-6">
             <button
               onClick={handleOpenLink}
@@ -187,7 +173,6 @@ export default function ARViewModal({ isOpen, onClose, product }) {
             </button>
           </div>
 
-          {/* Help Link */}
           <p className="text-center text-neutral-500 text-[15px]">
             Having trouble scanning?{" "}
             <button className="text-teal-700 font-semibold underline hover:text-teal-800">

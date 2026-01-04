@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { Star, ChevronDown, Loader2, PenLine } from "lucide-react";
-import { useProductReviews, useCanReview, useUserReview } from "../../hooks/useReviewTan";
+import {
+  useProductReviews,
+  useCanReview,
+  useUserReview,
+} from "../../hooks/useReviewTan";
 import useAuthStore from "../../store/authStore";
 import ReviewItem from "./ReviewItem";
 import ReviewForm from "./ReviewForm";
@@ -17,25 +21,26 @@ export default function ReviewSection({ productId }) {
 
   const { isAuthenticated, user } = useAuthStore();
 
-  // Fetch reviews
   const {
     data: reviewsData,
     isLoading: isLoadingReviews,
     isFetching,
   } = useProductReviews(productId, filter);
 
-  // Check if user can review
   const { data: canReviewData } = useCanReview(productId, {
     enabled: isAuthenticated,
   });
 
-  // Get user's review if exists
   const { data: userReviewData } = useUserReview(productId);
 
   const reviews = reviewsData?.data?.reviews || [];
   const breakdown = reviewsData?.data?.breakdown || [];
   const stats = reviewsData?.data?.stats || { average: 0, total: 0 };
-  const pagination = reviewsData?.data?.pagination || { page: 1, pages: 1, total: 0 };
+  const pagination = reviewsData?.data?.pagination || {
+    page: 1,
+    pages: 1,
+    total: 0,
+  };
 
   const canReview = canReviewData?.data?.canReview;
   const hasReviewed = canReviewData?.data?.hasReviewed;
@@ -74,9 +79,7 @@ export default function ReviewSection({ productId }) {
         Customer Reviews
       </h2>
 
-      {/* Rating Summary */}
       <div className="flex flex-col sm:flex-row items-start gap-6 sm:gap-8 mb-8">
-        {/* Overall Rating */}
         <div className="text-center sm:text-left">
           <div className="text-4xl sm:text-5xl font-bold text-neutral-900 font-playfair">
             {stats.average.toFixed(1)}
@@ -99,7 +102,6 @@ export default function ReviewSection({ productId }) {
           </p>
         </div>
 
-        {/* Rating Breakdown */}
         <div className="flex-1 w-full sm:max-w-sm space-y-2">
           {breakdown.map((item) => (
             <button
@@ -110,7 +112,9 @@ export default function ReviewSection({ productId }) {
                 })
               }
               className={`w-full flex items-center gap-3 py-1 group transition-colors ${
-                filter.rating === item.stars ? "opacity-100" : "opacity-70 hover:opacity-100"
+                filter.rating === item.stars
+                  ? "opacity-100"
+                  : "opacity-70 hover:opacity-100"
               }`}
             >
               <span className="text-sm text-neutral-600 font-dm-sans w-12 text-left">
@@ -119,10 +123,15 @@ export default function ReviewSection({ productId }) {
               <div className="flex-1 h-2.5 bg-neutral-100 rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full transition-all ${
-                    filter.rating === item.stars ? "bg-teal-600" : "bg-amber-400"
+                    filter.rating === item.stars
+                      ? "bg-teal-600"
+                      : "bg-amber-400"
                   }`}
                   style={{
-                    width: stats.total > 0 ? `${(item.count / stats.total) * 100}%` : "0%",
+                    width:
+                      stats.total > 0
+                        ? `${(item.count / stats.total) * 100}%`
+                        : "0%",
                   }}
                 />
               </div>
@@ -134,7 +143,6 @@ export default function ReviewSection({ productId }) {
         </div>
       </div>
 
-      {/* Write Review Button / Login Prompt */}
       {isAuthenticated ? (
         hasReviewed ? (
           <div className="mb-6 p-4 bg-teal-50 rounded-lg">
@@ -160,7 +168,10 @@ export default function ReviewSection({ productId }) {
       ) : (
         <div className="mb-6 p-4 bg-neutral-50 rounded-lg">
           <p className="text-sm text-neutral-600 font-dm-sans">
-            <a href="/login" className="text-teal-700 font-semibold hover:underline">
+            <a
+              href="/login"
+              className="text-teal-700 font-semibold hover:underline"
+            >
               Login
             </a>{" "}
             to write a review
@@ -168,7 +179,6 @@ export default function ReviewSection({ productId }) {
         </div>
       )}
 
-      {/* Review Form */}
       {showReviewForm && (
         <div className="mb-6">
           <ReviewForm
@@ -185,10 +195,8 @@ export default function ReviewSection({ productId }) {
         </div>
       )}
 
-      {/* Filters and Sort */}
       {stats.total > 0 && (
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6 pb-4 border-b border-neutral-200">
-          {/* Filter by Rating */}
           {filter.rating && (
             <div className="flex items-center gap-2">
               <span className="text-sm text-neutral-600 font-dm-sans">
@@ -203,7 +211,6 @@ export default function ReviewSection({ productId }) {
             </div>
           )}
 
-          {/* Sort Dropdown */}
           <div className="relative ml-auto">
             <select
               value={filter.sort}
@@ -224,7 +231,6 @@ export default function ReviewSection({ productId }) {
         </div>
       )}
 
-      {/* Reviews List */}
       {isLoadingReviews ? (
         <div className="flex items-center justify-center py-12">
           <Loader2 size={32} className="text-teal-700 animate-spin" />
@@ -241,7 +247,6 @@ export default function ReviewSection({ productId }) {
             />
           ))}
 
-          {/* Load More */}
           {pagination.page < pagination.pages && (
             <button
               onClick={handleLoadMore}
