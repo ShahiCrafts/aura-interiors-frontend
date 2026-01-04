@@ -17,6 +17,7 @@ import {
   Layers,
   Percent,
   LogOut,
+  Megaphone,
 } from 'lucide-react';
 import useAuthStore from '../store/authStore';
 
@@ -36,6 +37,7 @@ export default function AdminLayout() {
     { id: 'products', label: 'Products', icon: Package, path: '/admin/products' },
     { id: 'orders', label: 'Orders', icon: ShoppingCart, path: '/admin/orders', badge: 5 },
     { id: 'discounts', label: 'Discounts', icon: Percent, path: '/admin/discounts' },
+    { id: 'promotions', label: 'Promotions', icon: Megaphone, path: '/admin/promotions' },
     { id: 'users', label: 'Users', icon: Users, path: '/admin/users' },
     { id: 'analytics', label: 'Analytics', icon: BarChart3, path: '/admin/analytics' },
     { id: 'categories', label: 'Categories', icon: Tag, path: '/admin/categories' },

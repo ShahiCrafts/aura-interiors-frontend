@@ -56,7 +56,7 @@ export default function Navbar() {
   );
 
   // Push notifications - will auto-request permission when user is authenticated
-  const authToken = localStorage.getItem('authToken');
+  const authToken = localStorage.getItem('token');
   const { requestPushPermission, pushPermission, pushSupported } = usePushNotifications(
     authToken,
     user

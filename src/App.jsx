@@ -31,6 +31,7 @@ import AdminProducts from "./pages/admin/Products";
 import AdminOrders from "./pages/admin/Orders";
 import AdminDiscounts from "./pages/admin/Discounts";
 import AdminReviews from "./pages/admin/Reviews";
+import AdminPromotions from "./pages/admin/Promotions";
 
 function HomePage() {
   const { isAuthenticated, user } = useAuthStore();
@@ -108,6 +109,7 @@ function App() {
           <Route path="products" element={<AdminProducts />} />
           <Route path="orders" element={<AdminOrders />} />
           <Route path="discounts" element={<AdminDiscounts />} />
+          <Route path="promotions" element={<AdminPromotions />} />
           <Route path="reviews" element={<AdminReviews />} />
         </Route>
       </Routes>
