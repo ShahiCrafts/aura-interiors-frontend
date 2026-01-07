@@ -237,7 +237,7 @@ export default function NotificationsPage() {
                     </div>
 
                     {/* Icon */}
-                    <div className="flex-shrink-0 mt-1">
+                    <div className="shrink-0 mt-1">
                       {getNotificationIcon(notification.type, notification.category)}
                     </div>
 
@@ -276,7 +276,7 @@ export default function NotificationsPage() {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex gap-2 flex-shrink-0">
+                    <div className="flex gap-2 shrink-0">
                       {!notification.isRead && (
                         <button
                           onClick={() => handleMarkAsRead(notification._id)}

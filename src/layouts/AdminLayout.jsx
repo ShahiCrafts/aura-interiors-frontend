@@ -38,6 +38,7 @@ export default function AdminLayout() {
     { id: 'orders', label: 'Orders', icon: ShoppingCart, path: '/admin/orders', badge: 5 },
     { id: 'discounts', label: 'Discounts', icon: Percent, path: '/admin/discounts' },
     { id: 'promotions', label: 'Promotions', icon: Megaphone, path: '/admin/promotions' },
+    { id: 'announcements', label: 'Announcements', icon: Bell, path: '/admin/announcements' },
     { id: 'users', label: 'Users', icon: Users, path: '/admin/users' },
     { id: 'analytics', label: 'Analytics', icon: BarChart3, path: '/admin/analytics' },
     { id: 'categories', label: 'Categories', icon: Tag, path: '/admin/categories' },
@@ -105,7 +106,7 @@ export default function AdminLayout() {
                   : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
               }`}
             >
-              <item.icon className={`w-5 h-5 flex-shrink-0 transition-colors duration-200 ${isActive(item.path) ? 'text-gray-900' : ''}`} />
+              <item.icon className={`w-5 h-5 shrink-0 transition-colors duration-200 ${isActive(item.path) ? 'text-gray-900' : ''}`} />
               <span className={`flex-1 transition-all duration-200 ${isActive(item.path) ? 'font-semibold' : 'font-medium'}`}>{item.label}</span>
               {item.badge && (
                 <span className="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-600">
@@ -122,7 +123,7 @@ export default function AdminLayout() {
             onClick={handleSignOut}
             className="flex items-center gap-4 px-4 py-3 w-full rounded-xl text-gray-500 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
           >
-            <LogOut className="w-5 h-5 flex-shrink-0" />
+            <LogOut className="w-5 h-5 shrink-0" />
             <span className="font-medium">Logout</span>
           </button>
         </div>

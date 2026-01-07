@@ -408,7 +408,7 @@ export default function Promotions() {
                   <tr key={promotion._id} className="hover:bg-gray-50/50">
                     <td className="py-4 px-6">
                       <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <div className="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center shrink-0">
                           <Megaphone className="w-5 h-5 text-teal-600" />
                         </div>
                         <div>

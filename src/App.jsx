@@ -32,6 +32,8 @@ import AdminOrders from "./pages/admin/Orders";
 import AdminDiscounts from "./pages/admin/Discounts";
 import AdminReviews from "./pages/admin/Reviews";
 import AdminPromotions from "./pages/admin/Promotions";
+import AdminAnnouncements from "./pages/admin/Announcements";
+import AnnouncementsPage from "./pages/AnnouncementsPage";
 
 function HomePage() {
   const { isAuthenticated, user } = useAuthStore();
@@ -94,6 +96,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/announcements"
+          element={
+            <ProtectedRoute>
+              <AnnouncementsPage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Admin Routes */}
         <Route
@@ -110,6 +120,7 @@ function App() {
           <Route path="orders" element={<AdminOrders />} />
           <Route path="discounts" element={<AdminDiscounts />} />
           <Route path="promotions" element={<AdminPromotions />} />
+          <Route path="announcements" element={<AdminAnnouncements />} />
           <Route path="reviews" element={<AdminReviews />} />
         </Route>
       </Routes>
