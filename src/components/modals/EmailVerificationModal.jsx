@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { X, Mail } from "lucide-react";
-import { toast } from "../ui/Toast";
+import { toast } from "react-toastify";
 import {
   useVerifyEmail,
   useResendVerificationCode,
-} from "../../hooks/useSignupTan";
+} from "../../hooks/auth/useSignupTan";
+import formatError from "../../utils/errorHandler";
 
 export default function EmailVerificationModal({
   isOpen,
@@ -80,7 +81,7 @@ export default function EmailVerificationModal({
         onSuccess?.();
       },
       onError: (err) => {
-        toast.error(err || "Verification failed. Please try again.");
+        toast.error(formatError(err, "Verification failed. Please try again."));
       },
     });
   };
@@ -92,7 +93,7 @@ export default function EmailVerificationModal({
           toast.success("Verification code sent!");
         },
         onError: (err) => {
-          toast.error(err || "Failed to resend code. Please try again.");
+          toast.error(formatError(err, "Failed to resend code. Please try again."));
         },
       });
     }
@@ -159,7 +160,7 @@ export default function EmailVerificationModal({
 
             {isError && (
               <p className="text-red-500 text-sm font-dm-sans text-center">
-                {error}
+                {formatError(error)}
               </p>
             )}
 

@@ -24,49 +24,11 @@ import {
   SORT_OPTIONS,
 } from "./components";
 
-const baseUrl =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
-const uploadsBaseUrl = baseUrl.replace("/api/v1", "");
+import { getProductImageUrl, getModelUrl as getModelUrlUtil } from "../../utils/imageUrl";
 
-const getProductImage = (product) => {
-  if (!product) return null;
+const getProductImage = (product) => getProductImageUrl(product);
 
-  if (product.primaryImage) {
-    const url = product.primaryImage;
-    if (url.startsWith("http")) return url;
-    return `${uploadsBaseUrl}/uploads/products/${url}`;
-  }
-
-  if (product.images?.length > 0) {
-    const primaryImg = product.images.find((img) => img.isPrimary);
-    const url = primaryImg?.url || product.images[0]?.url;
-    if (url) {
-      if (url.startsWith("http")) return url;
-      return `${uploadsBaseUrl}/uploads/products/${url}`;
-    }
-  }
-
-  return null;
-};
-
-const getModelUrl = (product) => {
-  if (product?.modelFiles?.length > 0) {
-    const glbModel = product.modelFiles.find(
-      (m) => m.format === "glb" || m.format === "gltf"
-    );
-    if (glbModel) {
-      if (glbModel.isExternal || glbModel.url?.startsWith("http")) {
-        return glbModel.url;
-      }
-      return `${uploadsBaseUrl}/uploads/models/${glbModel.url}`;
-    }
-  }
-  if (product?.modelUrl) {
-    if (product.modelUrl.startsWith("http")) return product.modelUrl;
-    return `${uploadsBaseUrl}/uploads/models/${product.modelUrl}`;
-  }
-  return null;
-};
+const getModelUrl = (product) => getModelUrlUtil(product);
 
 const NativeARView = ({
   products = [],
@@ -244,7 +206,6 @@ const NativeARView = ({
         setHasPlacedModel(true);
         triggerHaptic("success");
       } catch (err) {
-        console.error("Failed to place model:", err);
         triggerHaptic("error");
       }
     }
@@ -302,7 +263,7 @@ const NativeARView = ({
 
       const moveDistance = Math.sqrt(
         Math.pow(touches[0].clientX - g.startX, 2) +
-          Math.pow(touches[0].clientY - g.startY, 2)
+        Math.pow(touches[0].clientY - g.startY, 2)
       );
       if (moveDistance > 10) {
         g.touchMoved = true;
@@ -317,7 +278,7 @@ const NativeARView = ({
 
         const dragDistance = Math.sqrt(
           Math.pow(touches[0].clientX - g.startX, 2) +
-            Math.pow(touches[0].clientY - g.startY, 2)
+          Math.pow(touches[0].clientY - g.startY, 2)
         );
         if (dragDistance > 20) {
           g.didDrag = true;
@@ -480,7 +441,7 @@ const NativeARView = ({
               triggerHaptic("success");
             }
           } catch (err) {
-            console.error("Failed to place model:", err);
+            // Failed to place model
           }
         }
         setIsPlacing(false);
@@ -534,7 +495,7 @@ const NativeARView = ({
               break;
             }
           } catch (e) {
-            console.log("Canvas capture failed:", e);
+            // Canvas capture failed
           }
         }
       }
@@ -547,7 +508,6 @@ const NativeARView = ({
 
       uiElements?.forEach((el) => (el.style.visibility = "visible"));
     } catch (err) {
-      console.error("Screenshot failed:", err);
       triggerHaptic("error");
       setScreenshotError("Screenshot failed");
       setTimeout(() => setScreenshotError(null), 3000);
@@ -558,9 +518,8 @@ const NativeARView = ({
   const downloadScreenshot = useCallback(() => {
     if (!screenshotData) return;
     const link = document.createElement("a");
-    link.download = `AR-${
-      selectedProduct?.name || "capture"
-    }-${Date.now()}.jpg`;
+    link.download = `AR-${selectedProduct?.name || "capture"
+      }-${Date.now()}.jpg`;
     link.href = screenshotData;
     link.click();
     triggerHaptic("success");

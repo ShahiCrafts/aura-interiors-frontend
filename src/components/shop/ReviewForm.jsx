@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Star, X, Loader2 } from "lucide-react";
-import { useCreateReview, useUpdateReview } from "../../hooks/useReviewTan";
-import { toast } from "../ui/Toast";
+import { useCreateReview, useUpdateReview } from "../../hooks/review/useReviewTan";
+import { toast } from "react-toastify";
+import formatError from "../../utils/errorHandler";
 
 export default function ReviewForm({
   productId,
@@ -67,10 +68,8 @@ export default function ReviewForm({
             onSuccess?.();
             onClose?.();
           },
-          onError: (error) => {
-            toast.error(
-              error?.response?.data?.message || "Failed to update review"
-            );
+          onError: (err) => {
+            toast.error(formatError(err, "Failed to update review"));
           },
         }
       );
@@ -83,10 +82,8 @@ export default function ReviewForm({
             onSuccess?.();
             onClose?.();
           },
-          onError: (error) => {
-            toast.error(
-              error?.response?.data?.message || "Failed to submit review"
-            );
+          onError: (err) => {
+            toast.error(formatError(err, "Failed to submit review"));
           },
         }
       );
@@ -135,11 +132,10 @@ export default function ReviewForm({
                 >
                   <Star
                     size={28}
-                    className={`transition-colors ${
-                      star <= (hoveredRating || rating)
-                        ? "fill-amber-400 text-amber-400"
-                        : "fill-neutral-200 text-neutral-200"
-                    }`}
+                    className={`transition-colors ${star <= (hoveredRating || rating)
+                      ? "fill-amber-400 text-amber-400"
+                      : "fill-neutral-200 text-neutral-200"
+                      }`}
                   />
                 </button>
               ))}
@@ -230,8 +226,8 @@ export default function ReviewForm({
                 ? "Updating..."
                 : "Submitting..."
               : isEditing
-              ? "Update Review"
-              : "Submit Review"}
+                ? "Update Review"
+                : "Submit Review"}
           </button>
         </div>
       </form>

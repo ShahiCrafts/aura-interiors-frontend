@@ -24,6 +24,7 @@ import {
   Image,
   Tag,
 } from "lucide-react";
+import ConfirmationDialog from "../../components/modals/ConfirmationDialog";
 import {
   useAnnouncements,
   useCreateAnnouncement,
@@ -33,8 +34,10 @@ import {
   useScheduleAnnouncement,
   useArchiveAnnouncement,
   useAnnouncementStats,
-} from "../../hooks/useAnnouncementTan";
-import { toast } from "../../components/ui/Toast";
+} from "../../hooks/admin/useAnnouncementTan";
+import { toast } from "react-toastify";
+import Pagination from "../../components/common/Pagination";
+import formatError from "../../utils/errorHandler";
 
 const TYPE_OPTIONS = [
   { value: "general", label: "General", icon: Info, color: "bg-blue-500" },
@@ -69,6 +72,8 @@ export default function Announcements() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingAnnouncement, setEditingAnnouncement] = useState(null);
   const [scheduleModal, setScheduleModal] = useState(null);
@@ -86,12 +91,24 @@ export default function Announcements() {
     actionLabel: "",
     expiresAt: "",
     tags: "",
+    targetRoles: [],
+  });
+
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    onConfirm: () => { },
+    type: "danger",
+    isLoading: false,
   });
 
   // Fetch announcements
   const { data: announcementsData, isLoading } = useAnnouncements({
     status: statusFilter !== "all" ? statusFilter : undefined,
     type: typeFilter !== "all" ? typeFilter : undefined,
+    page,
+    limit: pageSize,
   });
   const announcements = announcementsData?.data?.announcements || [];
   const pagination = announcementsData?.data?.pagination || {};
@@ -192,20 +209,28 @@ export default function Announcements() {
       }
       handleCloseModal();
     } catch (err) {
-      toast.error(err.response?.data?.message || "Something went wrong");
+      toast.error(formatError(err, "Something went wrong"));
     }
   };
 
   const handlePublish = async (id) => {
-    if (!window.confirm("Are you sure you want to publish this announcement? Users will be notified.")) {
-      return;
-    }
-    try {
-      await publishMutation.mutateAsync(id);
-      toast.success("Announcement published successfully");
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to publish");
-    }
+    setConfirmModal({
+      isOpen: true,
+      title: "Publish Announcement?",
+      message: "Are you sure you want to publish this announcement? Users will be notified.",
+      type: "info",
+      onConfirm: async () => {
+        try {
+          setConfirmModal((prev) => ({ ...prev, isLoading: true }));
+          await publishMutation.mutateAsync(id);
+          toast.success("Announcement published successfully");
+          setConfirmModal({ ...confirmModal, isOpen: false, isLoading: false });
+        } catch (err) {
+          toast.error(formatError(err, "Failed to publish"));
+          setConfirmModal((prev) => ({ ...prev, isLoading: false }));
+        }
+      },
+    });
   };
 
   const handleSchedule = async () => {
@@ -222,32 +247,48 @@ export default function Announcements() {
       setScheduleModal(null);
       setScheduledTime("");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to schedule");
+      toast.error(formatError(err, "Failed to schedule"));
     }
   };
 
   const handleArchive = async (id) => {
-    if (!window.confirm("Are you sure you want to archive this announcement?")) {
-      return;
-    }
-    try {
-      await archiveMutation.mutateAsync(id);
-      toast.success("Announcement archived successfully");
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to archive");
-    }
+    setConfirmModal({
+      isOpen: true,
+      title: "Archive Announcement?",
+      message: "Are you sure you want to archive this announcement?",
+      type: "warning",
+      onConfirm: async () => {
+        try {
+          setConfirmModal((prev) => ({ ...prev, isLoading: true }));
+          await archiveMutation.mutateAsync(id);
+          toast.success("Announcement archived successfully");
+          setConfirmModal({ ...confirmModal, isOpen: false, isLoading: false });
+        } catch (err) {
+          toast.error(formatError(err, "Failed to archive"));
+          setConfirmModal((prev) => ({ ...prev, isLoading: false }));
+        }
+      },
+    });
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this announcement? This action cannot be undone.")) {
-      return;
-    }
-    try {
-      await deleteMutation.mutateAsync(id);
-      toast.success("Announcement deleted successfully");
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to delete");
-    }
+    setConfirmModal({
+      isOpen: true,
+      title: "Delete Announcement?",
+      message: "Are you sure you want to delete this announcement? This action cannot be undone.",
+      type: "danger",
+      onConfirm: async () => {
+        try {
+          setConfirmModal((prev) => ({ ...prev, isLoading: true }));
+          await deleteMutation.mutateAsync(id);
+          toast.success("Announcement deleted successfully");
+          setConfirmModal({ ...confirmModal, isOpen: false, isLoading: false });
+        } catch (err) {
+          toast.error(formatError(err, "Failed to delete"));
+          setConfirmModal((prev) => ({ ...prev, isLoading: false }));
+        }
+      },
+    });
   };
 
   // Filter announcements by search
@@ -272,9 +313,9 @@ export default function Announcements() {
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition-colors font-medium"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-teal-600 text-white rounded-lg shadow-sm text-sm font-medium hover:bg-teal-700 transition-colors"
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="w-4 h-4" />
           New Announcement
         </button>
       </div>
@@ -307,13 +348,19 @@ export default function Announcements() {
             type="text"
             placeholder="Search announcements..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setPage(1);
+            }}
             className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
           />
         </div>
         <select
           value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
+          onChange={(e) => {
+            setStatusFilter(e.target.value);
+            setPage(1);
+          }}
           className="px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 bg-white"
         >
           <option value="all">All Status</option>
@@ -324,7 +371,10 @@ export default function Announcements() {
         </select>
         <select
           value={typeFilter}
-          onChange={(e) => setTypeFilter(e.target.value)}
+          onChange={(e) => {
+            setTypeFilter(e.target.value);
+            setPage(1);
+          }}
           className="px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 bg-white"
         >
           <option value="all">All Types</option>
@@ -367,124 +417,132 @@ export default function Announcements() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-          {filteredAnnouncements.map((announcement) => {
-            const typeInfo = getTypeInfo(announcement.type);
-            const TypeIcon = typeInfo.icon;
-            const statusBadge = STATUS_BADGE[announcement.status] || STATUS_BADGE.draft;
+                {filteredAnnouncements.map((announcement) => {
+                  const typeInfo = getTypeInfo(announcement.type);
+                  const TypeIcon = typeInfo.icon;
+                  const statusBadge = STATUS_BADGE[announcement.status] || STATUS_BADGE.draft;
 
-            return (
-              <tr key={announcement._id} className="hover:bg-gray-50/50">
-                <td className="py-4 px-6">
-                  <div className="flex items-start gap-3">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${typeInfo.color}`}>
-                      <TypeIcon className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium text-gray-900">{announcement.title}</p>
-                        {announcement.isPinned && (
-                          <Pin className="w-4 h-4 text-teal-500" />
+                  return (
+                    <tr key={announcement._id} className="hover:bg-gray-50/50">
+                      <td className="py-4 px-6">
+                        <div className="flex items-start gap-3">
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${typeInfo.color}`}>
+                            <TypeIcon className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <p className="font-medium text-gray-900">{announcement.title}</p>
+                              {announcement.isPinned && (
+                                <Pin className="w-4 h-4 text-teal-500" />
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-500 line-clamp-1 max-w-xs">
+                              {announcement.summary || announcement.content}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-4 px-6">
+                        <div className="flex items-center gap-2">
+                          <Users className="w-4 h-4 text-gray-400" />
+                          <span className="text-sm text-gray-600">
+                            {TARGET_OPTIONS.find(t => t.value === announcement.targetAudience?.type)?.label || "All Users"}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-4 px-6">
+                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${statusBadge.bg} ${statusBadge.text}`}>
+                          {statusBadge.label}
+                        </span>
+                        {announcement.scheduledAt && announcement.status === "scheduled" && (
+                          <p className="text-xs text-gray-400 mt-1">
+                            {new Date(announcement.scheduledAt).toLocaleDateString()}{" "}
+                            {new Date(announcement.scheduledAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                          </p>
                         )}
-                      </div>
-                      <p className="text-sm text-gray-500 line-clamp-1 max-w-xs">
-                        {announcement.summary || announcement.content}
-                      </p>
-                    </div>
-                  </div>
-                </td>
-                <td className="py-4 px-6">
-                  <div className="flex items-center gap-2">
-                    <Users className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm text-gray-600">
-                      {TARGET_OPTIONS.find(t => t.value === announcement.targetAudience?.type)?.label || "All Users"}
-                    </span>
-                  </div>
-                </td>
-                <td className="py-4 px-6">
-                  <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${statusBadge.bg} ${statusBadge.text}`}>
-                    {statusBadge.label}
-                  </span>
-                  {announcement.scheduledAt && announcement.status === "scheduled" && (
-                    <p className="text-xs text-gray-400 mt-1">
-                      {new Date(announcement.scheduledAt).toLocaleDateString()}{" "}
-                      {new Date(announcement.scheduledAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                    </p>
-                  )}
-                </td>
-                <td className="py-4 px-6">
-                  <span className="text-sm text-gray-600">{announcement.viewCount || 0}</span>
-                </td>
-                <td className="py-4 px-6">
-                  <p className="text-sm text-gray-600">
-                    {new Date(announcement.createdAt).toLocaleDateString()}
-                  </p>
-                </td>
-                <td className="py-4 px-6">
-                  <div className="flex items-center justify-end gap-2">
-                    {announcement.status === "draft" && (
-                      <>
-                        <button
-                          onClick={() => handlePublish(announcement._id)}
-                          className="p-2 hover:bg-teal-50 rounded-lg transition-colors"
-                          title="Publish Now"
-                        >
-                          <Send className="w-4 h-4 text-teal-600" />
-                        </button>
-                        <button
-                          onClick={() => setScheduleModal(announcement)}
-                          className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
-                          title="Schedule"
-                        >
-                          <Calendar className="w-4 h-4 text-blue-600" />
-                        </button>
-                      </>
-                    )}
-                    {announcement.status === "scheduled" && (
-                      <button
-                        onClick={() => handlePublish(announcement._id)}
-                        className="p-2 hover:bg-teal-50 rounded-lg transition-colors"
-                        title="Publish Now"
-                      >
-                        <Send className="w-4 h-4 text-teal-600" />
-                      </button>
-                    )}
-                    {announcement.status === "published" && (
-                      <button
-                        onClick={() => handleArchive(announcement._id)}
-                        className="p-2 hover:bg-amber-50 rounded-lg transition-colors"
-                        title="Archive"
-                      >
-                        <Archive className="w-4 h-4 text-amber-600" />
-                      </button>
-                    )}
-                    {announcement.status !== "published" && (
-                      <>
-                        <button
-                          onClick={() => handleOpenModal(announcement)}
-                          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                          title="Edit"
-                        >
-                          <Edit className="w-4 h-4 text-gray-500" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(announcement._id)}
-                          className="p-2 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Delete"
-                        >
-                          <Trash2 className="w-4 h-4 text-red-500" />
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
+                      </td>
+                      <td className="py-4 px-6">
+                        <span className="text-sm text-gray-600">{announcement.viewCount || 0}</span>
+                      </td>
+                      <td className="py-4 px-6">
+                        <p className="text-sm text-gray-600">
+                          {new Date(announcement.createdAt).toLocaleDateString()}
+                        </p>
+                      </td>
+                      <td className="py-4 px-6">
+                        <div className="flex items-center justify-end gap-2">
+                          {announcement.status === "draft" && (
+                            <>
+                              <button
+                                onClick={() => handlePublish(announcement._id)}
+                                className="p-2 hover:bg-teal-50 rounded-lg transition-colors"
+                                title="Publish Now"
+                              >
+                                <Send className="w-4 h-4 text-teal-600" />
+                              </button>
+                              <button
+                                onClick={() => setScheduleModal(announcement)}
+                                className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                                title="Schedule"
+                              >
+                                <Calendar className="w-4 h-4 text-blue-600" />
+                              </button>
+                            </>
+                          )}
+                          {announcement.status === "scheduled" && (
+                            <button
+                              onClick={() => handlePublish(announcement._id)}
+                              className="p-2 hover:bg-teal-50 rounded-lg transition-colors"
+                              title="Publish Now"
+                            >
+                              <Send className="w-4 h-4 text-teal-600" />
+                            </button>
+                          )}
+                          {announcement.status === "published" && (
+                            <button
+                              onClick={() => handleArchive(announcement._id)}
+                              className="p-2 hover:bg-amber-50 rounded-lg transition-colors"
+                              title="Archive"
+                            >
+                              <Archive className="w-4 h-4 text-amber-600" />
+                            </button>
+                          )}
+                          {announcement.status !== "published" && (
+                            <>
+                              <button
+                                onClick={() => handleOpenModal(announcement)}
+                                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                                title="Edit"
+                              >
+                                <Edit className="w-4 h-4 text-gray-500" />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(announcement._id)}
+                                className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                                title="Delete"
+                              >
+                                <Trash2 className="w-4 h-4 text-red-500" />
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         </div>
       )}
+
+      <Pagination
+        page={page}
+        totalPages={pagination.pages}
+        pageSize={pageSize}
+        totalItems={pagination.total}
+        onPageChange={setPage}
+      />
 
       {/* Create/Edit Modal */}
       <AnimatePresence>
@@ -791,6 +849,17 @@ export default function Announcements() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <ConfirmationDialog
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal({ ...confirmModal, isOpen: false })}
+        confirmText="Confirm"
+        type={confirmModal.type}
+        isLoading={confirmModal.isLoading}
+      />
     </div>
   );
 }

@@ -4,7 +4,7 @@ import {
   useProductReviews,
   useCanReview,
   useUserReview,
-} from "../../hooks/useReviewTan";
+} from "../../hooks/review/useReviewTan";
 import useAuthStore from "../../store/authStore";
 import ReviewItem from "./ReviewItem";
 import ReviewForm from "./ReviewForm";
@@ -111,22 +111,20 @@ export default function ReviewSection({ productId }) {
                   rating: filter.rating === item.stars ? undefined : item.stars,
                 })
               }
-              className={`w-full flex items-center gap-3 py-1 group transition-colors ${
-                filter.rating === item.stars
+              className={`w-full flex items-center gap-3 py-1 group transition-colors ${filter.rating === item.stars
                   ? "opacity-100"
                   : "opacity-70 hover:opacity-100"
-              }`}
+                }`}
             >
               <span className="text-sm text-neutral-600 font-dm-sans w-12 text-left">
                 {item.stars} star
               </span>
               <div className="flex-1 h-2.5 bg-neutral-100 rounded-full overflow-hidden">
                 <div
-                  className={`h-full rounded-full transition-all ${
-                    filter.rating === item.stars
+                  className={`h-full rounded-full transition-all ${filter.rating === item.stars
                       ? "bg-teal-600"
                       : "bg-amber-400"
-                  }`}
+                    }`}
                   style={{
                     width:
                       stats.total > 0

@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { X, Mail, Lock, Eye, EyeOff } from "lucide-react";
-import { toast } from "../ui/Toast";
+import { toast } from "react-toastify";
 import useAuthStore from "../../store/authStore";
-import { useLogin } from "../../hooks/useLoginTan";
+import { useLogin } from "../../hooks/auth/useLoginTan";
 import ForgotPasswordModal from "./ForgotPasswordModal";
+import formatError from "../../utils/errorHandler";
 
 export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
   const [formData, setFormData] = useState({
@@ -55,16 +56,17 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
           }
         },
         onError: (err) => {
-          toast.error(err || "Login failed. Please try again.");
+          toast.error(formatError(err, "Login failed. Please try again."));
         },
       }
     );
   };
 
   const handleGoogleLogin = () => {
-    const backendUrl =
-      import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
-    window.location.href = `${backendUrl}/auth/google`;
+    const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+    const baseUrl = rawBaseUrl.endsWith("/") ? rawBaseUrl.slice(0, -1) : rawBaseUrl;
+    const apiBaseUrl = baseUrl.includes("/api/v1") ? baseUrl : `${baseUrl}/api/v1`;
+    window.location.href = `${apiBaseUrl}/auth/google`;
   };
 
   if (!isOpen) return null;
@@ -91,11 +93,11 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
           </button>
 
           <div className="mb-6">
-            <h2 className="text-2xl sm:text-3xl font-playfair text-neutral-900">
-              <span className="font-bold">Welcome</span>{" "}
+            <h2 className="text-xl sm:text-2xl font-playfair text-neutral-900">
+              <span className="font-medium">Welcome</span>{" "}
               <span className="italic text-teal-700">back!</span>
             </h2>
-            <p className="text-neutral-500 mt-1 font-dm-sans text-sm sm:text-base">
+            <p className="text-neutral-500 mt-2 font-dm-sans text-sm sm:text-base">
               Sign in to continue using Aura Interiors
             </p>
           </div>
@@ -166,20 +168,20 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
               <button
                 type="button"
                 onClick={() => setShowForgotPassword(true)}
-                className="text-sm text-teal-700 font-semibold hover:underline font-dm-sans"
+                className="text-sm text-red-500 font-medium hover:underline font-dm-sans"
               >
                 Forgot password?
               </button>
             </div>
 
             {isError && (
-              <p className="text-red-500 text-sm font-dm-sans">{error}</p>
+              <p className="text-red-500 text-sm font-dm-sans">{formatError(error)}</p>
             )}
 
             <button
               type="submit"
               disabled={isPending}
-              className="w-full py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-dm-sans"
+              className="w-full py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 font-dm-sans"
             >
               {isPending ? "Signing in..." : "Sign In"}
             </button>

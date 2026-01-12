@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { X, Lock, Eye, EyeOff, Check, ShieldCheck } from "lucide-react";
-import { toast } from "../ui/Toast";
-import { useUpdatePassword } from "../../hooks/usePasswordTan";
+import { toast } from "react-toastify";
+import { useUpdatePassword } from "../../hooks/auth/usePasswordTan";
+import formatError from "../../utils/errorHandler";
 
 export default function ChangePasswordModal({ isOpen, onClose }) {
   const [formData, setFormData] = useState({
@@ -96,7 +97,7 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
           onClose();
         },
         onError: (err) => {
-          toast.error(err || "Failed to update password");
+          toast.error(formatError(err, "Failed to update password"));
         },
       }
     );
@@ -131,8 +132,8 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
               <Lock size={24} className="text-teal-700" />
             </div>
             <div>
-              <h2 className="text-xl sm:text-2xl font-playfair text-neutral-900">
-                <span className="font-bold">Change</span>{" "}
+              <h2 className="text-xl sm:text-2xl mb-1 font-playfair text-neutral-900">
+                <span className="font-medium">Change</span>{" "}
                 <span className="italic text-teal-700">Password</span>
               </h2>
               <p className="text-neutral-500 font-dm-sans text-sm">
@@ -216,13 +217,12 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
                   onChange={handleChange}
                   placeholder="Confirm your new password"
                   required
-                  className={`w-full px-4 py-2.5 pr-11 rounded-lg border outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400 ${
-                    formData.confirmPassword
-                      ? passwordsMatch
-                        ? "border-teal-500 focus:border-teal-600 focus:ring-1 focus:ring-teal-600 bg-teal-50/30"
-                        : "border-red-300 focus:border-red-500 focus:ring-1 focus:ring-red-500"
-                      : "border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700"
-                  }`}
+                  className={`w-full px-4 py-2.5 pr-11 rounded-lg border outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400 ${formData.confirmPassword
+                    ? passwordsMatch
+                      ? "border-teal-500 focus:border-teal-600 focus:ring-1 focus:ring-teal-600 bg-teal-50/30"
+                      : "border-red-300 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                    : "border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700"
+                    }`}
                 />
                 <button
                   type="button"
@@ -254,18 +254,18 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
               )}
             </div>
 
-            <div className="flex gap-3 pt-2">
+            <div className="flex gap-3 pt-2 mt-6">
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 py-3 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-semibold rounded-full transition-all duration-300 font-dm-sans"
+                className="flex-1 py-3 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-semibold rounded-xl transition-all duration-300 font-dm-sans"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isPending || !passwordsMatch}
-                className="flex-1 py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-dm-sans"
+                className="flex-1 py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-xl font-dm-sans"
               >
                 {isPending ? "Updating..." : "Update Password"}
               </button>

@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { X, Mail, ArrowLeft } from "lucide-react";
-import { toast } from "../ui/Toast";
-import { useForgotPassword } from "../../hooks/usePasswordTan";
+import { toast } from "react-toastify";
+import { useForgotPassword } from "../../hooks/auth/usePasswordTan";
+import formatError from "../../utils/errorHandler";
 
 export default function ForgotPasswordModal({
   isOpen,
@@ -34,7 +35,7 @@ export default function ForgotPasswordModal({
         toast.success("Reset link sent to your email!");
       },
       onError: (err) => {
-        toast.error(err || "Failed to send reset link");
+        toast.error(formatError(err, "Failed to send reset link"));
       },
     });
   };
@@ -67,16 +68,16 @@ export default function ForgotPasswordModal({
               <div className="mb-6">
                 <button
                   onClick={onBackToLogin}
-                  className="flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700 mb-4 transition-colors"
+                  className="flex items-center gap-1 text-sm text-teal-700 hover:text-neutral-700 mb-4 transition-colors"
                 >
                   <ArrowLeft size={16} />
                   Back to login
                 </button>
-                <h2 className="text-2xl sm:text-3xl font-playfair text-neutral-900">
-                  <span className="font-bold">Forgot</span>{" "}
+                <h2 className="text-xl sm:text-2xl font-playfair text-neutral-900">
+                  <span className="font-medium">Forgot</span>{" "}
                   <span className="italic text-teal-700">password?</span>
                 </h2>
-                <p className="text-neutral-500 mt-1 font-dm-sans text-sm sm:text-base">
+                <p className="text-neutral-500 mt-2 font-dm-sans text-sm sm:text-base">
                   Enter your email and we'll send you a reset link
                 </p>
               </div>
@@ -105,7 +106,7 @@ export default function ForgotPasswordModal({
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="w-full py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-dm-sans"
+                  className="w-full py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full font-dm-sans mt-3"
                 >
                   {isPending ? "Sending..." : "Send Reset Link"}
                 </button>

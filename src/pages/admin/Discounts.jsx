@@ -8,42 +8,55 @@ import {
   X,
   Percent,
   Tag,
-  Calendar,
-  Users,
   Loader2,
-  CheckCircle,
-  XCircle,
-  Clock,
+  Ticket,
+  ChevronDown,
 } from "lucide-react";
+import ConfirmationDialog from "../../components/modals/ConfirmationDialog";
 import {
   useDiscounts,
   useCreateDiscount,
   useUpdateDiscount,
   useDeleteDiscount,
-} from "../../hooks/useDiscountTan";
-import { toast } from "../../components/ui/Toast";
+} from "../../hooks/admin/useDiscountTan";
+import { toast } from "react-toastify";
+import Pagination from "../../components/common/Pagination";
+import formatError from "../../utils/errorHandler";
 
 export default function Discounts() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10);
+
+  // Modal States
   const [modalOpen, setModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedDiscountId, setSelectedDiscountId] = useState(null);
   const [editingDiscount, setEditingDiscount] = useState(null);
   const [discountForm, setDiscountForm] = useState({
     code: "",
     description: "",
     discountPercentage: "",
-    minimumOrderAmount: "",
+    minimumOrderAmount: "0",
     maxUsageLimit: "",
     expiryDate: "",
     isActive: true,
   });
 
   // Fetch discounts
-  const { data: discountsData, isLoading } = useDiscounts({
+  const {
+    data: discountsData,
+    isLoading,
+    error,
+  } = useDiscounts({
     status: statusFilter !== "all" ? statusFilter : undefined,
+    page,
+    limit: pageSize,
   });
+
   const discounts = discountsData?.data?.discounts || [];
-  const pagination = discountsData?.data?.pagination || {};
+  const pagination = discountsData?.data?.pagination || { total: 0, pages: 1 };
 
   // Mutations
   const createMutation = useCreateDiscount();
@@ -79,35 +92,20 @@ export default function Discounts() {
     setModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setModalOpen(false);
-    setEditingDiscount(null);
-    setDiscountForm({
-      code: "",
-      description: "",
-      discountPercentage: "",
-      minimumOrderAmount: "0",
-      maxUsageLimit: "",
-      expiryDate: "",
-      isActive: true,
-    });
-  };
-
   const handleSaveDiscount = async () => {
     if (
       !discountForm.code ||
       !discountForm.discountPercentage ||
       !discountForm.expiryDate
     ) {
-      toast.error("Please fill in required fields");
-      return;
+      return toast.error("Please fill in required fields");
     }
 
     const formData = {
       code: discountForm.code.toUpperCase(),
       description: discountForm.description,
-      discountPercentage: parseFloat(discountForm.discountPercentage),
-      minimumOrderAmount: parseFloat(discountForm.minimumOrderAmount) || 0,
+      discountPercentage: parseInt(discountForm.discountPercentage),
+      minimumOrderAmount: parseInt(discountForm.minimumOrderAmount) || 0,
       maxUsageLimit: discountForm.maxUsageLimit
         ? parseInt(discountForm.maxUsageLimit)
         : null,
@@ -115,71 +113,80 @@ export default function Discounts() {
       isActive: discountForm.isActive,
     };
 
-    try {
-      if (editingDiscount) {
-        await updateMutation.mutateAsync({
-          id: editingDiscount._id,
-          data: formData,
-        });
-        toast.success("Discount updated successfully");
-      } else {
-        await createMutation.mutateAsync(formData);
-        toast.success("Discount created successfully");
-      }
-      handleCloseModal();
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Something went wrong");
+    if (editingDiscount) {
+      updateMutation.mutate(
+        { id: editingDiscount._id, data: formData },
+        {
+          onSuccess: () => {
+            toast.success("Discount updated");
+            setModalOpen(false);
+          },
+          onError: (err) => {
+            toast.error(formatError(err, "Operation failed"));
+          },
+        }
+      );
+    } else {
+      createMutation.mutate(formData, {
+        onSuccess: () => {
+          toast.success("Discount created");
+          setModalOpen(false);
+        },
+        onError: (err) => {
+          toast.error(formatError(err, "Operation failed"));
+        },
+      });
     }
   };
 
-  const handleDeleteDiscount = async (id) => {
-    if (confirm("Are you sure you want to delete this discount code?")) {
-      try {
-        await deleteMutation.mutateAsync(id);
+  const confirmDelete = (id) => {
+    setSelectedDiscountId(id);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteDiscount = async () => {
+    deleteMutation.mutate(selectedDiscountId, {
+      onSuccess: () => {
         toast.success("Discount deleted successfully");
-      } catch (err) {
-        toast.error(err.response?.data?.message || "Failed to delete discount");
-      }
-    }
+        setDeleteModalOpen(false);
+      },
+      onError: (err) => {
+        toast.error(formatError(err, "Failed to delete discount"));
+      },
+    });
   };
 
   const getStatusBadge = (discount) => {
-    if (!discount.isActive) {
+    const isExpired = new Date(discount.expiryDate) < new Date();
+    const isLimitReached =
+      discount.maxUsageLimit &&
+      discount.currentUsageCount >= discount.maxUsageLimit;
+
+    if (!discount.isActive)
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-          <XCircle className="w-3.5 h-3.5" />
+        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-gray-100 text-gray-600">
           Inactive
         </span>
       );
-    }
-    if (new Date(discount.expiryDate) < new Date()) {
+    if (isExpired)
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
-          <Clock className="w-3.5 h-3.5" />
+        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-red-100 text-red-700">
           Expired
         </span>
       );
-    }
-    if (
-      discount.maxUsageLimit &&
-      discount.currentUsageCount >= discount.maxUsageLimit
-    ) {
+    if (isLimitReached)
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700">
-          <Users className="w-3.5 h-3.5" />
+        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-700">
           Limit Reached
         </span>
       );
-    }
     return (
-      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
-        <CheckCircle className="w-3.5 h-3.5" />
+      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-teal-100 text-teal-700">
         Active
       </span>
     );
   };
 
-  // Filter by search query
   const filteredDiscounts = discounts.filter((d) =>
     d.code.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -189,143 +196,151 @@ export default function Discounts() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 font-playfair">
-            Discount Codes
-          </h1>
-          <p className="text-gray-500 mt-1 font-dm-sans">
-            {pagination.total || 0} total discounts
+          <h1 className="text-2xl font-bold text-gray-900">Discounts</h1>
+          <p className="text-gray-500 mt-0.5 text-sm">
+            Create and manage coupon codes for your shop
           </p>
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="flex items-center gap-2 px-4 py-2.5 bg-teal-700 text-white rounded-xl font-medium hover:bg-teal-800 transition-colors font-dm-sans"
+          className="flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white rounded-lg shadow-sm text-sm font-semibold hover:bg-teal-700 transition-all active:scale-95"
         >
-          <Plus className="w-5 h-5" />
-          Add Discount
+          <Plus className="w-4 h-4" /> Add New Discount
         </button>
       </div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-4">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search by code..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 font-dm-sans"
-            />
-          </div>
-          <div className="flex gap-2">
-            {["all", "active", "expired", "inactive"].map((status) => (
-              <button
-                key={status}
-                onClick={() => setStatusFilter(status)}
-                className={`px-4 py-2.5 rounded-xl text-sm font-medium capitalize transition-colors font-dm-sans ${
-                  statusFilter === status
-                    ? "bg-teal-700 text-white"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
+      {/* Main Card */}
+      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
+        <div className="p-4 border-b border-gray-100">
+          <div className="flex flex-col lg:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search codes..."
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setPage(1);
+                }}
+                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all placeholder:text-gray-400"
+              />
+            </div>
+            <div className="relative">
+              <select
+                value={statusFilter}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value);
+                  setPage(1);
+                }}
+                className="appearance-none pl-4 pr-10 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 cursor-pointer min-w-40"
               >
-                {status}
-              </button>
-            ))}
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="expired">Expired</option>
+                <option value="inactive">Inactive</option>
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Discounts Table */}
-      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-teal-700" />
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
+          </div>
+        ) : error ? (
+          <div className="py-20 text-center">
+            <h2 className="text-lg font-semibold text-red-600 mb-2">
+              Error Loading Discounts
+            </h2>
+            <p className="text-gray-500">{formatError(error)}</p>
+          </div>
+        ) : filteredDiscounts.length === 0 ? (
+          <div className="py-20 text-center">
+            <Ticket className="w-12 h-12 text-gray-200 mx-auto mb-4" />
+            <h3 className="text-gray-900 font-semibold">No discounts found</h3>
+            <p className="text-gray-500 text-sm mt-1">
+              Try changing your filters or add a new code.
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4 font-dm-sans">
-                    Code
+            <table className="w-full text-left">
+              <thead>
+                <tr className="bg-gray-50/80 border-b border-gray-100">
+                  <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Discount Code
                   </th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4 font-dm-sans">
-                    Discount
+                  <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Percentage
                   </th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4 font-dm-sans">
-                    Min. Order
+                  <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Requirement
                   </th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4 font-dm-sans">
+                  <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     Usage
                   </th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4 font-dm-sans">
-                    Expiry
-                  </th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4 font-dm-sans">
+                  <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="text-right text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4 font-dm-sans">
+                  <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-50">
                 {filteredDiscounts.map((discount) => (
                   <motion.tr
                     key={discount._id}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="hover:bg-gray-50 transition-colors"
+                    className="hover:bg-gray-50/50 transition-colors"
                   >
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-2">
-                        <Tag className="w-4 h-4 text-teal-700" />
-                        <span className="font-mono font-semibold text-gray-900">
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col">
+                        <span className="font-mono font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded w-fit text-sm">
                           {discount.code}
                         </span>
+                        <span className="text-xs text-gray-400 mt-1">
+                          {discount.description || "Coupon code"}
+                        </span>
                       </div>
-                      {discount.description && (
-                        <p className="text-xs text-gray-500 mt-1 font-dm-sans">
-                          {discount.description}
-                        </p>
-                      )}
                     </td>
-                    <td className="px-5 py-4">
-                      <span className="inline-flex items-center gap-1 font-semibold text-teal-700 font-dm-sans">
-                        <Percent className="w-4 h-4" />
+                    <td className="px-6 py-4">
+                      <span className="text-sm font-bold text-gray-900">
                         {discount.discountPercentage}% OFF
                       </span>
                     </td>
-                    <td className="px-5 py-4 text-gray-600 font-dm-sans">
-                      NRs. {discount.minimumOrderAmount?.toLocaleString() || 0}
+                    <td className="px-6 py-4">
+                      <span className="text-xs text-gray-600 font-medium">
+                        Min: Rs. {discount.minimumOrderAmount?.toLocaleString()}
+                      </span>
                     </td>
-                    <td className="px-5 py-4 text-gray-600 font-dm-sans">
-                      {discount.currentUsageCount}
-                      {discount.maxUsageLimit
-                        ? ` / ${discount.maxUsageLimit}`
-                        : " / Unlimited"}
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col">
+                        <span className="text-sm font-semibold text-gray-900">
+                          {discount.currentUsageCount}
+                        </span>
+                        <span className="text-[10px] text-gray-400 uppercase font-bold">
+                          Limit: {discount.maxUsageLimit || "∞"}
+                        </span>
+                      </div>
                     </td>
-                    <td className="px-5 py-4 text-gray-600 font-dm-sans">
-                      {new Date(discount.expiryDate).toLocaleDateString()}
-                    </td>
-                    <td className="px-5 py-4">{getStatusBadge(discount)}</td>
-                    <td className="px-5 py-4">
-                      <div className="flex items-center justify-end gap-1">
+                    <td className="px-6 py-4">{getStatusBadge(discount)}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-center gap-2">
                         <button
                           onClick={() => handleOpenModal(discount)}
-                          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                          title="Edit"
+                          className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
                         >
-                          <Edit className="w-4 h-4 text-gray-500" />
+                          <Edit size={16} />
                         </button>
                         <button
-                          onClick={() => handleDeleteDiscount(discount._id)}
-                          className="p-2 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Delete"
-                          disabled={deleteMutation.isPending}
+                          onClick={() => confirmDelete(discount._id)}
+                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                         >
-                          <Trash2 className="w-4 h-4 text-red-500" />
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     </td>
@@ -336,91 +351,63 @@ export default function Discounts() {
           </div>
         )}
 
-        {!isLoading && filteredDiscounts.length === 0 && (
-          <div className="p-12 text-center">
-            <Percent className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <h3 className="font-medium text-gray-900 mb-1 font-playfair">
-              No discounts found
-            </h3>
-            <p className="text-sm text-gray-500 font-dm-sans">
-              Create your first discount code to get started
-            </p>
-          </div>
-        )}
+        <Pagination
+          page={page}
+          totalPages={pagination.pages}
+          pageSize={pageSize}
+          totalItems={pagination.total}
+          onPageChange={setPage}
+        />
       </div>
 
-      {/* Add/Edit Discount Modal */}
+      {/* Save Modal */}
       <AnimatePresence>
         {modalOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+          <div
             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={handleCloseModal}
+            onClick={() => setModalOpen(false)}
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Modal Header */}
-              <div className="flex items-center justify-between p-6 border-b border-gray-100">
-                <h2 className="text-xl font-bold text-gray-900 font-playfair">
-                  {editingDiscount ? "Edit Discount" : "Add New Discount"}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <h2 className="text-lg font-bold text-gray-900">
+                  {editingDiscount ? "Edit Discount" : "New Discount Code"}
                 </h2>
                 <button
-                  onClick={handleCloseModal}
-                  className="w-10 h-10 rounded-xl hover:bg-gray-100 flex items-center justify-center transition-colors"
+                  onClick={() => setModalOpen(false)}
+                  className="p-2 hover:bg-gray-100 rounded-lg"
                 >
-                  <X className="w-5 h-5 text-gray-500" />
+                  <X size={20} className="text-gray-400" />
                 </button>
               </div>
 
-              {/* Modal Content */}
-              <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2 font-dm-sans">
-                    Discount Code *
-                  </label>
-                  <input
-                    type="text"
-                    value={discountForm.code}
-                    onChange={(e) =>
-                      setDiscountForm({
-                        ...discountForm,
-                        code: e.target.value.toUpperCase(),
-                      })
-                    }
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all font-mono uppercase"
-                    placeholder="SAVE20"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2 font-dm-sans">
-                    Description
-                  </label>
-                  <input
-                    type="text"
-                    value={discountForm.description}
-                    onChange={(e) =>
-                      setDiscountForm({
-                        ...discountForm,
-                        description: e.target.value,
-                      })
-                    }
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all font-dm-sans"
-                    placeholder="20% off on orders above NRs. 5000"
-                  />
-                </div>
-
+              <div className="p-6 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 font-dm-sans">
-                      Discount Percentage *
+                  <div className="col-span-2 sm:col-span-1">
+                    <label className="block text-xs font-bold uppercase text-gray-500 mb-1.5">
+                      Coupon Code *
+                    </label>
+                    <input
+                      type="text"
+                      value={discountForm.code}
+                      onChange={(e) =>
+                        setDiscountForm({
+                          ...discountForm,
+                          code: e.target.value.toUpperCase(),
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:border-teal-500 outline-none font-mono font-bold"
+                      placeholder="SALE50"
+                    />
+                  </div>
+                  <div className="col-span-2 sm:col-span-1">
+                    <label className="block text-xs font-bold uppercase text-gray-500 mb-1.5">
+                      Discount % *
                     </label>
                     <div className="relative">
                       <input
@@ -432,43 +419,52 @@ export default function Discounts() {
                             discountPercentage: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-3 pr-10 rounded-xl border border-gray-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all font-dm-sans"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:border-teal-500 outline-none"
                         placeholder="20"
-                        min="1"
-                        max="100"
                       />
-                      <Percent className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 font-dm-sans">
-                      Min. Order Amount
-                    </label>
-                    <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-dm-sans">
-                        Rs.
-                      </span>
-                      <input
-                        type="number"
-                        value={discountForm.minimumOrderAmount}
-                        onChange={(e) =>
-                          setDiscountForm({
-                            ...discountForm,
-                            minimumOrderAmount: e.target.value,
-                          })
-                        }
-                        className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all font-dm-sans"
-                        placeholder="5000"
-                        min="0"
+                      <Percent
+                        size={14}
+                        className="absolute right-3 top-3 text-gray-400"
                       />
                     </div>
                   </div>
                 </div>
-
+                <div>
+                  <label className="block text-xs font-bold uppercase text-gray-500 mb-1.5">
+                    Description
+                  </label>
+                  <input
+                    value={discountForm.description}
+                    onChange={(e) =>
+                      setDiscountForm({
+                        ...discountForm,
+                        description: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:border-teal-500 outline-none text-sm"
+                    placeholder="Holiday season sale..."
+                  />
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 font-dm-sans">
-                      Usage Limit
+                    <label className="block text-xs font-bold uppercase text-gray-500 mb-1.5">
+                      Min. Order (Rs.)
+                    </label>
+                    <input
+                      type="number"
+                      value={discountForm.minimumOrderAmount}
+                      onChange={(e) =>
+                        setDiscountForm({
+                          ...discountForm,
+                          minimumOrderAmount: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:border-teal-500 outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-gray-500 mb-1.5">
+                      Max Usage
                     </label>
                     <input
                       type="number"
@@ -479,16 +475,14 @@ export default function Discounts() {
                           maxUsageLimit: e.target.value,
                         })
                       }
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all font-dm-sans"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:border-teal-500 outline-none"
                       placeholder="Unlimited"
-                      min="1"
                     />
-                    <p className="text-xs text-gray-500 mt-1 font-dm-sans">
-                      Leave empty for unlimited
-                    </p>
                   </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 font-dm-sans">
+                    <label className="block text-xs font-bold uppercase text-gray-500 mb-1.5">
                       Expiry Date *
                     </label>
                     <input
@@ -500,62 +494,68 @@ export default function Discounts() {
                           expiryDate: e.target.value,
                         })
                       }
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all font-dm-sans"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:border-teal-500 outline-none text-sm"
                       min={new Date().toISOString().split("T")[0]}
                     />
                   </div>
+                  <div className="flex items-end">
+                    <label className="flex items-center gap-3 cursor-pointer p-2 hover:bg-gray-50 rounded-lg w-full">
+                      <input
+                        type="checkbox"
+                        checked={discountForm.isActive}
+                        onChange={(e) =>
+                          setDiscountForm({
+                            ...discountForm,
+                            isActive: e.target.checked,
+                          })
+                        }
+                        className="w-4 h-4 text-teal-600 rounded border-gray-300 focus:ring-teal-500"
+                      />
+                      <span className="text-xs font-bold text-gray-600 uppercase">
+                        Active Now
+                      </span>
+                    </label>
+                  </div>
                 </div>
-
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={discountForm.isActive}
-                    onChange={(e) =>
-                      setDiscountForm({
-                        ...discountForm,
-                        isActive: e.target.checked,
-                      })
-                    }
-                    className="w-4 h-4 rounded border-gray-300 text-teal-700 focus:ring-teal-500"
-                  />
-                  <span className="text-sm text-gray-700 font-dm-sans">
-                    Active (can be used immediately)
-                  </span>
-                </label>
               </div>
 
-              {/* Modal Footer */}
-              <div className="flex gap-3 p-6 border-t border-gray-100">
+              <div className="p-6 border-t border-gray-100 flex gap-3">
                 <button
-                  onClick={handleCloseModal}
-                  className="flex-1 px-6 py-3 rounded-xl border border-gray-200 font-medium text-gray-600 hover:bg-gray-50 transition-colors font-dm-sans"
+                  onClick={() => setModalOpen(false)}
+                  className="flex-1 px-4 py-2.5 border border-gray-200 text-gray-600 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-gray-50"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSaveDiscount}
                   disabled={
-                    !discountForm.code ||
-                    !discountForm.discountPercentage ||
-                    !discountForm.expiryDate ||
-                    createMutation.isPending ||
-                    updateMutation.isPending
+                    createMutation.isPending || updateMutation.isPending
                   }
-                  className="flex-1 bg-teal-700 text-white px-6 py-3 rounded-xl font-medium hover:bg-teal-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-dm-sans"
+                  className="flex-1 bg-teal-600 text-white px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-teal-700 shadow-md flex items-center justify-center gap-2"
                 >
                   {createMutation.isPending || updateMutation.isPending ? (
-                    <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+                    <Loader2 size={14} className="animate-spin" />
                   ) : editingDiscount ? (
-                    "Update Discount"
+                    "Update"
                   ) : (
-                    "Create Discount"
+                    "Save"
                   )}
                 </button>
               </div>
             </motion.div>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
+
+      <ConfirmationDialog
+        isOpen={deleteModalOpen}
+        title="Delete Discount?"
+        message="Are you sure you want to remove this discount code? This action cannot be undone."
+        onConfirm={handleDeleteDiscount}
+        onCancel={() => setDeleteModalOpen(false)}
+        confirmText="Delete"
+        isLoading={deleteMutation.isPending}
+      />
     </div>
   );
 }

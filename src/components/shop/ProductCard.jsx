@@ -4,9 +4,14 @@ import {
   useAddToWishlist,
   useRemoveFromWishlist,
   useCheckWishlist,
-} from "../../hooks/useWishlistTan";
+} from "../../hooks/cart/useWishlistTan";
 import useAuthStore from "../../store/authStore";
-import { toast } from "../ui/Toast";
+import { toast } from "react-toastify";
+import { getProductImageUrl } from "../../utils/imageUrl";
+import { useAddToCart } from "../../hooks/cart/useCartTan";
+import useGuestCartStore from "../../store/guestCartStore";
+import { ShoppingCart } from "lucide-react";
+import formatError from "../../utils/errorHandler";
 
 export default function ProductCard({ product, viewMode = "grid" }) {
   const {
@@ -32,6 +37,28 @@ export default function ProductCard({ product, viewMode = "grid" }) {
   const isInWishlist = wishlistCheck?.data?.inWishlist || false;
   const isWishlistLoading = isAdding || isRemoving;
 
+  const { mutate: addToCart, isPending: isAddingToCart } = useAddToCart();
+  const { addItem: addToGuestCart } = useGuestCartStore();
+
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isAuthenticated) {
+      addToGuestCart(product, 1);
+      toast.success("Added to cart");
+      return;
+    }
+
+    addToCart(
+      { productId: _id, quantity: 1 },
+      {
+        onSuccess: () => toast.success("Added to cart"),
+        onError: (err) => toast.error(formatError(err, "Failed to add to cart")),
+      }
+    );
+  };
+
   const handleWishlistToggle = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -44,23 +71,17 @@ export default function ProductCard({ product, viewMode = "grid" }) {
     if (isInWishlist) {
       removeFromWishlist(_id, {
         onSuccess: () => toast.success("Removed from wishlist"),
-        onError: () => toast.error("Failed to remove from wishlist"),
+        onError: (err) => toast.error(formatError(err, "Failed to remove from wishlist")),
       });
     } else {
       addToWishlist(_id, {
         onSuccess: () => toast.success("Added to wishlist"),
-        onError: () => toast.error("Failed to add to wishlist"),
+        onError: (err) => toast.error(formatError(err, "Failed to add to wishlist")),
       });
     }
   };
 
-  const primaryImage =
-    images?.find((img) => img.isPrimary)?.url || images?.[0]?.url;
-  const baseUrl =
-    import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
-  const imageUrl = primaryImage
-    ? `${baseUrl.replace("/api/v1", "")}/uploads/products/${primaryImage}`
-    : "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&auto=format&fit=crop";
+  const imageUrl = getProductImageUrl(product);
 
   const formattedPrice = `NRs. ${price?.toLocaleString() || 0}`;
 
@@ -170,7 +191,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
         <button
           onClick={handleWishlistToggle}
           disabled={isWishlistLoading}
-          className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:scale-110 transition-transform disabled:opacity-50"
+          className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:scale-110 transition-transform disabled:opacity-50 z-10"
         >
           <Heart
             size={16}
@@ -179,6 +200,22 @@ export default function ProductCard({ product, viewMode = "grid" }) {
             }
           />
         </button>
+
+        {/* Quick Add Button on Hover */}
+        <div className="absolute inset-x-0 bottom-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300 pointer-events-none group-hover:pointer-events-auto">
+          <button
+            onClick={handleAddToCart}
+            disabled={isAddingToCart}
+            className="w-full bg-teal-700 text-white py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-2 shadow-lg shadow-teal-900/20 hover:bg-teal-800 transition-colors"
+          >
+            {isAddingToCart ? "..." : (
+              <>
+                <ShoppingCart size={14} />
+                Add to Cart
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       <div className="p-4">

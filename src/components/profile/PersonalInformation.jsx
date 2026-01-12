@@ -1,14 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import { Upload, Trash2, Lock, Check, Camera } from "lucide-react";
-import { toast } from "../ui/Toast";
+import { toast } from "react-toastify";
 import useAuthStore from "../../store/authStore";
 import {
   useProfile,
   useUpdateProfile,
   useUpdateAvatar,
   useRemoveAvatar,
-} from "../../hooks/useProfileTan";
+} from "../../hooks/profile/useProfileTan";
 import ChangePasswordModal from "../modals/ChangePasswordModal";
+import { getAvatarUrl } from "../../utils/imageUrl";
+import formatError from "../../utils/errorHandler";
 
 const months = [
   "January",
@@ -134,7 +136,7 @@ export default function PersonalInformation() {
         }
       },
       onError: (err) => {
-        toast.error(err || "Failed to update profile");
+        toast.error(formatError(err, "Failed to update profile"));
       },
     });
   };
@@ -163,7 +165,7 @@ export default function PersonalInformation() {
           }
         },
         onError: (err) => {
-          toast.error(err || "Failed to update avatar");
+          toast.error(formatError(err, "Failed to update avatar"));
         },
       });
     }
@@ -179,25 +181,18 @@ export default function PersonalInformation() {
         }
       },
       onError: (err) => {
-        toast.error(err || "Failed to remove avatar");
+        toast.error(formatError(err, "Failed to remove avatar"));
       },
     });
   };
 
   const getInitials = (firstName, lastName) => {
-    return `${firstName?.charAt(0) || ""}${
-      lastName?.charAt(0) || ""
-    }`.toUpperCase();
+    return `${firstName?.charAt(0) || ""}${lastName?.charAt(0) || ""
+      }`.toUpperCase();
   };
 
-  const getAvatarUrl = () => {
-    if (user?.avatar) {
-      const baseUrl =
-        import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
-      const serverUrl = baseUrl.split("/api")[0];
-      return `${serverUrl}/uploads/avatars/${user.avatar}`;
-    }
-    return null;
+  const getUserAvatar = () => {
+    return getAvatarUrl(user);
   };
 
   if (isLoading) {
@@ -217,7 +212,7 @@ export default function PersonalInformation() {
       <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6 sm:p-8">
         <div className="mb-6">
           <h2 className="text-xl font-playfair text-neutral-900">
-            <span className="font-bold">Profile</span>{" "}
+            <span className="font-medium">Profile</span>{" "}
             <span className="italic text-teal-700">Picture</span>
           </h2>
           <p className="text-neutral-500 font-dm-sans text-sm mt-1">
@@ -227,11 +222,10 @@ export default function PersonalInformation() {
 
         <div className="flex items-center gap-6">
           <div className="relative">
-            {getAvatarUrl() ? (
+            {user?.avatar ? (
               <img
-                src={getAvatarUrl()}
+                src={getUserAvatar()}
                 alt="Profile"
-                crossOrigin="anonymous"
                 className="w-20 h-20 rounded-2xl object-cover"
               />
             ) : (
@@ -283,7 +277,7 @@ export default function PersonalInformation() {
       <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6 sm:p-8">
         <div className="mb-6">
           <h2 className="text-xl font-playfair text-neutral-900">
-            <span className="font-bold">Personal</span>{" "}
+            <span className="font-medium">Personal</span>{" "}
             <span className="italic text-teal-700">Information</span>
           </h2>
           <p className="text-neutral-500 font-dm-sans text-sm mt-1">
@@ -383,11 +377,10 @@ export default function PersonalInformation() {
                     key={gender}
                     type="button"
                     onClick={() => handleGenderSelect(gender)}
-                    className={`px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all font-dm-sans capitalize ${
-                      formData.gender === gender
-                        ? "border-teal-500 bg-teal-50 text-teal-700"
-                        : "border-neutral-200 text-neutral-600 hover:border-neutral-300"
-                    }`}
+                    className={`px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all font-dm-sans capitalize ${formData.gender === gender
+                      ? "border-teal-500 bg-teal-50 text-teal-700"
+                      : "border-neutral-200 text-neutral-600 hover:border-neutral-300"
+                      }`}
                   >
                     {formData.gender === gender && (
                       <span className="inline-flex items-center gap-1">
@@ -472,7 +465,7 @@ export default function PersonalInformation() {
       <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6 sm:p-8">
         <div className="mb-6">
           <h2 className="text-xl font-playfair text-neutral-900">
-            <span className="font-bold">Password</span>{" "}
+            <span className="font-medium">Password</span>{" "}
             <span className="italic text-teal-700">& Security</span>
           </h2>
           <p className="text-neutral-500 font-dm-sans text-sm mt-1">

@@ -1,11 +1,11 @@
-import { Check } from "lucide-react";
+import { Check, ClipboardList, Package, Truck, CheckCircle2, ShoppingBag, X } from "lucide-react";
 
 const TRACKING_STEPS = [
-  { key: "pending", label: "Order Placed" },
-  { key: "confirmed", label: "Confirmed" },
-  { key: "processing", label: "Processing" },
-  { key: "shipped", label: "Shipped" },
-  { key: "delivered", label: "Delivered" },
+  { key: "pending", label: "Order Placed", icon: ShoppingBag },
+  { key: "confirmed", label: "Confirmed", icon: ClipboardList },
+  { key: "processing", label: "Processing", icon: Package },
+  { key: "shipped", label: "Shipped", icon: Truck },
+  { key: "delivered", label: "Delivered", icon: CheckCircle2 },
 ];
 
 const STATUS_ORDER = {
@@ -14,16 +14,16 @@ const STATUS_ORDER = {
   processing: 2,
   shipped: 3,
   delivered: 4,
-  cancelled: -1,
 };
 
 export default function OrderTrackingTimeline({ status }) {
-  const currentStepIndex = STATUS_ORDER[status] ?? 0;
+  const currentStepIndex = STATUS_ORDER[status] ?? -1;
 
   if (status === "cancelled") {
     return (
-      <div className="flex items-center justify-center py-4">
-        <span className="text-red-500 font-medium font-dm-sans">
+      <div className="flex items-center justify-center py-6 bg-red-50 rounded-2xl border border-red-100">
+        <span className="text-red-600 font-bold font-dm-sans flex items-center gap-2">
+          <X size={20} />
           Order Cancelled
         </span>
       </div>
@@ -31,61 +31,52 @@ export default function OrderTrackingTimeline({ status }) {
   }
 
   return (
-    <div className="py-4">
-      <div className="flex items-center justify-between">
+    <div className="py-2 relative">
+      {/* Connector Line Base */}
+      <div className="absolute top-7 left-0 w-full h-0.5 bg-neutral-100 -z-0 hidden sm:block" />
+
+      <div className="flex items-center justify-between relative z-10">
         {TRACKING_STEPS.map((step, index) => {
-          const isCompleted = index < currentStepIndex;
-          const isCurrent = index === currentStepIndex;
-          const isPending = index > currentStepIndex;
+          const isCompleted = index <= currentStepIndex;
+          const isLastCompleted = index === currentStepIndex;
+          const Icon = step.icon;
 
           return (
             <div key={step.key} className="flex flex-col items-center flex-1">
-              <div className="flex items-center w-full">
+              <div className="relative flex items-center justify-center w-full">
+                {/* Connector Line Active */}
                 {index > 0 && (
                   <div
-                    className={`flex-1 h-0.5 ${
-                      isCompleted || isCurrent
-                        ? "bg-teal-500"
-                        : "bg-neutral-200"
-                    }`}
+                    className={`absolute right-1/2 top-1/2 -translate-y-1/2 w-full h-0.5 -z-10 hidden sm:block ${isCompleted ? "bg-teal-500" : "bg-neutral-100"
+                      }`}
                   />
                 )}
 
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all ${
-                    isCompleted
-                      ? "bg-teal-500 text-white"
-                      : isCurrent
-                      ? "bg-teal-500 text-white ring-4 ring-teal-100"
-                      : "bg-neutral-200 text-neutral-400"
-                  }`}
+                  className={`w-14 h-14 rounded-full flex items-center justify-center shrink-0 transition-all duration-500 ${isCompleted
+                      ? "bg-teal-600 text-white shadow-lg shadow-teal-600/20 ring-4 ring-white"
+                      : "bg-white text-neutral-300 border-2 border-neutral-100"
+                    }`}
                 >
-                  {isCompleted ? (
-                    <Check size={16} strokeWidth={3} />
+                  {isLastCompleted && status !== "delivered" ? (
+                    <div className="relative">
+                      <Icon size={24} />
+                      <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-teal-500"></span>
+                      </span>
+                    </div>
+                  ) : isCompleted ? (
+                    <Check size={24} strokeWidth={3} />
                   ) : (
-                    <div
-                      className={`w-2 h-2 rounded-full ${
-                        isCurrent ? "bg-white" : "bg-neutral-400"
-                      }`}
-                    />
+                    <Icon size={24} />
                   )}
                 </div>
-
-                {index < TRACKING_STEPS.length - 1 && (
-                  <div
-                    className={`flex-1 h-0.5 ${
-                      isCompleted ? "bg-teal-500" : "bg-neutral-200"
-                    }`}
-                  />
-                )}
               </div>
 
               <span
-                className={`mt-2 text-xs font-medium font-dm-sans text-center ${
-                  isCompleted || isCurrent
-                    ? "text-teal-700"
-                    : "text-neutral-400"
-                }`}
+                className={`mt-4 text-[11px] font-bold font-dm-sans text-center uppercase tracking-wider transition-colors duration-500 ${isCompleted ? "text-teal-700" : "text-neutral-400"
+                  }`}
               >
                 {step.label}
               </span>

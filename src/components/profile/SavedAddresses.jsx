@@ -9,13 +9,15 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react";
-import { toast } from "../ui/Toast";
+import { toast } from "react-toastify";
 import {
   useAddresses,
   useDeleteAddress,
   useSetDefaultAddress,
-} from "../../hooks/useAddressTan";
+} from "../../hooks/profile/useAddressTan";
 import AddEditAddressModal from "../modals/AddEditAddressModal";
+import ConfirmationDialog from "../modals/ConfirmationDialog";
+import formatError from "../../utils/errorHandler";
 
 const labelIcons = {
   home: Home,
@@ -34,6 +36,8 @@ const labelColors = {
 export default function SavedAddresses() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [addressToDelete, setAddressToDelete] = useState(null);
 
   const { data, isLoading, error } = useAddresses();
   const { mutate: deleteAddress, isPending: isDeleting } = useDeleteAddress();
@@ -52,17 +56,22 @@ export default function SavedAddresses() {
     setModalOpen(true);
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this address?")) {
-      deleteAddress(id, {
-        onSuccess: () => {
-          toast.success("Address deleted successfully");
-        },
-        onError: (err) => {
-          toast.error(err || "Failed to delete address");
-        },
-      });
-    }
+  const handleDelete = () => {
+    deleteAddress(addressToDelete, {
+      onSuccess: () => {
+        toast.success("Address deleted successfully");
+        setDeleteModalOpen(false);
+        setAddressToDelete(null);
+      },
+      onError: (err) => {
+        toast.error(formatError(err, "Failed to delete address"));
+      },
+    });
+  };
+
+  const confirmDelete = (id) => {
+    setAddressToDelete(id);
+    setDeleteModalOpen(true);
   };
 
   const handleSetDefault = (id) => {
@@ -71,7 +80,7 @@ export default function SavedAddresses() {
         toast.success("Default address updated");
       },
       onError: (err) => {
-        toast.error(err || "Failed to set default address");
+        toast.error(formatError(err, "Failed to set default address"));
       },
     });
   };
@@ -106,20 +115,22 @@ export default function SavedAddresses() {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6 sm:p-8">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
         <div>
-          <h1 className="text-2xl font-playfair text-neutral-900">
-            <span className="font-bold">Saved</span>{" "}
+          <h2 className="text-2xl font-playfair text-neutral-900">
+            <span className="font-medium">Saved</span>{" "}
             <span className="italic text-teal-700">Addresses</span>
-          </h1>
+          </h2>
           <p className="text-neutral-500 font-dm-sans text-sm mt-1">
             Manage your delivery and billing addresses
           </p>
         </div>
+
         <button
           onClick={handleAddNew}
-          className="flex items-center justify-center gap-2 px-5 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-dm-sans text-sm"
+          className="flex items-center justify-center gap-2 px-6 py-3 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-xl transition-all duration-300 font-dm-sans text-sm"
         >
           <Plus size={18} />
           Add New Address
@@ -134,11 +145,10 @@ export default function SavedAddresses() {
           return (
             <div
               key={address._id}
-              className={`relative p-5 rounded-xl border-2 transition-all ${
-                address.isDefault
-                  ? "border-teal-200 bg-teal-50/30"
-                  : "border-neutral-100 hover:border-neutral-200"
-              }`}
+              className={`relative p-5 rounded-xl border-2 transition-all bg-white ${address.isDefault
+                ? "border-teal-200 bg-teal-50/30"
+                : "border-neutral-100 hover:border-neutral-200"
+                }`}
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2">
@@ -223,7 +233,7 @@ export default function SavedAddresses() {
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(address._id)}
+                    onClick={() => confirmDelete(address._id)}
                     disabled={isDeleting}
                     className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-neutral-600 border border-neutral-200 rounded-lg hover:bg-neutral-50 hover:text-red-600 hover:border-red-200 transition-colors font-dm-sans"
                   >
@@ -238,12 +248,12 @@ export default function SavedAddresses() {
 
         <button
           onClick={handleAddNew}
-          className="p-5 rounded-xl border-2 border-dashed border-neutral-200 hover:border-teal-300 hover:bg-teal-50/30 transition-all flex flex-col items-center justify-center gap-3 min-h-[200px] group"
+          className="p-5 rounded-xl border-2 border-dashed border-neutral-200 hover:border-teal-700 hover:bg-teal-50/30 transition-all flex flex-col items-center justify-center gap-3 min-h-[200px] group bg-white"
         >
-          <div className="w-12 h-12 rounded-full bg-neutral-100 group-hover:bg-teal-100 flex items-center justify-center transition-colors">
+          <div className="w-12 h-12 rounded-full bg-neutral-100 group-hover:bg-teal-700 flex items-center justify-center transition-colors">
             <Plus
               size={24}
-              className="text-neutral-400 group-hover:text-teal-700 transition-colors"
+              className="text-neutral-400 group-hover:text-white transition-colors"
             />
           </div>
           <div className="text-center">
@@ -264,6 +274,19 @@ export default function SavedAddresses() {
           setEditingAddress(null);
         }}
         address={editingAddress}
+      />
+
+      <ConfirmationDialog
+        isOpen={deleteModalOpen}
+        title="Delete Address?"
+        message="Are you sure you want to delete this address? This action cannot be undone."
+        onConfirm={handleDelete}
+        onCancel={() => {
+          setDeleteModalOpen(false);
+          setAddressToDelete(null);
+        }}
+        confirmText="Delete"
+        isLoading={isDeleting}
       />
     </div>
   );

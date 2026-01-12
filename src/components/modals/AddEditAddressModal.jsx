@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { X, Home, Building2, Users, MapPin } from "lucide-react";
-import { toast } from "../ui/Toast";
-import { useCreateAddress, useUpdateAddress } from "../../hooks/useAddressTan";
+import { toast } from "react-toastify";
+import { useCreateAddress, useUpdateAddress } from "../../hooks/profile/useAddressTan";
+import formatError from "../../utils/errorHandler";
 
 const labelOptions = [
   { value: "home", label: "Home", icon: Home },
@@ -105,7 +106,7 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
             onClose();
           },
           onError: (err) => {
-            toast.error(err || "Failed to update address");
+            toast.error(formatError(err, "Failed to update address"));
           },
         }
       );
@@ -116,7 +117,7 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
           onClose();
         },
         onError: (err) => {
-          toast.error(err || "Failed to add address");
+          toast.error(formatError(err, "Failed to add address"));
         },
       });
     }
@@ -147,7 +148,7 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
 
           <div className="mb-6">
             <h2 className="text-xl sm:text-2xl font-playfair text-neutral-900">
-              <span className="font-bold">{isEditing ? "Edit" : "Add"}</span>{" "}
+              <span className="font-medium">{isEditing ? "Edit" : "Add"}</span>{" "}
               <span className="italic text-teal-700">Address</span>
             </h2>
             <p className="text-neutral-500 font-dm-sans text-sm mt-1">
@@ -176,11 +177,10 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
                           label: option.value,
                         }))
                       }
-                      className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all ${
-                        isSelected
-                          ? "border-teal-500 bg-teal-50 text-teal-700"
-                          : "border-neutral-200 hover:border-neutral-300 text-neutral-600"
-                      }`}
+                      className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all ${isSelected
+                        ? "border-teal-500 bg-teal-50 text-teal-700"
+                        : "border-neutral-200 hover:border-neutral-300 text-neutral-600"
+                        }`}
                     >
                       <Icon size={20} />
                       <span className="text-xs font-medium font-dm-sans">
@@ -217,11 +217,10 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
                 {typeOptions.map((option) => (
                   <label
                     key={option.value}
-                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 cursor-pointer transition-all ${
-                      formData.type === option.value
-                        ? "border-teal-500 bg-teal-50 text-teal-700"
-                        : "border-neutral-200 hover:border-neutral-300 text-neutral-600"
-                    }`}
+                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 cursor-pointer transition-all ${formData.type === option.value
+                      ? "border-teal-500 bg-teal-50 text-teal-700"
+                      : "border-neutral-200 hover:border-neutral-300 text-neutral-600"
+                      }`}
                   >
                     <input
                       type="radio"
@@ -376,22 +375,22 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 py-3 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-semibold rounded-full transition-all duration-300 font-dm-sans"
+                className="flex-1 py-3 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-semibold rounded-xl transition-all duration-300 font-dm-sans"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isPending}
-                className="flex-1 py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-dm-sans"
+                className="flex-1 py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all duration-300 font-dm-sans"
               >
                 {isPending
                   ? isEditing
                     ? "Updating..."
                     : "Adding..."
                   : isEditing
-                  ? "Update Address"
-                  : "Add Address"}
+                    ? "Update Address"
+                    : "Add Address"}
               </button>
             </div>
           </form>

@@ -1,225 +1,178 @@
-import {
-  Package,
-  ShoppingCart,
-  Users,
-  DollarSign,
-  TrendingUp,
-  TrendingDown,
-  ArrowRight,
-} from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useProducts } from '../../hooks/useProductTan';
-import { useCategories } from '../../hooks/useCategoryTan';
-import { useAllOrders } from '../../hooks/useOrderTan';
+import { Loader2, Download, DollarSign, ShoppingBag, Box, Users } from 'lucide-react';
+import * as XLSX from 'xlsx';
+import { useDashboardStats, useRevenueAnalytics, useCategorySales, useTopProducts } from '../../hooks/admin/useAnalyticsTan';
+import { useAllOrders } from '../../hooks/order/useOrderTan';
+
+// Extracted Components
+import StatCard from '../../components/admin/dashboard/StatCard';
+import RevenueChart from '../../components/admin/dashboard/RevenueChart';
+import CategorySalesChart from '../../components/admin/dashboard/CategorySalesChart';
+import TopProductsTable from '../../components/admin/dashboard/TopProductsTable';
+import RecentOrdersTable from '../../components/admin/dashboard/RecentOrdersTable';
 
 export default function Dashboard() {
-  const { data: productsData } = useProducts({ limit: 5 });
-  const { data: categoriesData } = useCategories();
-  const { data: ordersData } = useAllOrders({ limit: 1 }); // Only need 1 order since we use stats
+  const { data: statsData, isLoading: statsLoading } = useDashboardStats();
+  const { data: revenueData, isLoading: revenueLoading } = useRevenueAnalytics(30);
+  const { data: categoryData, isLoading: categoryLoading } = useCategorySales();
+  const { data: topProductsData, isLoading: productsLoading } = useTopProducts();
+  const { data: recentOrdersData, isLoading: ordersLoading } = useAllOrders({ limit: 5 });
 
-  const products = productsData?.data?.products || [];
-  const totalProducts = productsData?.data?.pagination?.total || 0;
-  const categories = categoriesData?.data?.categories || [];
-  const totalOrders = ordersData?.data?.pagination?.total || 0;
-  const totalRevenue = ordersData?.data?.stats?.totalRevenue || 0;
+  const stats = statsData?.data || {
+    totalRevenue: 0,
+    totalOrders: 0,
+    totalProducts: 0,
+    totalUsers: 0
+  };
 
-  // Format revenue display
+  const chartData = revenueData?.data?.chartData || [];
+  const pieData = categoryData?.data?.salesByCategory || [];
+  const topProducts = topProductsData?.data?.topProducts || [];
+  const recentOrders = recentOrdersData?.data?.orders || [];
+
+  const handleDownloadReport = () => {
+    try {
+      const overviewData = [
+        { Metric: 'Net Revenue', Value: stats.totalRevenue },
+        { Metric: 'Total Orders', Value: stats.totalOrders },
+        { Metric: 'Total Products', Value: stats.totalProducts },
+        { Metric: 'Total Customers', Value: stats.totalUsers },
+      ];
+
+      const productsData = topProducts.map(p => ({
+        Name: p.name,
+        Deals: p.sales,
+        'Total Value': p.revenue,
+      }));
+
+      const ordersData = recentOrders.map(o => ({
+        'Order ID': o.orderId,
+        Customer: o.user?.fullName || o.guestInfo?.firstName || 'Guest',
+        Status: o.orderStatus,
+        Total: o.total,
+        Date: new Date(o.createdAt).toLocaleDateString(),
+      }));
+
+      const wb = XLSX.utils.book_new();
+      const wsOverview = XLSX.utils.json_to_sheet(overviewData);
+      const wsProducts = XLSX.utils.json_to_sheet(productsData);
+      const wsOrders = XLSX.utils.json_to_sheet(ordersData);
+
+      XLSX.utils.book_append_sheet(wb, wsOverview, 'Overview');
+      XLSX.utils.book_append_sheet(wb, wsProducts, 'Top Products');
+      XLSX.utils.book_append_sheet(wb, wsOrders, 'Recent Orders');
+
+      const fileName = `Aura_Interiors_Report_${new Date().toISOString().split('T')[0]}.xlsx`;
+      XLSX.writeFile(wb, fileName);
+    } catch (error) {
+      console.error('Error generating report:', error);
+      alert('Failed to generate report. Please try again.');
+    }
+  };
+
   const formatRevenue = (amount) => {
     if (amount >= 100000) {
-      return `NRs. ${(amount / 100000).toFixed(1)}L`; // Lakhs
+      return `NRs. ${(amount / 100000).toFixed(1)}L`;
     } else if (amount >= 1000) {
       return `NRs. ${(amount / 1000).toFixed(0)}K`;
     }
     return `NRs. ${amount.toLocaleString()}`;
   };
 
-  const stats = [
+  const statCards = [
     {
-      label: 'Total Products',
-      value: totalProducts,
-      change: '+12%',
-      trend: 'up',
-      icon: Package,
-      color: 'bg-blue-500',
-    },
-    {
-      label: 'Total Categories',
-      value: categories.length,
-      change: '+3%',
-      trend: 'up',
-      icon: ShoppingCart,
-      color: 'bg-emerald-500',
+      label: 'Net Revenue',
+      value: formatRevenue(stats.totalRevenue),
+      trend: '+0.4%',
+      trendUp: true,
+      trendLabel: 'vs last month',
+      icon: DollarSign,
+      color: 'emerald'
     },
     {
       label: 'Total Orders',
-      value: totalOrders,
-      change: '+15%',
-      trend: 'up',
-      icon: Users,
-      color: 'bg-purple-500',
+      value: stats.totalOrders.toLocaleString(),
+      trend: '+32%',
+      trendUp: true,
+      trendLabel: 'vs last quarter',
+      icon: ShoppingBag,
+      color: 'blue'
     },
     {
-      label: 'Revenue',
-      value: formatRevenue(totalRevenue),
-      change: '+8%',
-      trend: 'up',
-      icon: DollarSign,
-      color: 'bg-amber-500',
+      label: 'Products',
+      value: stats.totalProducts,
+      trend: '71%',
+      trendUp: true,
+      trendLabel: 'Goal: 100',
+      icon: Box,
+      color: 'orange'
+    },
+    {
+      label: 'Customers',
+      value: stats.totalUsers.toLocaleString(),
+      trend: '+11%',
+      trendUp: true,
+      trendLabel: 'vs last quarter',
+      icon: Users,
+      color: 'purple'
     },
   ];
+
+  if (statsLoading || revenueLoading || categoryLoading || productsLoading || ordersLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
+      </div>
+    );
+  }
+
+  if (!statsData || !revenueData) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-gray-500">
+        <p>Failed to load dashboard data.</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-4 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-500 mt-1">Welcome back! Here's what's happening.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Overview</h1>
+          <p className="text-gray-500 mt-0.5 text-sm">Welcome back! Here's what's happening today.</p>
+        </div>
+        <button
+          onClick={handleDownloadReport}
+          className="flex items-center gap-2 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors shadow-sm text-sm font-medium"
+        >
+          <Download className="w-4 h-4" />
+          Download Report
+        </button>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat) => (
-          <div
-            key={stat.label}
-            className="bg-white rounded-2xl p-5 border border-gray-100"
-          >
-            <div className="flex items-start justify-between">
-              <div className={`w-12 h-12 ${stat.color} rounded-xl flex items-center justify-center`}>
-                <stat.icon className="w-6 h-6 text-white" />
-              </div>
-              <div className={`flex items-center gap-1 text-sm font-medium ${
-                stat.trend === 'up' ? 'text-emerald-600' : 'text-red-600'
-              }`}>
-                {stat.trend === 'up' ? (
-                  <TrendingUp className="w-4 h-4" />
-                ) : (
-                  <TrendingDown className="w-4 h-4" />
-                )}
-                {stat.change}
-              </div>
-            </div>
-            <div className="mt-4">
-              <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-              <p className="text-sm text-gray-500 mt-1">{stat.label}</p>
-            </div>
-          </div>
+        {statCards.map((stat) => (
+          <StatCard key={stat.label} {...stat} />
         ))}
       </div>
 
-      {/* Recent Products & Categories */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Products */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Recent Products</h2>
-            <Link
-              to="/admin/products"
-              className="text-sm text-[#025E5D] font-medium flex items-center gap-1 hover:underline"
-            >
-              View All
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-          <div className="space-y-3">
-            {products.length > 0 ? (
-              products.map((product) => (
-                <div
-                  key={product._id}
-                  className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl"
-                >
-                  <div className="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center">
-                    <Package className="w-5 h-5 text-gray-500" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 truncate">{product.name}</p>
-                    <p className="text-sm text-gray-500">{product.category?.name || 'Uncategorized'}</p>
-                  </div>
-                  <p className="font-semibold text-gray-900">NRs. {product.price?.toLocaleString()}</p>
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-500 text-center py-8">No products yet</p>
-            )}
-          </div>
-        </div>
-
-        {/* Categories Overview */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Categories</h2>
-            <Link
-              to="/admin/categories"
-              className="text-sm text-[#025E5D] font-medium flex items-center gap-1 hover:underline"
-            >
-              View All
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-          <div className="space-y-3">
-            {categories.length > 0 ? (
-              categories.slice(0, 5).map((category) => (
-                <div
-                  key={category._id}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-xl"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-[#025E5D]/10 rounded-lg flex items-center justify-center">
-                      <Package className="w-5 h-5 text-[#025E5D]" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">{category.name}</p>
-                      <p className="text-sm text-gray-500">{category.productCount || 0} products</p>
-                    </div>
-                  </div>
-                  <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                    category.status === 'active'
-                      ? 'bg-emerald-100 text-emerald-700'
-                      : 'bg-gray-100 text-gray-600'
-                  }`}>
-                    {category.status === 'active' ? 'Active' : 'Inactive'}
-                  </span>
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-500 text-center py-8">No categories yet</p>
-            )}
-          </div>
-        </div>
+      {/* Main Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <RevenueChart data={chartData} />
+        <CategorySalesChart data={pieData} />
       </div>
 
-      {/* Quick Actions */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-5">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <Link
-            to="/admin/products"
-            className="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
-          >
-            <Package className="w-6 h-6 text-[#025E5D]" />
-            <span className="text-sm font-medium text-gray-700">Add Product</span>
-          </Link>
-          <Link
-            to="/admin/categories"
-            className="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
-          >
-            <ShoppingCart className="w-6 h-6 text-[#025E5D]" />
-            <span className="text-sm font-medium text-gray-700">Add Category</span>
-          </Link>
-          <Link
-            to="/admin/orders"
-            className="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
-          >
-            <Users className="w-6 h-6 text-[#025E5D]" />
-            <span className="text-sm font-medium text-gray-700">View Orders</span>
-          </Link>
-          <Link
-            to="/admin/analytics"
-            className="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
-          >
-            <TrendingUp className="w-6 h-6 text-[#025E5D]" />
-            <span className="text-sm font-medium text-gray-700">Analytics</span>
-          </Link>
-        </div>
+      {/* Bottom Section: Tables */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <TopProductsTable products={topProducts} />
+        <RecentOrdersTable orders={recentOrders} />
       </div>
     </div>
   );

@@ -5,42 +5,7 @@
  * Works offline; syncs when online
  */
 
-// Firebase Messaging for background messages
-importScripts('https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.7.0/firebase-messaging-compat.js');
 
-// Initialize Firebase in Service Worker (needed for background messages)
-// These values must match your firebase.js config
-firebase.initializeApp({
-  apiKey: "AIzaSyBjrJpQAeZhCfWYES-PgDqs2M4IASPcPOA",
-  authDomain: "aura-interiors-7f112.firebaseapp.com",
-  projectId: "aura-interiors-7f112",
-  storageBucket: "aura-interiors-7f112.firebasestorage.app",
-  messagingSenderId: "572622226094",
-  appId: "1:572622226094:web:e532a6d29e8659e02a633f",
-});
-
-const messaging = firebase.messaging();
-
-// Handle background messages from FCM
-messaging.onBackgroundMessage((payload) => {
-  console.log('[ServiceWorker] Background message received:', payload);
-  
-  const { title, body, icon, data } = payload.notification || payload.data || {};
-  
-  const options = {
-    body: body || 'You have a new notification',
-    icon: icon || '/icons/notification-icon-192.png',
-    badge: '/icons/notification-badge-72.png',
-    data: data || payload.data || {},
-    requireInteraction: false,
-    vibrate: [200, 100, 200],
-    tag: data?.type || 'notification',
-    timestamp: Date.now(),
-  };
-
-  self.registration.showNotification(title || 'Aura Interiors', options);
-});
 
 /**
  * BACKGROUND MESSAGE HANDLER (Fallback for non-FCM push)
@@ -170,10 +135,8 @@ self.addEventListener("message", (event) => {
  * INSTALL EVENT
  * Set up cache for offline support
  */
-const CACHE_NAME = "aura-notifications-v1";
+const CACHE_NAME = "aura-notifications-v2";
 const URLS_TO_CACHE = [
-  "/",
-  "/index.html",
   "/icons/notification-icon-192.png",
   "/icons/notification-badge-72.png",
 ];
@@ -219,44 +182,52 @@ self.addEventListener("activate", (event) => {
 
 /**
  * FETCH EVENT
- * Serve from cache when offline
+ * Network-first for HTML/JS, cache-first for static assets
  */
 self.addEventListener("fetch", (event) => {
   // Skip non-GET requests
   if (event.request.method !== "GET") return;
 
-  // Skip API requests (should fail gracefully)
+  // Skip API requests
   if (event.request.url.includes("/api/")) return;
 
+  const url = new URL(event.request.url);
+
+  // Network-first for HTML, JS, and navigation requests (prevents caching issues)
+  const isNavigationOrScript =
+    event.request.mode === "navigate" ||
+    url.pathname.endsWith(".html") ||
+    url.pathname.endsWith(".js") ||
+    url.pathname.endsWith(".jsx") ||
+    url.pathname === "/";
+
+  if (isNavigationOrScript) {
+    // Network-first strategy for HTML/JS
+    event.respondWith(
+      fetch(event.request)
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Cache-first for static assets (icons, images)
   event.respondWith(
-    caches
-      .match(event.request)
-      .then((response) => {
-        if (response) {
-          return response;
-        }
-
-        return fetch(event.request)
-          .then((response) => {
-            // Cache successful responses
-            if (
-              response &&
-              response.status === 200 &&
-              !event.request.url.includes("/api/")
-            ) {
-              const responseToCache = response.clone();
-              caches.open(CACHE_NAME).then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-            }
-
-            return response;
-          })
-          .catch(() => {
-            // Return cached version if available
-            return caches.match("/index.html");
+    caches.match(event.request).then((response) => {
+      if (response) {
+        return response;
+      }
+      return fetch(event.request).then((response) => {
+        // Only cache images and icons
+        if (response && response.status === 200 &&
+          (url.pathname.includes("/icons/") || url.pathname.includes("/images/"))) {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
           });
-      })
+        }
+        return response;
+      });
+    })
   );
 });
 

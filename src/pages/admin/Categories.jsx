@@ -15,9 +15,13 @@ import {
   Upload,
   Loader2,
 } from 'lucide-react';
-import { useCategories, useCreateCategory, useUpdateCategory, useDeleteCategory } from '../../hooks/useCategoryTan';
-import { toast } from '../../components/ui/Toast';
+import Skeleton from "../../components/common/Skeleton";
+import ConfirmationDialog from "../../components/modals/ConfirmationDialog";
+import { useCategories, useCreateCategory, useUpdateCategory, useDeleteCategory } from '../../hooks/product/useCategoryTan';
+import { toast } from "react-toastify";
+import formatError from "../../utils/errorHandler";
 import ImageWithFallback from '../../components/fallbacks/ImageWithFallback';
+import { getCategoryImageUrl } from '../../utils/imageUrl';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
 
@@ -29,6 +33,8 @@ export default function Categories() {
   const [editingCategory, setEditingCategory] = useState(null);
   const [expandedCategories, setExpandedCategories] = useState([]);
   const [imagePreview, setImagePreview] = useState(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState(null);
   const [categoryForm, setCategoryForm] = useState({
     name: '',
     description: '',
@@ -79,19 +85,24 @@ export default function Categories() {
       parent: category.parent?._id || category.parent || '',
       sortOrder: category.sortOrder || 0,
     });
-    setImagePreview(category.image ? `${API_URL.replace('/api/v1', '')}/uploads/categories/${category.image}` : null);
+    setImagePreview(category.image ? getCategoryImageUrl(category.image) : null);
     setShowModal(true);
   };
 
-  const handleDeleteCategory = async (categoryId) => {
-    if (confirm('Are you sure you want to delete this category?')) {
-      try {
-        await deleteMutation.mutateAsync(categoryId);
-        toast.success('Category deleted successfully');
-      } catch (err) {
-        toast.error(err.response?.data?.message || 'Failed to delete category');
-      }
+  const handleDeleteCategory = async () => {
+    try {
+      await deleteMutation.mutateAsync(categoryToDelete);
+      toast.success('Category deleted successfully');
+      setDeleteModalOpen(false);
+      setCategoryToDelete(null);
+    } catch (err) {
+      toast.error(formatError(err, 'Failed to delete category'));
     }
+  };
+
+  const confirmDelete = (id) => {
+    setCategoryToDelete(id);
+    setDeleteModalOpen(true);
   };
 
   const handleImageChange = (e) => {
@@ -134,7 +145,7 @@ export default function Categories() {
       }
       setShowModal(false);
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Something went wrong');
+      toast.error(formatError(err, 'Something went wrong'));
     }
   };
 
@@ -147,16 +158,56 @@ export default function Categories() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-[#025E5D]" />
+      <div className="space-y-6">
+        {/* Header Skeleton */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-4 w-64" />
+          </div>
+          <Skeleton className="h-10 w-32 rounded-lg" />
+        </div>
+
+        {/* Filters Skeleton */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Skeleton className="flex-1 h-12 rounded-xl" />
+          <div className="flex gap-4">
+            <Skeleton className="w-40 h-12 rounded-xl" />
+            <Skeleton className="w-40 h-12 rounded-xl" />
+          </div>
+        </div>
+
+        {/* Grid Skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 flex gap-4">
+              <Skeleton className="w-20 h-20 rounded-xl" />
+              <div className="flex-1 space-y-3">
+                <div className="flex justify-between">
+                  <div className="space-y-1">
+                    <Skeleton className="h-5 w-32" />
+                    <Skeleton className="h-4 w-20" />
+                  </div>
+                  <Skeleton className="h-6 w-16 rounded-full" />
+                </div>
+                <Skeleton className="h-4 w-full" />
+                <div className="flex gap-4">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="text-center py-12">
-        <p className="text-red-500">Failed to load categories</p>
+      <div className="text-center py-12 bg-white rounded-2xl border border-gray-100">
+        <h2 className="text-xl font-semibold text-red-600 mb-2">Error Loading Categories</h2>
+        <p className="text-gray-500">{formatError(error)}</p>
       </div>
     );
   }
@@ -171,7 +222,7 @@ export default function Categories() {
         </div>
         <button
           onClick={handleAddCategory}
-          className="flex items-center gap-2 px-4 py-2 bg-[#025E5D] text-white rounded-xl text-sm font-medium hover:bg-[#014d4b] transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-teal-600 text-white rounded-lg shadow-sm text-sm font-medium hover:bg-teal-700 transition-colors"
         >
           <Plus className="w-4 h-4" />
           Add Category
@@ -219,7 +270,7 @@ export default function Categories() {
               <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
                 {category.image ? (
                   <ImageWithFallback
-                    src={`${API_URL.replace('/api/v1', '')}/uploads/categories/${category.image}`}
+                    src={getCategoryImageUrl(category.image)}
                     alt={category.name}
                     className="w-full h-full object-cover"
                   />
@@ -237,11 +288,10 @@ export default function Categories() {
                     <h3 className="font-semibold text-gray-900">{category.name}</h3>
                     <p className="text-sm text-gray-500 mt-0.5">/{category.slug}</p>
                   </div>
-                  <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                    category.status === 'active'
-                      ? 'bg-emerald-100 text-emerald-700'
-                      : 'bg-gray-100 text-gray-600'
-                  }`}>
+                  <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${category.status === 'active'
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : 'bg-gray-100 text-gray-600'
+                    }`}>
                     {category.status === 'active' ? 'Active' : 'Inactive'}
                   </span>
                 </div>
@@ -267,7 +317,7 @@ export default function Categories() {
                   <Edit2 className="w-4 h-4 text-gray-500" />
                 </button>
                 <button
-                  onClick={() => handleDeleteCategory(category._id)}
+                  onClick={() => confirmDelete(category._id)}
                   className="p-2 hover:bg-red-50 rounded-lg transition-colors"
                   disabled={deleteMutation.isPending}
                 >
@@ -307,11 +357,10 @@ export default function Categories() {
                             <div className="flex items-center gap-3">
                               <GripVertical className="w-4 h-4 text-gray-400" />
                               <span className="text-sm font-medium text-gray-700">{sub.name}</span>
-                              <span className={`px-2 py-0.5 rounded-full text-xs ${
-                                sub.status === 'active'
-                                  ? 'bg-emerald-100 text-emerald-700'
-                                  : 'bg-gray-100 text-gray-600'
-                              }`}>
+                              <span className={`px-2 py-0.5 rounded-full text-xs ${sub.status === 'active'
+                                ? 'bg-emerald-100 text-emerald-700'
+                                : 'bg-gray-100 text-gray-600'
+                                }`}>
                                 {sub.status === 'active' ? 'Active' : 'Inactive'}
                               </span>
                             </div>
@@ -323,7 +372,7 @@ export default function Categories() {
                                 <Edit2 className="w-3.5 h-3.5 text-gray-500" />
                               </button>
                               <button
-                                onClick={() => handleDeleteCategory(sub._id)}
+                                onClick={() => confirmDelete(sub._id)}
                                 className="p-1.5 hover:bg-red-100 rounded-lg transition-colors"
                               >
                                 <Trash2 className="w-3.5 h-3.5 text-red-500" />
@@ -524,6 +573,20 @@ export default function Categories() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <ConfirmationDialog
+        isOpen={deleteModalOpen}
+        title="Delete Category?"
+        message="Are you sure you want to delete this category? All subcategories and product associations might be affected. This action cannot be undone."
+        onConfirm={handleDeleteCategory}
+        onCancel={() => {
+          setDeleteModalOpen(false);
+          setCategoryToDelete(null);
+        }}
+        confirmText="Delete"
+        type="danger"
+        isLoading={deleteMutation.isPending}
+      />
     </div>
   );
 }

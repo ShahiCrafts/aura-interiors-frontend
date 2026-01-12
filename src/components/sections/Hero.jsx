@@ -106,7 +106,7 @@ export default function Hero() {
   ];
 
   return (
-    <section className="w-full min-h-[calc(100vh-64px)] lg:h-[calc(100vh-72px)] flex flex-col lg:flex-row items-center px-4 sm:px-6 md:px-12 lg:px-20 py-6 sm:py-8 lg:py-0 relative overflow-hidden bg-linear-to-b from-zinc-50 to-white mt-16 lg:mt-[72px]">
+    <section className="w-full min-h-[calc(100vh-64px)] lg:h-[calc(100vh-72px)] flex flex-col lg:flex-row items-center px-4 sm:px-6 md:px-12 lg:px-20 py-6 sm:py-8 lg:py-0 relative overflow-hidden bg-white mt-16 lg:mt-[72px]">
       <div
         className={`w-full lg:flex-1 flex flex-col items-center lg:items-start text-center lg:text-left justify-center gap-3 sm:gap-4 relative z-10 transition-opacity duration-700 ${
           isVisible ? "opacity-100" : "opacity-0"

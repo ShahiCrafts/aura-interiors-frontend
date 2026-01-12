@@ -1,0 +1,16 @@
+:root {
+    --toastify-color-success: #0f766e;
+    /* teal-700 */
+    --toastify-color-warning: #f59e0b;
+    /* amber-500 */
+    --toastify-color-error: #e11d48;
+    /* rose-600 */
+    --toastify-color-progress-success: var(--toastify-color-success);
+    --toastify-color-progress-warning: var(--toastify-color-warning);
+    --toastify-color-progress-error: var(--toastify-color-error);
+}
+
+/* Ensure the font matches the app's DM Sans */
+.Toastify__toast {
+    font-family: "DM Sans", sans-serif;
+}

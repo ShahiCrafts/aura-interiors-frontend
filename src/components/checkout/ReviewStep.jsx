@@ -6,9 +6,10 @@ import {
   ClipboardCheck,
 } from "lucide-react";
 import useCheckoutStore from "../../store/checkoutStore";
-import { useCart } from "../../hooks/useCartTan";
+import { useCart } from "../../hooks/cart/useCartTan";
 import useAuthStore from "../../store/authStore";
 import useGuestCartStore from "../../store/guestCartStore";
+import { getProductImageUrl } from "../../utils/imageUrl";
 
 export default function ReviewStep() {
   const {
@@ -33,19 +34,7 @@ export default function ReviewStep() {
   const shippingCost = 0;
   const total = subtotal - discountAmount + shippingCost;
 
-  const baseUrl =
-    import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
-
-  const getImageUrl = (product) => {
-    const primaryImage =
-      product?.images?.find((img) => img.isPrimary)?.url ||
-      product?.images?.[0]?.url;
-    if (!primaryImage) {
-      return "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&auto=format&fit=crop";
-    }
-    if (primaryImage.startsWith("http")) return primaryImage;
-    return `${baseUrl.replace("/api/v1", "")}/uploads/products/${primaryImage}`;
-  };
+  const getImageUrl = (product) => getProductImageUrl(product);
 
   return (
     <div className="space-y-6">

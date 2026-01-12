@@ -10,9 +10,11 @@ import {
   Loader2,
   Share2,
 } from "lucide-react";
-import { toast } from "../ui/Toast";
-import { useWishlist, useRemoveFromWishlist } from "../../hooks/useWishlistTan";
-import { useAddToCart } from "../../hooks/useCartTan";
+import { toast } from "react-toastify";
+import { useWishlist, useRemoveFromWishlist } from "../../hooks/cart/useWishlistTan";
+import { useAddToCart } from "../../hooks/cart/useCartTan";
+import { getProductImageUrl } from "../../utils/imageUrl";
+import formatError from "../../utils/errorHandler";
 
 export default function Wishlist() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -25,8 +27,6 @@ export default function Wishlist() {
   const { mutate: addToCart, isPending: isAddingToCart } = useAddToCart();
 
   const wishlistItems = data?.data?.wishlist?.items || [];
-  const baseUrl =
-    import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
 
   const categories = [
     ...new Set(
@@ -69,8 +69,8 @@ export default function Wishlist() {
       onSuccess: () => {
         toast.success("Removed from wishlist");
       },
-      onError: () => {
-        toast.error("Failed to remove from wishlist");
+      onError: (err) => {
+        toast.error(formatError(err, "Failed to remove from wishlist"));
       },
     });
   };
@@ -80,7 +80,7 @@ export default function Wishlist() {
       { productId: product._id, quantity: 1 },
       {
         onSuccess: () => toast.success(`${product.name} added to cart`),
-        onError: () => toast.error("Failed to add to cart"),
+        onError: (err) => toast.error(formatError(err, "Failed to add to cart")),
       }
     );
   };
@@ -91,8 +91,8 @@ export default function Wishlist() {
         addToCart(
           { productId: item.product._id, quantity: 1 },
           {
-            onError: () =>
-              toast.error(`Failed to add ${item.product.name} to cart`),
+            onError: (err) =>
+              toast.error(formatError(err, `Failed to add ${item.product.name} to cart`)),
           }
         );
       }
@@ -100,16 +100,7 @@ export default function Wishlist() {
     toast.success("Adding all items to cart");
   };
 
-  const getImageUrl = (product) => {
-    const primaryImage =
-      product?.images?.find((img) => img.isPrimary)?.url ||
-      product?.images?.[0]?.url;
-    if (!primaryImage) {
-      return "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&auto=format&fit=crop";
-    }
-    if (primaryImage.startsWith("http")) return primaryImage;
-    return `${baseUrl.replace("/api/v1", "")}/uploads/products/${primaryImage}`;
-  };
+  const getImageUrl = (product) => getProductImageUrl(product);
 
   const getDiscountPercentage = (product) => {
     if (product?.originalPrice && product.originalPrice > product.price) {
@@ -141,26 +132,28 @@ export default function Wishlist() {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6 sm:p-8">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      {/* Header & Stats Section */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
         <div>
-          <h1 className="text-2xl font-playfair text-neutral-900">
-            <span className="font-bold">My</span>{" "}
+          <h2 className="text-2xl font-playfair text-neutral-900">
+            <span className="font-medium">My</span>{" "}
             <span className="italic text-teal-700">Wishlist</span>
-          </h1>
+          </h2>
           <p className="text-neutral-500 font-dm-sans text-sm mt-1">
-            Items you love, saved for later
+            {wishlistItems.length} {wishlistItems.length === 1 ? "item" : "items"} you love, saved for later
           </p>
         </div>
+
         {wishlistItems.length > 0 && (
           <div className="flex items-center gap-3">
-            <button className="w-10 h-10 flex items-center justify-center border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors">
-              <Share2 size={18} className="text-neutral-500" />
+            <button className="p-3 bg-white border border-neutral-200 rounded-xl text-neutral-500 hover:bg-neutral-50 transition-colors">
+              <Share2 size={20} />
             </button>
             <button
               onClick={handleAddAllToCart}
               disabled={isAddingToCart}
-              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-lg transition-all duration-300 font-dm-sans text-sm disabled:opacity-50"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-xl transition-all duration-300 font-dm-sans text-sm disabled:opacity-50"
             >
               <ShoppingCart size={18} />
               {isAddingToCart ? "Adding..." : "Add All to Cart"}
@@ -170,93 +163,78 @@ export default function Wishlist() {
       </div>
 
       {wishlistItems.length > 0 && (
-        <div className="mb-6">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div className="flex flex-col sm:flex-row gap-3">
-              <div className="relative w-full sm:w-64">
-                <Search
-                  size={18}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
-                />
-                <input
-                  type="text"
-                  placeholder="Search your wishlist..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-sm"
-                />
-              </div>
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1 relative">
+            <Search
+              size={18}
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400"
+            />
+            <input
+              type="text"
+              placeholder="Search your wishlist..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-11 pr-4 py-3 rounded-xl border border-neutral-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition-all font-dm-sans text-sm placeholder:text-neutral-400 bg-white"
+            />
+          </div>
 
-              <div className="relative">
-                <select
-                  value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="appearance-none px-4 py-2.5 pr-10 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-sm bg-white cursor-pointer"
-                >
-                  <option value="all">All Categories</option>
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown
-                  size={16}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
-                />
-              </div>
-
-              <div className="relative">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none px-4 py-2.5 pr-10 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-sm bg-white cursor-pointer"
-                >
-                  <option value="recent">Recently Added</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
-                  <option value="name">Name</option>
-                </select>
-                <ChevronDown
-                  size={16}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
-                />
-              </div>
+          <div className="flex gap-3">
+            <div className="relative min-w-[160px]">
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="w-full pl-4 pr-10 py-3 rounded-xl border border-neutral-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition-all font-dm-sans text-sm bg-white appearance-none cursor-pointer text-neutral-600"
+              >
+                <option value="all">All Categories</option>
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
             </div>
 
-            <span className="text-sm text-neutral-500 font-dm-sans whitespace-nowrap">
-              {filteredItems.length} item{filteredItems.length !== 1 ? "s" : ""}{" "}
-              in wishlist
-            </span>
+            <div className="relative min-w-[160px]">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="w-full pl-4 pr-10 py-3 rounded-xl border border-neutral-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition-all font-dm-sans text-sm bg-white appearance-none cursor-pointer text-neutral-600"
+              >
+                <option value="recent">Recently Added</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="name">Name</option>
+              </select>
+              <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+            </div>
           </div>
         </div>
       )}
 
       {wishlistItems.length === 0 && (
-        <div className="text-center py-16">
-          <div className="w-20 h-20 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Heart size={32} className="text-neutral-400" />
+        <div className="bg-white rounded-[2rem] border border-neutral-100 p-12 sm:p-20 text-center shadow-sm">
+          <div className="w-24 h-24 bg-teal-50 rounded-[2rem] flex items-center justify-center mx-auto mb-8 transform -rotate-6">
+            <Heart size={40} className="text-teal-600" />
           </div>
-          <h3 className="text-lg font-semibold text-neutral-900 font-dm-sans mb-2">
-            Your wishlist is empty
+          <h3 className="text-3xl font-playfair font-medium text-neutral-900 mb-4 tracking-tight">
+            Your Wishlist is <span className="italic text-teal-700">Empty</span>
           </h3>
-          <p className="text-neutral-500 font-dm-sans mb-6">
-            Start adding products you love to your wishlist
+          <p className="text-neutral-500 font-dm-sans max-w-sm mx-auto mb-10 leading-relaxed">
+            Discover pieces that speak to you and save them here for later inspiration.
           </p>
           <Link
             to="/shop"
-            className="inline-flex items-center gap-2 px-6 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-full transition-all font-dm-sans"
+            className="inline-flex items-center gap-3 px-8 py-4 bg-teal-700 hover:bg-teal-800 text-white font-bold rounded-full transition-all duration-300 font-dm-sans shadow-lg shadow-teal-900/10 hover:shadow-xl"
           >
-            Browse Products
+            Start Exploring
           </Link>
         </div>
       )}
 
       {wishlistItems.length > 0 && filteredItems.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-neutral-500 font-dm-sans">
-            No items match your search criteria
-          </p>
+        <div className="bg-white rounded-3xl border border-neutral-100 p-12 text-center shadow-sm italic text-neutral-400 font-dm-sans">
+          No items match your search criteria.
         </div>
       )}
 

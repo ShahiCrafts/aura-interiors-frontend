@@ -4,10 +4,12 @@ import {
   useCart,
   useUpdateCartItem,
   useRemoveFromCart,
-} from "../../hooks/useCartTan";
+} from "../../hooks/cart/useCartTan";
 import useAuthStore from "../../store/authStore";
 import useGuestCartStore from "../../store/guestCartStore";
-import { toast } from "../ui/Toast";
+import { toast } from "react-toastify";
+import { getProductImageUrl } from "../../utils/imageUrl";
+import formatError from "../../utils/errorHandler";
 
 const EmptyCartIllustration = () => (
   <svg
@@ -138,19 +140,7 @@ export default function CartSlider({ isOpen, onClose }) {
     : guestTotals.itemCount;
   const subtotal = isAuthenticated ? cart?.subtotal || 0 : guestTotals.subtotal;
 
-  const baseUrl =
-    import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
-
-  const getImageUrl = (product) => {
-    const primaryImage =
-      product?.images?.find((img) => img.isPrimary)?.url ||
-      product?.images?.[0]?.url;
-    if (!primaryImage) {
-      return "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&auto=format&fit=crop";
-    }
-    if (primaryImage.startsWith("http")) return primaryImage;
-    return `${baseUrl.replace("/api/v1", "")}/uploads/products/${primaryImage}`;
-  };
+  const getImageUrl = (product) => getProductImageUrl(product);
 
   const handleUpdateQuantity = (itemId, newQuantity) => {
     if (newQuantity < 1) return;
@@ -163,7 +153,7 @@ export default function CartSlider({ isOpen, onClose }) {
     updateCartItem(
       { itemId, quantity: newQuantity },
       {
-        onError: () => toast.error("Failed to update quantity"),
+        onError: (err) => toast.error(formatError(err, "Failed to update quantity")),
       }
     );
   };
@@ -177,23 +167,21 @@ export default function CartSlider({ isOpen, onClose }) {
 
     removeFromCart(itemId, {
       onSuccess: () => toast.success("Item removed from cart"),
-      onError: () => toast.error("Failed to remove item"),
+      onError: (err) => toast.error(formatError(err, "Failed to remove item")),
     });
   };
 
   return (
     <>
       <div
-        className={`fixed inset-0 z-50 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${
-          isOpen ? "opacity-100 visible" : "opacity-0 invisible"
-        }`}
+        className={`fixed inset-0 z-50 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${isOpen ? "opacity-100 visible" : "opacity-0 invisible"
+          }`}
         onClick={onClose}
       />
 
       <div
-        className={`fixed top-0 right-0 z-50 h-full w-full sm:max-w-[400px] bg-white shadow-2xl transition-transform duration-300 ease-out flex flex-col font-dm-sans ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`fixed top-0 right-0 z-50 h-full w-full sm:max-w-[400px] bg-white shadow-2xl transition-transform duration-300 ease-out flex flex-col font-dm-sans ${isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-100">
           <div className="flex items-center gap-2.5">

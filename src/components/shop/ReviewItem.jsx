@@ -8,12 +8,16 @@ import {
   CheckCircle,
   Loader2,
 } from "lucide-react";
-import { useMarkHelpful, useDeleteReview } from "../../hooks/useReviewTan";
+import { useMarkHelpful, useDeleteReview } from "../../hooks/review/useReviewTan";
 import useAuthStore from "../../store/authStore";
-import { toast } from "../ui/Toast";
+import { toast } from "react-toastify";
+import { getAvatarUrl } from "../../utils/imageUrl";
+import ConfirmationDialog from "../modals/ConfirmationDialog";
+import formatError from "../../utils/errorHandler";
 
 export default function ReviewItem({ review, productId, onEdit, isOwner }) {
   const [showMenu, setShowMenu] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const { isAuthenticated, user } = useAuthStore();
 
   const { mutate: markHelpful, isPending: isMarkingHelpful } = useMarkHelpful();
@@ -30,32 +34,26 @@ export default function ReviewItem({ review, productId, onEdit, isOwner }) {
     markHelpful(
       { productId, reviewId: review._id },
       {
-        onError: (error) => {
-          toast.error(
-            error?.response?.data?.message || "Failed to mark as helpful"
-          );
+        onError: (err) => {
+          toast.error(formatError(err, "Failed to mark as helpful"));
         },
       }
     );
   };
 
   const handleDelete = () => {
-    if (window.confirm("Are you sure you want to delete your review?")) {
-      deleteReview(
-        { productId, reviewId: review._id },
-        {
-          onSuccess: () => {
-            toast.success("Review deleted successfully");
-          },
-          onError: (error) => {
-            toast.error(
-              error?.response?.data?.message || "Failed to delete review"
-            );
-          },
-        }
-      );
-    }
-    setShowMenu(false);
+    deleteReview(
+      { productId, reviewId: review._id },
+      {
+        onSuccess: () => {
+          toast.success("Review deleted successfully");
+          setDeleteModalOpen(false);
+        },
+        onError: (err) => {
+          toast.error(formatError(err, "Failed to delete review"));
+        },
+      }
+    );
   };
 
   const formatDate = (dateString) => {
@@ -72,26 +70,11 @@ export default function ReviewItem({ review, productId, onEdit, isOwner }) {
     return `${Math.floor(days / 365)} years ago`;
   };
 
-  const getUserAvatar = () => {
-    if (review.user?.avatar) {
-      const baseUrl =
-        import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
-      if (review.user.avatar.startsWith("http")) {
-        return review.user.avatar;
-      }
-      return `${baseUrl.replace("/api/v1", "")}/uploads/avatars/${
-        review.user.avatar
-      }`;
-    }
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(
-      `${review.user?.firstName || ""} ${review.user?.lastName || ""}`
-    )}&background=0d9488&color=fff`;
-  };
+  const getUserAvatar = () => getAvatarUrl(review.user);
 
   const getUserName = () => {
-    return `${review.user?.firstName || "Anonymous"} ${
-      review.user?.lastName || ""
-    }`.trim();
+    return `${review.user?.firstName || "Anonymous"} ${review.user?.lastName || ""
+      }`.trim();
   };
 
   return (
@@ -165,15 +148,14 @@ export default function ReviewItem({ review, productId, onEdit, isOwner }) {
                         Edit
                       </button>
                       <button
-                        onClick={handleDelete}
+                        onClick={() => {
+                          setDeleteModalOpen(true);
+                          setShowMenu(false);
+                        }}
                         disabled={isDeleting}
                         className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-dm-sans"
                       >
-                        {isDeleting ? (
-                          <Loader2 size={14} className="animate-spin" />
-                        ) : (
-                          <Trash2 size={14} />
-                        )}
+                        <Trash2 size={14} />
                         Delete
                       </button>
                     </div>
@@ -207,11 +189,10 @@ export default function ReviewItem({ review, productId, onEdit, isOwner }) {
           <button
             onClick={handleMarkHelpful}
             disabled={isMarkingHelpful}
-            className={`flex items-center gap-1.5 text-sm transition-colors font-dm-sans ${
-              hasVoted
-                ? "text-teal-700"
-                : "text-neutral-500 hover:text-teal-700"
-            }`}
+            className={`flex items-center gap-1.5 text-sm transition-colors font-dm-sans ${hasVoted
+              ? "text-teal-700"
+              : "text-neutral-500 hover:text-teal-700"
+              }`}
           >
             {isMarkingHelpful ? (
               <Loader2 size={14} className="animate-spin" />
@@ -222,6 +203,16 @@ export default function ReviewItem({ review, productId, onEdit, isOwner }) {
           </button>
         </div>
       </div>
+
+      <ConfirmationDialog
+        isOpen={deleteModalOpen}
+        title="Delete Review?"
+        message="Are you sure you want to delete your review? This action cannot be undone."
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteModalOpen(false)}
+        confirmText="Delete"
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

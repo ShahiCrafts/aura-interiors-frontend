@@ -1,18 +1,20 @@
-import { useEffect, useState } from "react";
-import { X, ExternalLink, Camera, Smartphone } from "lucide-react";
+import { useEffect, useState, useMemo } from "react";
+import { X, ExternalLink, Camera } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 
 export default function ARViewModal({ isOpen, onClose, product }) {
   const [isMobile, setIsMobile] = useState(false);
+  const [deviceInfo, setDeviceInfo] = useState({ isIOS: false, isAndroid: false });
 
   useEffect(() => {
-    const checkMobile = () => {
+    const checkDevice = () => {
       const userAgent = navigator.userAgent || navigator.vendor || window.opera;
       const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
       const isAndroid = /android/i.test(userAgent);
       setIsMobile(isIOS || isAndroid);
+      setDeviceInfo({ isIOS, isAndroid });
     };
-    checkMobile();
+    checkDevice();
   }, []);
 
   useEffect(() => {
@@ -25,6 +27,29 @@ export default function ARViewModal({ isOpen, onClose, product }) {
       document.body.style.overflow = "";
     };
   }, [isOpen]);
+
+  // Check if product has AR models for different platforms
+  const modelAvailability = useMemo(() => {
+    if (!product) return { hasGlb: false, hasUsdz: false, hasAny: false };
+
+    const hasGlb = product.modelFiles?.some(m => m.format === "glb" || m.format === "gltf") ||
+                   product.modelUrl?.includes(".glb") || product.modelUrl?.includes(".gltf");
+    const hasUsdz = product.modelFiles?.some(m => m.format === "usdz") ||
+                    product.modelUrl?.includes(".usdz");
+
+    return {
+      hasGlb,
+      hasUsdz,
+      hasAny: hasGlb || hasUsdz
+    };
+  }, [product]);
+
+  // Check if current device has a compatible model
+  const hasCompatibleModel = useMemo(() => {
+    if (deviceInfo.isIOS) return modelAvailability.hasUsdz;
+    if (deviceInfo.isAndroid) return modelAvailability.hasGlb;
+    return modelAvailability.hasAny;
+  }, [deviceInfo, modelAvailability]);
 
   if (!isOpen || !product) return null;
 
@@ -54,6 +79,7 @@ export default function ARViewModal({ isOpen, onClose, product }) {
     }
   };
 
+  // Desktop view - QR code only
   if (!isMobile) {
     return (
       <div className="fixed inset-0 z-100 overflow-y-auto">
@@ -84,25 +110,40 @@ export default function ARViewModal({ isOpen, onClose, product }) {
               Scan this QR code with your mobile device
             </p>
 
-            <div className="flex justify-center mb-6">
-              <div className="p-4 rounded-xl border border-neutral-200 bg-white">
-                <QRCodeSVG
-                  value={arViewUrl}
-                  size={200}
-                  level="H"
-                  includeMargin={false}
-                  bgColor="#ffffff"
-                  fgColor="#000000"
-                />
-              </div>
-            </div>
+            {modelAvailability.hasAny ? (
+              <>
+                <div className="flex justify-center mb-6">
+                  <div className="p-4 rounded-xl border border-neutral-200 bg-white">
+                    <QRCodeSVG
+                      value={arViewUrl}
+                      size={200}
+                      level="H"
+                      includeMargin={false}
+                      bgColor="#ffffff"
+                      fgColor="#000000"
+                    />
+                  </div>
+                </div>
 
-            <p className="text-center text-neutral-500 text-[15px]">
-              Having trouble scanning?{" "}
-              <button className="text-teal-700 font-semibold underline hover:text-teal-800">
-                Get Help
-              </button>
-            </p>
+                {/* Device compatibility info */}
+                <p className="text-center text-neutral-400 text-xs mb-4">
+                  Supported: {modelAvailability.hasUsdz && "iOS"}{modelAvailability.hasUsdz && modelAvailability.hasGlb && " • "}{modelAvailability.hasGlb && "Android"}
+                </p>
+
+                <p className="text-center text-neutral-500 text-[15px]">
+                  Having trouble scanning?{" "}
+                  <button className="text-teal-700 font-semibold underline hover:text-teal-800">
+                    Get Help
+                  </button>
+                </p>
+              </>
+            ) : (
+              <div className="text-center py-4">
+                <p className="text-neutral-500 text-[15px]">
+                  AR model is not available for this product yet.
+                </p>
+              </div>
+            )}
           </div>
         </div>
         <style>{`
@@ -115,6 +156,7 @@ export default function ARViewModal({ isOpen, onClose, product }) {
     );
   }
 
+  // Mobile view - QR code with action buttons
   return (
     <div className="fixed inset-0 z-100 overflow-y-auto">
       <div
@@ -153,28 +195,35 @@ export default function ARViewModal({ isOpen, onClose, product }) {
           </h2>
 
           <p className="text-center text-neutral-500 text-[15px] mb-6">
-            Scan this QR code with your mobile device
+            {hasCompatibleModel
+              ? "Launch AR to see this furniture in your room"
+              : deviceInfo.isIOS
+              ? "This product only has an Android AR model"
+              : "This product only has an iOS AR model"}
           </p>
 
-          <div className="flex gap-3 mb-6">
-            <button
-              onClick={handleOpenLink}
-              className="flex-1 flex items-center justify-center gap-2 h-12 rounded-xl border border-neutral-300 text-neutral-700 text-[15px] font-medium hover:bg-neutral-50 transition-colors"
-            >
-              <ExternalLink size={17} />
-              Open Link
-            </button>
-            <button
-              onClick={handleEnableCamera}
-              className="flex-1 flex items-center justify-center gap-2 h-12 rounded-xl bg-teal-700 text-white text-[15px] font-medium hover:bg-teal-800 transition-colors"
-            >
-              <Camera size={17} />
-              Enable Camera
-            </button>
-          </div>
+          {modelAvailability.hasAny && (
+            <div className="flex gap-3 mb-6">
+              <button
+                onClick={handleOpenLink}
+                className="flex-1 flex items-center justify-center gap-2 h-12 rounded-xl border border-neutral-300 text-neutral-700 text-[15px] font-medium hover:bg-neutral-50 transition-colors"
+              >
+                <ExternalLink size={17} />
+                Open Link
+              </button>
+              <button
+                onClick={handleEnableCamera}
+                disabled={!hasCompatibleModel}
+                className="flex-1 flex items-center justify-center gap-2 h-12 rounded-xl bg-teal-700 text-white text-[15px] font-medium hover:bg-teal-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Camera size={17} />
+                Enable Camera
+              </button>
+            </div>
+          )}
 
           <p className="text-center text-neutral-500 text-[15px]">
-            Having trouble scanning?{" "}
+            Having trouble?{" "}
             <button className="text-teal-700 font-semibold underline hover:text-teal-800">
               Get Help
             </button>

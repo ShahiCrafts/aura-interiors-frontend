@@ -15,18 +15,27 @@ import {
   AlertCircle,
   Loader2,
 } from "lucide-react";
+import Skeleton from "../../components/common/Skeleton";
+import ConfirmationDialog from "../../components/modals/ConfirmationDialog";
 import {
   useProducts,
   useCreateProduct,
   useUpdateProduct,
   useDeleteProduct,
-} from "../../hooks/useProductTan";
-import { useCategories } from "../../hooks/useCategoryTan";
-import { toast } from "../../components/ui/Toast";
+} from "../../hooks/product/useProductTan";
+import { useCategories } from "../../hooks/product/useCategoryTan";
+import { toast } from "react-toastify";
 import ImageWithFallback from "../../components/fallbacks/ImageWithFallback";
+import {
+  getImageUrl as getImageUrlUtil,
+  getProductImageUrl,
+} from "../../utils/imageUrl";
+import formatError from "../../utils/errorHandler";
 
 const API_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
+
+import Pagination from "../../components/common/Pagination";
 
 export default function Products() {
   const fileInputRef = useRef(null);
@@ -34,7 +43,11 @@ export default function Products() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10);
   const [modalOpen, setModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
   const [editingProduct, setEditingProduct] = useState(null);
   const [activeTab, setActiveTab] = useState("basic");
   const [modelInputType, setModelInputType] = useState("url");
@@ -102,8 +115,11 @@ export default function Products() {
   const { data: productsData, isLoading } = useProducts({
     search: searchQuery || undefined,
     category: selectedCategory !== "all" ? selectedCategory : undefined,
+    page,
+    limit: pageSize,
   });
   const products = productsData?.data?.products || [];
+  const pagination = productsData?.data?.pagination || { total: 0, pages: 1 };
 
   // Fetch categories for filter and form
   const { data: categoriesData } = useCategories();
@@ -147,9 +163,7 @@ export default function Products() {
       if (product.images?.length > 0) {
         setImagePreviews(
           product.images.map((img) => ({
-            url: `${API_URL.replace("/api/v1", "")}/uploads/products/${
-              img.url
-            }`,
+            url: getImageUrlUtil(img.url, "products"),
             existing: true,
             originalUrl: img.url,
           }))
@@ -485,19 +499,24 @@ export default function Products() {
       }
       setModalOpen(false);
     } catch (err) {
-      toast.error(err.response?.data?.message || "Something went wrong");
+      toast.error(formatError(err, "Something went wrong"));
     }
   };
 
-  const handleDeleteProduct = async (id) => {
-    if (confirm("Are you sure you want to delete this product?")) {
-      try {
-        await deleteMutation.mutateAsync(id);
-        toast.success("Product deleted successfully");
-      } catch (err) {
-        toast.error(err.response?.data?.message || "Failed to delete product");
-      }
+  const handleDeleteProduct = async () => {
+    try {
+      await deleteMutation.mutateAsync(productToDelete);
+      toast.success("Product deleted successfully");
+      setDeleteModalOpen(false);
+      setProductToDelete(null);
+    } catch (err) {
+      toast.error(formatError(err, "Failed to delete product"));
     }
+  };
+
+  const confirmDelete = (id) => {
+    setProductToDelete(id);
+    setDeleteModalOpen(true);
   };
 
   const handleToggle = (field, value) => {
@@ -514,9 +533,9 @@ export default function Products() {
   const getStatusColor = (status) => {
     switch (status) {
       case "active":
-        return "bg-emerald-100 text-emerald-700";
+        return "bg-teal-50 text-teal-700";
       case "out_of_stock":
-        return "bg-red-100 text-red-700";
+        return "bg-red-50 text-red-700";
       case "draft":
         return "bg-gray-100 text-gray-700";
       default:
@@ -538,14 +557,7 @@ export default function Products() {
   };
 
   const getProductImage = (product) => {
-    if (product.images?.length > 0) {
-      const primaryImage =
-        product.images.find((img) => img.isPrimary) || product.images[0];
-      return `${API_URL.replace("/api/v1", "")}/uploads/products/${
-        primaryImage.url
-      }`;
-    }
-    return null;
+    return getProductImageUrl(product);
   };
 
   return (
@@ -554,105 +566,151 @@ export default function Products() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Products</h1>
-          <p className="text-gray-500 mt-1">
-            {productsData?.data?.pagination?.total || 0} total products
+          <p className="text-gray-500 mt-0.5 text-sm">
+            Manage your product inventory
           </p>
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="flex items-center gap-2 px-4 py-2.5 bg-[#025E5D] text-white rounded-xl font-medium hover:bg-[#014d4b] transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition-colors shadow-sm"
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="w-4 h-4" />
           Add Product
         </button>
       </div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-4">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#025E5D] focus:ring-2 focus:ring-[#025E5D]/20"
-            />
-          </div>
-          <div className="flex gap-2 overflow-x-auto pb-1">
-            <button
-              onClick={() => setSelectedCategory("all")}
-              className={`px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-colors ${
-                selectedCategory === "all"
-                  ? "bg-[#025E5D] text-white"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              }`}
-            >
-              All
-            </button>
-            {categories.slice(0, 5).map((cat) => (
+      {/* Products Table */}
+      {/* Products Table */}
+      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
+        {/* Filters inside table card */}
+        <div className="p-4 border-b border-gray-100">
+          <div className="flex flex-col lg:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setPage(1);
+                }}
+                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all placeholder:text-gray-400"
+              />
+            </div>
+            <div className="flex gap-2 flex-wrap">
               <button
-                key={cat._id}
-                onClick={() => setSelectedCategory(cat._id)}
-                className={`px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-colors ${
-                  selectedCategory === cat._id
-                    ? "bg-[#025E5D] text-white"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
+                onClick={() => {
+                  setSelectedCategory("all");
+                  setPage(1);
+                }}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${selectedCategory === "all"
+                  ? "bg-teal-600 text-white shadow-sm"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
               >
-                {cat.name}
+                All
               </button>
-            ))}
+              {categories.slice(0, 5).map((cat) => (
+                <button
+                  key={cat._id}
+                  onClick={() => {
+                    setSelectedCategory(cat._id);
+                    setPage(1);
+                  }}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${selectedCategory === cat._id
+                    ? "bg-teal-600 text-white shadow-sm"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
+                >
+                  {cat.name}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Products Table */}
-      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-[#025E5D]" />
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-gray-50/80 border-b border-gray-100">
+                  <th className="px-6 py-4"><Skeleton className="h-4 w-24" /></th>
+                  <th className="px-6 py-4"><Skeleton className="h-4 w-20" /></th>
+                  <th className="px-6 py-4"><Skeleton className="h-4 w-16" /></th>
+                  <th className="px-6 py-4"><Skeleton className="h-4 w-16" /></th>
+                  <th className="px-6 py-4"><Skeleton className="h-4 w-20" /></th>
+                  <th className="px-6 py-4"><Skeleton className="h-4 w-16" /></th>
+                  <th className="px-6 py-4 text-right"><Skeleton className="h-4 w-16 ml-auto" /></th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {[...Array(5)].map((_, i) => (
+                  <tr key={i}>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <Skeleton className="w-11 h-11 rounded-lg" />
+                        <div className="space-y-2">
+                          <Skeleton className="h-4 w-32" />
+                          <Skeleton className="h-3 w-20" />
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4"><Skeleton className="h-4 w-24" /></td>
+                    <td className="px-6 py-4"><Skeleton className="h-4 w-20" /></td>
+                    <td className="px-6 py-4"><Skeleton className="h-4 w-16" /></td>
+                    <td className="px-6 py-4"><Skeleton className="h-6 w-20 rounded-full" /></td>
+                    <td className="px-6 py-4"><Skeleton className="h-6 w-16 rounded-full" /></td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex justify-end gap-2">
+                        <Skeleton className="w-8 h-8 rounded-lg" />
+                        <Skeleton className="w-8 h-8 rounded-lg" />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4">
+              <thead>
+                <tr className="bg-gray-50/80 border-b border-gray-100">
+                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-4">
                     Product
                   </th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4">
+                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-4">
                     Category
                   </th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4">
+                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-4">
                     Price
                   </th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4">
+                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-4">
                     Stock
                   </th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4">
+                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-4">
                     3D Model
                   </th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4">
+                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-4">
                     Status
                   </th>
-                  <th className="text-right text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-4">
+                  <th className="text-right text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-4">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-50">
                 {products.map((product) => (
                   <motion.tr
                     key={product._id}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="hover:bg-gray-50 transition-colors"
+                    className="hover:bg-gray-50/50 transition-colors"
                   >
-                    <td className="px-5 py-4">
+                    <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-100 shrink-0">
+                        <div className="w-11 h-11 rounded-lg overflow-hidden bg-gray-100 shrink-0">
                           {getProductImage(product) ? (
                             <ImageWithFallback
                               src={getProductImage(product)}
@@ -661,28 +719,28 @@ export default function Products() {
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
-                              <Image className="w-6 h-6 text-gray-400" />
+                              <Image className="w-5 h-5 text-gray-400" />
                             </div>
                           )}
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900">
+                          <p className="font-medium text-gray-900 text-sm">
                             {product.name}
                           </p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-gray-400 mt-0.5">
                             {product.sku || product._id?.slice(-8)}
                           </p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-5 py-4">
-                      <span className="text-gray-600">
+                    <td className="px-6 py-4">
+                      <span className="text-sm text-gray-600">
                         {product.category?.name || "Uncategorized"}
                       </span>
                     </td>
-                    <td className="px-5 py-4">
+                    <td className="px-6 py-4">
                       <div>
-                        <span className="font-semibold text-gray-900">
+                        <span className="font-semibold text-gray-900 text-sm">
                           NRs. {product.price?.toLocaleString()}
                         </span>
                         {product.originalPrice && (
@@ -692,45 +750,51 @@ export default function Products() {
                         )}
                       </div>
                     </td>
-                    <td className="px-5 py-4">
+                    <td className="px-6 py-4">
                       <span
-                        className={`${
-                          product.stock === 0
-                            ? "text-red-500"
-                            : product.stock < 10
+                        className={`text-sm font-medium ${product.stock === 0
+                          ? "text-red-500"
+                          : product.stock < 10
                             ? "text-amber-500"
                             : "text-gray-600"
-                        }`}
+                          }`}
                       >
                         {product.stock} units
                       </span>
                     </td>
-                    <td className="px-5 py-4">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       {product.modelUrl || product.modelFiles?.length > 0 ? (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
-                          <Box className="w-3.5 h-3.5" />
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-violet-50 text-violet-700 border border-violet-100">
+                          <Box className="w-3 h-3" />
                           {product.modelFiles?.length > 0
-                            ? `${product.modelFiles.length} Model${
-                                product.modelFiles.length > 1 ? "s" : ""
-                              }`
+                            ? `${product.modelFiles.length} Model${product.modelFiles.length > 1 ? "s" : ""
+                            }`
                             : "Available"}
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-gray-50 text-gray-400 border border-gray-100">
                           No Model
                         </span>
                       )}
                     </td>
-                    <td className="px-5 py-4">
+                    <td className="px-6 py-4">
                       <span
-                        className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(
                           product.status
                         )}`}
                       >
+                        <span
+                          className={`${product.status === "active"
+                            ? "bg-teal-500"
+                            : product.status === "out_of_stock"
+                              ? "bg-red-500"
+                              : "bg-gray-400"
+                            }`}
+                        ></span>
                         {getStatusLabel(product.status)}
                       </span>
                     </td>
-                    <td className="px-5 py-4">
+                    <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => handleOpenModal(product)}
@@ -740,7 +804,7 @@ export default function Products() {
                           <Edit className="w-4 h-4 text-gray-500" />
                         </button>
                         <button
-                          onClick={() => handleDeleteProduct(product._id)}
+                          onClick={() => confirmDelete(product._id)}
                           className="p-2 hover:bg-red-50 rounded-lg transition-colors"
                           title="Delete"
                           disabled={deleteMutation.isPending}
@@ -757,8 +821,8 @@ export default function Products() {
         )}
 
         {!isLoading && products.length === 0 && (
-          <div className="p-12 text-center">
-            <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+          <div className="p-16 text-center">
+            <Package className="w-12 h-12 text-gray-300 mx-auto mb-4" />
             <h3 className="font-medium text-gray-900 mb-1">
               No products found
             </h3>
@@ -768,6 +832,24 @@ export default function Products() {
           </div>
         )}
       </div>
+
+      <Pagination
+        page={page}
+        totalPages={pagination.pages}
+        pageSize={pageSize}
+        totalItems={pagination.total}
+        onPageChange={setPage}
+      />
+
+      <ConfirmationDialog
+        isOpen={deleteModalOpen}
+        title="Delete Product?"
+        message="Are you sure you want to delete this product? This action cannot be undone."
+        onConfirm={handleDeleteProduct}
+        onCancel={() => setDeleteModalOpen(false)}
+        confirmText="Delete"
+        isLoading={deleteMutation.isPending}
+      />
 
       {/* Add/Edit Product Modal */}
       <AnimatePresence>
@@ -809,11 +891,10 @@ export default function Products() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-                      activeTab === tab.id
-                        ? "border-[#025E5D] text-[#025E5D]"
-                        : "border-transparent text-gray-500 hover:text-gray-700"
-                    }`}
+                    className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab.id
+                      ? "border-[#025E5D] text-[#025E5D]"
+                      : "border-transparent text-gray-500 hover:text-gray-700"
+                      }`}
                   >
                     {tab.label}
                   </button>
@@ -1142,11 +1223,10 @@ export default function Products() {
                         <button
                           type="button"
                           onClick={() => setModelInputType("url")}
-                          className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border transition-all ${
-                            modelInputType === "url"
-                              ? "border-[#025E5D] bg-[#025E5D]/5 text-[#025E5D]"
-                              : "border-gray-200 text-gray-600 hover:border-gray-300"
-                          }`}
+                          className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border transition-all ${modelInputType === "url"
+                            ? "border-[#025E5D] bg-[#025E5D]/5 text-[#025E5D]"
+                            : "border-gray-200 text-gray-600 hover:border-gray-300"
+                            }`}
                         >
                           <LinkIcon className="w-4 h-4" />
                           URL / Link
@@ -1154,11 +1234,10 @@ export default function Products() {
                         <button
                           type="button"
                           onClick={() => setModelInputType("upload")}
-                          className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border transition-all ${
-                            modelInputType === "upload"
-                              ? "border-[#025E5D] bg-[#025E5D]/5 text-[#025E5D]"
-                              : "border-gray-200 text-gray-600 hover:border-gray-300"
-                          }`}
+                          className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border transition-all ${modelInputType === "upload"
+                            ? "border-[#025E5D] bg-[#025E5D]/5 text-[#025E5D]"
+                            : "border-gray-200 text-gray-600 hover:border-gray-300"
+                            }`}
                         >
                           <Upload className="w-4 h-4" />
                           Upload File
@@ -1176,30 +1255,87 @@ export default function Products() {
                         {/* Existing and new URL entries list */}
                         {(existingModelFiles.length > 0 ||
                           modelUrls.length > 0) && (
-                          <div className="space-y-2">
-                            {/* Existing model entries (URL-based) */}
-                            {existingModelFiles
-                              .filter((m) => m.isExternal)
-                              .map((model, index) => (
+                            <div className="space-y-2">
+                              {/* Existing model entries (URL-based) */}
+                              {existingModelFiles
+                                .filter((m) => m.isExternal)
+                                .map((model, index) => (
+                                  <div
+                                    key={`existing-url-${index}`}
+                                    className="border border-gray-200 rounded-xl p-4"
+                                  >
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center gap-3">
+                                        <div
+                                          className={`w-10 h-10 rounded-lg flex items-center justify-center ${model.platform === "ios"
+                                            ? "bg-blue-100"
+                                            : "bg-green-100"
+                                            }`}
+                                        >
+                                          <LinkIcon
+                                            className={`w-5 h-5 ${model.platform === "ios"
+                                              ? "text-blue-600"
+                                              : "text-green-600"
+                                              }`}
+                                          />
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                          <p className="text-sm font-medium text-gray-900 truncate">
+                                            {model.url}
+                                          </p>
+                                          <div className="flex items-center gap-2">
+                                            <span
+                                              className={`text-xs px-2 py-0.5 rounded-full ${model.platform === "ios"
+                                                ? "bg-blue-100 text-blue-700"
+                                                : "bg-green-100 text-green-700"
+                                                }`}
+                                            >
+                                              {model.format?.toUpperCase()} -{" "}
+                                              {model.platform === "ios"
+                                                ? "iOS"
+                                                : "Android/Web"}
+                                            </span>
+                                            <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">
+                                              URL
+                                            </span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          removeModelFile(
+                                            existingModelFiles.indexOf(model),
+                                            true
+                                          )
+                                        }
+                                        className="p-2 hover:bg-red-50 rounded-lg transition-colors shrink-0"
+                                      >
+                                        <X className="w-4 h-4 text-red-500" />
+                                      </button>
+                                    </div>
+                                  </div>
+                                ))}
+
+                              {/* New URL entries */}
+                              {modelUrls.map((model, index) => (
                                 <div
-                                  key={`existing-url-${index}`}
+                                  key={`new-url-${index}`}
                                   className="border border-gray-200 rounded-xl p-4"
                                 >
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
                                       <div
-                                        className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                                          model.platform === "ios"
-                                            ? "bg-blue-100"
-                                            : "bg-green-100"
-                                        }`}
+                                        className={`w-10 h-10 rounded-lg flex items-center justify-center ${model.platform === "ios"
+                                          ? "bg-blue-100"
+                                          : "bg-green-100"
+                                          }`}
                                       >
                                         <LinkIcon
-                                          className={`w-5 h-5 ${
-                                            model.platform === "ios"
-                                              ? "text-blue-600"
-                                              : "text-green-600"
-                                          }`}
+                                          className={`w-5 h-5 ${model.platform === "ios"
+                                            ? "text-blue-600"
+                                            : "text-green-600"
+                                            }`}
                                         />
                                       </div>
                                       <div className="min-w-0 flex-1">
@@ -1208,19 +1344,18 @@ export default function Products() {
                                         </p>
                                         <div className="flex items-center gap-2">
                                           <span
-                                            className={`text-xs px-2 py-0.5 rounded-full ${
-                                              model.platform === "ios"
-                                                ? "bg-blue-100 text-blue-700"
-                                                : "bg-green-100 text-green-700"
-                                            }`}
+                                            className={`text-xs px-2 py-0.5 rounded-full ${model.platform === "ios"
+                                              ? "bg-blue-100 text-blue-700"
+                                              : "bg-green-100 text-green-700"
+                                              }`}
                                           >
                                             {model.format?.toUpperCase()} -{" "}
                                             {model.platform === "ios"
                                               ? "iOS"
                                               : "Android/Web"}
                                           </span>
-                                          <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">
-                                            URL
+                                          <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
+                                            New
                                           </span>
                                         </div>
                                       </div>
@@ -1228,10 +1363,7 @@ export default function Products() {
                                     <button
                                       type="button"
                                       onClick={() =>
-                                        removeModelFile(
-                                          existingModelFiles.indexOf(model),
-                                          true
-                                        )
+                                        removeModelFile(index, false, true)
                                       }
                                       className="p-2 hover:bg-red-50 rounded-lg transition-colors shrink-0"
                                     >
@@ -1240,67 +1372,8 @@ export default function Products() {
                                   </div>
                                 </div>
                               ))}
-
-                            {/* New URL entries */}
-                            {modelUrls.map((model, index) => (
-                              <div
-                                key={`new-url-${index}`}
-                                className="border border-gray-200 rounded-xl p-4"
-                              >
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center gap-3">
-                                    <div
-                                      className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                                        model.platform === "ios"
-                                          ? "bg-blue-100"
-                                          : "bg-green-100"
-                                      }`}
-                                    >
-                                      <LinkIcon
-                                        className={`w-5 h-5 ${
-                                          model.platform === "ios"
-                                            ? "text-blue-600"
-                                            : "text-green-600"
-                                        }`}
-                                      />
-                                    </div>
-                                    <div className="min-w-0 flex-1">
-                                      <p className="text-sm font-medium text-gray-900 truncate">
-                                        {model.url}
-                                      </p>
-                                      <div className="flex items-center gap-2">
-                                        <span
-                                          className={`text-xs px-2 py-0.5 rounded-full ${
-                                            model.platform === "ios"
-                                              ? "bg-blue-100 text-blue-700"
-                                              : "bg-green-100 text-green-700"
-                                          }`}
-                                        >
-                                          {model.format?.toUpperCase()} -{" "}
-                                          {model.platform === "ios"
-                                            ? "iOS"
-                                            : "Android/Web"}
-                                        </span>
-                                        <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
-                                          New
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      removeModelFile(index, false, true)
-                                    }
-                                    className="p-2 hover:bg-red-50 rounded-lg transition-colors shrink-0"
-                                  >
-                                    <X className="w-4 h-4 text-red-500" />
-                                  </button>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                            </div>
+                          )}
 
                         {/* URL input area */}
                         <div className="flex gap-2">
@@ -1312,13 +1385,13 @@ export default function Products() {
                               e.key === "Enter" &&
                               (e.preventDefault(), addModelUrl())
                             }
-                            className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:border-[#025E5D] focus:ring-2 focus:ring-[#025E5D]/20 outline-none transition-all"
+                            className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 outline-none transition-all"
                             placeholder="https://example.com/model.glb"
                           />
                           <button
                             type="button"
                             onClick={addModelUrl}
-                            className="px-4 py-3 bg-[#025E5D] text-white rounded-xl font-medium hover:bg-[#014d4b] transition-colors"
+                            className="px-4 py-3 bg-teal-600 text-white rounded-xl font-medium hover:bg-teal-700 transition-colors"
                           >
                             Add
                           </button>
@@ -1341,68 +1414,127 @@ export default function Products() {
                         {(existingModelFiles.filter((m) => !m.isExternal)
                           .length > 0 ||
                           modelFiles.length > 0) && (
-                          <div className="space-y-2">
-                            {/* Existing model files (uploaded, not URL) */}
-                            {existingModelFiles
-                              .filter((m) => !m.isExternal)
-                              .map((model, index) => (
+                            <div className="space-y-2">
+                              {/* Existing model files (uploaded, not URL) */}
+                              {existingModelFiles
+                                .filter((m) => !m.isExternal)
+                                .map((model, index) => (
+                                  <div
+                                    key={`existing-${index}`}
+                                    className="border border-gray-200 rounded-xl p-4"
+                                  >
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center gap-3">
+                                        <div
+                                          className={`w-10 h-10 rounded-lg flex items-center justify-center ${model.platform === "ios"
+                                            ? "bg-blue-100"
+                                            : "bg-green-100"
+                                            }`}
+                                        >
+                                          <Box
+                                            className={`w-5 h-5 ${model.platform === "ios"
+                                              ? "text-blue-600"
+                                              : "text-green-600"
+                                              }`}
+                                          />
+                                        </div>
+                                        <div>
+                                          <p className="text-sm font-medium text-gray-900">
+                                            {model.url}
+                                          </p>
+                                          <div className="flex items-center gap-2">
+                                            <span
+                                              className={`text-xs px-2 py-0.5 rounded-full ${model.platform === "ios"
+                                                ? "bg-blue-100 text-blue-700"
+                                                : "bg-green-100 text-green-700"
+                                                }`}
+                                            >
+                                              {model.format?.toUpperCase()} -{" "}
+                                              {model.platform === "ios"
+                                                ? "iOS"
+                                                : "Android/Web"}
+                                            </span>
+                                            {model.fileSize && (
+                                              <span className="text-xs text-gray-500">
+                                                {(
+                                                  model.fileSize /
+                                                  (1024 * 1024)
+                                                ).toFixed(2)}{" "}
+                                                MB
+                                              </span>
+                                            )}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          removeModelFile(
+                                            existingModelFiles.indexOf(model),
+                                            true
+                                          )
+                                        }
+                                        className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                                      >
+                                        <X className="w-4 h-4 text-red-500" />
+                                      </button>
+                                    </div>
+                                  </div>
+                                ))}
+
+                              {/* New model files */}
+                              {modelFiles.map((model, index) => (
                                 <div
-                                  key={`existing-${index}`}
+                                  key={`new-${index}`}
                                   className="border border-gray-200 rounded-xl p-4"
                                 >
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
                                       <div
-                                        className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                                          model.platform === "ios"
-                                            ? "bg-blue-100"
-                                            : "bg-green-100"
-                                        }`}
+                                        className={`w-10 h-10 rounded-lg flex items-center justify-center ${model.platform === "ios"
+                                          ? "bg-blue-100"
+                                          : "bg-green-100"
+                                          }`}
                                       >
                                         <Box
-                                          className={`w-5 h-5 ${
-                                            model.platform === "ios"
-                                              ? "text-blue-600"
-                                              : "text-green-600"
-                                          }`}
+                                          className={`w-5 h-5 ${model.platform === "ios"
+                                            ? "text-blue-600"
+                                            : "text-green-600"
+                                            }`}
                                         />
                                       </div>
                                       <div>
                                         <p className="text-sm font-medium text-gray-900">
-                                          {model.url}
+                                          {model.name}
                                         </p>
                                         <div className="flex items-center gap-2">
                                           <span
-                                            className={`text-xs px-2 py-0.5 rounded-full ${
-                                              model.platform === "ios"
-                                                ? "bg-blue-100 text-blue-700"
-                                                : "bg-green-100 text-green-700"
-                                            }`}
+                                            className={`text-xs px-2 py-0.5 rounded-full ${model.platform === "ios"
+                                              ? "bg-blue-100 text-blue-700"
+                                              : "bg-green-100 text-green-700"
+                                              }`}
                                           >
                                             {model.format?.toUpperCase()} -{" "}
                                             {model.platform === "ios"
                                               ? "iOS"
                                               : "Android/Web"}
                                           </span>
-                                          {model.fileSize && (
-                                            <span className="text-xs text-gray-500">
-                                              {(
-                                                model.fileSize /
-                                                (1024 * 1024)
-                                              ).toFixed(2)}{" "}
-                                              MB
-                                            </span>
-                                          )}
+                                          <span className="text-xs text-gray-500">
+                                            {(model.size / (1024 * 1024)).toFixed(
+                                              2
+                                            )}{" "}
+                                            MB
+                                          </span>
+                                          <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
+                                            New
+                                          </span>
                                         </div>
                                       </div>
                                     </div>
                                     <button
                                       type="button"
                                       onClick={() =>
-                                        removeModelFile(
-                                          existingModelFiles.indexOf(model),
-                                          true
-                                        )
+                                        removeModelFile(index, false)
                                       }
                                       className="p-2 hover:bg-red-50 rounded-lg transition-colors"
                                     >
@@ -1411,73 +1543,8 @@ export default function Products() {
                                   </div>
                                 </div>
                               ))}
-
-                            {/* New model files */}
-                            {modelFiles.map((model, index) => (
-                              <div
-                                key={`new-${index}`}
-                                className="border border-gray-200 rounded-xl p-4"
-                              >
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center gap-3">
-                                    <div
-                                      className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                                        model.platform === "ios"
-                                          ? "bg-blue-100"
-                                          : "bg-green-100"
-                                      }`}
-                                    >
-                                      <Box
-                                        className={`w-5 h-5 ${
-                                          model.platform === "ios"
-                                            ? "text-blue-600"
-                                            : "text-green-600"
-                                        }`}
-                                      />
-                                    </div>
-                                    <div>
-                                      <p className="text-sm font-medium text-gray-900">
-                                        {model.name}
-                                      </p>
-                                      <div className="flex items-center gap-2">
-                                        <span
-                                          className={`text-xs px-2 py-0.5 rounded-full ${
-                                            model.platform === "ios"
-                                              ? "bg-blue-100 text-blue-700"
-                                              : "bg-green-100 text-green-700"
-                                          }`}
-                                        >
-                                          {model.format?.toUpperCase()} -{" "}
-                                          {model.platform === "ios"
-                                            ? "iOS"
-                                            : "Android/Web"}
-                                        </span>
-                                        <span className="text-xs text-gray-500">
-                                          {(model.size / (1024 * 1024)).toFixed(
-                                            2
-                                          )}{" "}
-                                          MB
-                                        </span>
-                                        <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
-                                          New
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      removeModelFile(index, false)
-                                    }
-                                    className="p-2 hover:bg-red-50 rounded-lg transition-colors"
-                                  >
-                                    <X className="w-4 h-4 text-red-500" />
-                                  </button>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                            </div>
+                          )}
 
                         {/* Upload area */}
                         <div
@@ -1485,11 +1552,10 @@ export default function Products() {
                           onDragOver={handleModelDragOver}
                           onDragLeave={handleModelDragLeave}
                           onDrop={handleModelDrop}
-                          className={`border-2 border-dashed rounded-xl p-6 text-center transition-colors cursor-pointer ${
-                            isDraggingModel
-                              ? "border-[#025E5D] bg-[#025E5D]/5"
-                              : "border-gray-200 hover:border-[#025E5D]"
-                          }`}
+                          className={`border-2 border-dashed rounded-xl p-6 text-center transition-colors cursor-pointer ${isDraggingModel
+                            ? "border-[#025E5D] bg-[#025E5D]/5"
+                            : "border-gray-200 hover:border-[#025E5D]"
+                            }`}
                         >
                           <Box className="w-10 h-10 text-gray-400 mx-auto mb-2" />
                           <p className="text-sm font-medium text-gray-700">
@@ -1659,13 +1725,12 @@ export default function Products() {
                             onClick={() =>
                               handleToggle("materials", material.toLowerCase())
                             }
-                            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                              productForm.materials.includes(
-                                material.toLowerCase()
-                              )
-                                ? "bg-[#025E5D] text-white"
-                                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                            }`}
+                            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${productForm.materials.includes(
+                              material.toLowerCase()
+                            )
+                              ? "bg-[#025E5D] text-white"
+                              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                              }`}
                           >
                             {material}
                           </button>
@@ -1686,11 +1751,10 @@ export default function Products() {
                             onClick={() =>
                               handleToggle("colors", color.toLowerCase())
                             }
-                            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                              productForm.colors.includes(color.toLowerCase())
-                                ? "bg-[#025E5D] text-white"
-                                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                            }`}
+                            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${productForm.colors.includes(color.toLowerCase())
+                              ? "bg-[#025E5D] text-white"
+                              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                              }`}
                           >
                             {color}
                           </button>

@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { X, Mail, Lock, Eye, EyeOff } from "lucide-react";
-import { toast } from "../ui/Toast";
+import { toast } from "react-toastify";
 import useAuthStore from "../../store/authStore";
-import { useSignup } from "../../hooks/useSignupTan";
+import { useSignup } from "../../hooks/auth/useSignupTan";
 import EmailVerificationModal from "./EmailVerificationModal";
+import formatError from "../../utils/errorHandler";
 
 export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
   const [formData, setFormData] = useState({
@@ -51,7 +52,7 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
           setShowVerificationModal(true);
         },
         onError: (err) => {
-          toast.error(err || "Signup failed. Please try again.");
+          toast.error(formatError(err, "Signup failed. Please try again."));
         },
       }
     );
@@ -67,9 +68,10 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
   };
 
   const handleGoogleSignup = () => {
-    const backendUrl =
-      import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
-    window.location.href = `${backendUrl}/auth/google`;
+    const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+    const baseUrl = rawBaseUrl.endsWith("/") ? rawBaseUrl.slice(0, -1) : rawBaseUrl;
+    const apiBaseUrl = baseUrl.includes("/api/v1") ? baseUrl : `${baseUrl}/api/v1`;
+    window.location.href = `${apiBaseUrl}/auth/google`;
   };
 
   if (!isOpen) return null;
@@ -107,8 +109,8 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
           </button>
 
           <div className="mb-5">
-            <h2 className="text-2xl sm:text-3xl font-playfair text-neutral-900">
-              <span className="font-bold">Create your</span>{" "}
+            <h2 className="text-xl sm:text-2xl font-playfair text-neutral-900">
+              <span className="font-medium">Create your</span>{" "}
               <span className="italic text-teal-700">account</span>
             </h2>
             <p className="text-neutral-500 mt-1 font-dm-sans text-sm sm:text-base">
@@ -226,13 +228,13 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
             </div>
 
             {isError && (
-              <p className="text-red-500 text-sm font-dm-sans">{error}</p>
+              <p className="text-red-500 text-sm font-dm-sans">{formatError(error)}</p>
             )}
 
             <button
               type="submit"
               disabled={isPending}
-              className="w-full py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-dm-sans"
+              className="w-full py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full font-dm-sans"
             >
               {isPending ? "Signing up..." : "Sign Up"}
             </button>
