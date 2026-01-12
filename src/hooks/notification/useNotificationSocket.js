@@ -1,9 +1,3 @@
-/**
- * useNotificationSocket HOOK
- * Manages real-time WebSocket connection for notifications
- * Handles connection, reconnection, and event listening
- */
-
 import { useEffect, useRef, useCallback, useState } from "react";
 import io from "socket.io-client";
 
@@ -25,7 +19,7 @@ const useNotificationSocket = (token, userId) => {
 
     try {
       // Create socket instance with authentication
-      const socket = io(import.meta.env.VITE_API_URL || "http://localhost:8080", {
+      const socket = io(import.meta.env.VITE_API_BASE_URL || "http://localhost:8080", {
         auth: { token },
         transports: ["websocket", "polling"], // Fallback to polling
         reconnection: true,
@@ -34,10 +28,8 @@ const useNotificationSocket = (token, userId) => {
         reconnectionAttempts: 10,
       });
 
-      // ===================== CONNECTION EVENTS =====================
 
       socket.on("connect", () => {
-        console.log("✓ WebSocket connected");
         setConnected(true);
         setError(null);
 
@@ -46,7 +38,6 @@ const useNotificationSocket = (token, userId) => {
       });
 
       socket.on("disconnect", (reason) => {
-        console.log("✗ WebSocket disconnected:", reason);
         setConnected(false);
 
         // Stop heartbeat
@@ -56,18 +47,10 @@ const useNotificationSocket = (token, userId) => {
       });
 
       socket.on("error", (error) => {
-        console.error("WebSocket error:", error);
         setError(error);
       });
 
-      // ===================== NOTIFICATION EVENTS =====================
-
-      /**
-       * RECEIVE NEW NOTIFICATION
-       * Real-time delivery when user is online
-       */
       socket.on("notification:new", (notification) => {
-        console.log("📨 New notification:", notification);
         setNotifications((prev) => [notification, ...prev]);
         setUnreadCount((prev) => prev + 1);
       });
@@ -77,7 +60,6 @@ const useNotificationSocket = (token, userId) => {
        * System-wide announcements
        */
       socket.on("notification:broadcast", (notification) => {
-        console.log("📢 Broadcast notification:", notification);
         setNotifications((prev) => [notification, ...prev]);
         setUnreadCount((prev) => prev + 1);
       });
@@ -87,7 +69,6 @@ const useNotificationSocket = (token, userId) => {
        * Unread count sync
        */
       socket.on("badge:update", (data) => {
-        console.log("🔔 Badge updated:", data.unreadCount);
         setUnreadCount(data.unreadCount);
       });
 
@@ -96,7 +77,6 @@ const useNotificationSocket = (token, userId) => {
        * Periodic sync of notification list
        */
       socket.on("notifications:list", (data) => {
-        console.log("📋 Notifications synced:", data);
         setNotifications(data.notifications);
       });
 
@@ -104,29 +84,29 @@ const useNotificationSocket = (token, userId) => {
        * SUBSCRIPTION CONFIRMATION
        */
       socket.on("subscribed", (data) => {
-        console.log(`✓ Subscribed to topic: ${data.topic}`);
+        // Subscribed to topic
       });
 
       socket.on("unsubscribed", (data) => {
-        console.log(`✓ Unsubscribed from topic: ${data.topic}`);
+        // Unsubscribed from topic
       });
 
       /**
        * ACTION CONFIRMATIONS
        */
       socket.on("notification:read:success", (data) => {
-        console.log("✓ Notification marked as read");
+        // Notification marked as read
       });
 
       socket.on("notification:archive:success", (data) => {
-        console.log("✓ Notification archived");
+        // Notification archived
       });
 
       /**
        * HEARTBEAT ACKNOWLEDGMENT
        */
       socket.on("heartbeat:ack", (data) => {
-        console.log("💓 Heartbeat acknowledged");
+        // Heartbeat acknowledged
       });
 
       socketRef.current = socket;
@@ -139,7 +119,6 @@ const useNotificationSocket = (token, userId) => {
         socket.disconnect();
       };
     } catch (err) {
-      console.error("Failed to initialize socket:", err);
       setError(err.message);
     }
   }, [token, userId]);

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import promotionApi from "../store/api/promotionApi";
+import promotionApi from "../../api/promotionApi";
 
 const PROMOTION_KEYS = {
   all: ["promotions"],

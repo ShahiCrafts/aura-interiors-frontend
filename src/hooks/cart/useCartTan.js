@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import cartApi from '../store/api/cartApi';
+import cartApi from "../../api/cartApi";
 
 const CART_KEYS = {
   all: ['cart'],

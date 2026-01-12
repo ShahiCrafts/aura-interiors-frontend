@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import announcementApi from "../store/api/announcementApi";
+import announcementApi from "../../api/announcementApi";
 
 const ANNOUNCEMENT_KEYS = {
   all: ["announcements"],

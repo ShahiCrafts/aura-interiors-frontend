@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import reviewApi from '../store/api/reviewApi';
+import reviewApi from "../../api/reviewApi";
 
 const REVIEW_KEYS = {
   all: ['reviews'],

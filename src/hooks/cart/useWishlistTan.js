@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import wishlistApi from '../store/api/wishlistApi';
+import wishlistApi from "../../api/wishlistApi";
 
 const WISHLIST_KEYS = {
   all: ['wishlist'],

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import orderApi from "../store/api/orderApi";
+import orderApi from "../../api/orderApi";
 
 const ORDER_KEYS = {
   all: ["orders"],

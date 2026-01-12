@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import categoryApi from "../store/api/categoryApi";
+import categoryApi from '../../api/categoryApi';
 
 const CATEGORY_KEYS = {
   all: ["categories"],

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import discountApi from "../store/api/discountApi";
+import discountApi from "../../api/discountApi";
 
 const DISCOUNT_KEYS = {
   all: ["discounts"],
