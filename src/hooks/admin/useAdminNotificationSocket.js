@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import io from "socket.io-client";
 import notificationApi from "../../api/notificationApi";
+import { SOCKET_URL } from "../../config/constants";
 
 const useAdminNotificationSocket = (token, userId, role) => {
     const [socket, setSocket] = useState(null);
@@ -11,7 +12,7 @@ const useAdminNotificationSocket = (token, userId, role) => {
     useEffect(() => {
         if (!token || !userId || role !== "admin") return;
 
-        const socketInstance = io(import.meta.env.VITE_API_BASE_URL || "http://localhost:8080", {
+        const socketInstance = io(SOCKET_URL, {
             auth: { token },
             transports: ["websocket"],
             withCredentials: true,

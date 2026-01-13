@@ -1,12 +1,12 @@
+import { API_V1_URL, SOCKET_URL } from '../config/constants';
+
 /**
  * Centralized image URL construction utility
  * Handles external URLs, Unsplash photo IDs, and local uploads
  */
 
-const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
-const baseUrl = rawBaseUrl.endsWith("/") ? rawBaseUrl.slice(0, -1) : rawBaseUrl;
-const API_BASE_URL = baseUrl.includes("/api/v1") ? baseUrl : `${baseUrl}/api/v1`;
-const UPLOADS_BASE_URL = API_BASE_URL.replace("/api/v1", "");
+const API_BASE_URL = API_V1_URL;
+const UPLOADS_BASE_URL = SOCKET_URL;
 const UNSPLASH_BASE_URL = "https://images.unsplash.com";
 
 // Default fallback images

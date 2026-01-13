@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { API_V1_URL } from "../../config/constants";
 import { useNavigate } from "react-router-dom";
 import { X, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
@@ -63,10 +64,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
   };
 
   const handleGoogleLogin = () => {
-    const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
-    const baseUrl = rawBaseUrl.endsWith("/") ? rawBaseUrl.slice(0, -1) : rawBaseUrl;
-    const apiBaseUrl = baseUrl.includes("/api/v1") ? baseUrl : `${baseUrl}/api/v1`;
-    window.location.href = `${apiBaseUrl}/auth/google`;
+    window.location.href = `${API_V1_URL}/auth/google`;
   };
 
   if (!isOpen) return null;

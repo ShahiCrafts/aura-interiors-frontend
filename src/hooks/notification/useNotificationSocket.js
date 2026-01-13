@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import io from "socket.io-client";
+import { SOCKET_URL } from "../../config/constants";
 
 const useNotificationSocket = (token, userId) => {
   const socketRef = useRef(null);
@@ -19,7 +20,7 @@ const useNotificationSocket = (token, userId) => {
 
     try {
       // Create socket instance with authentication
-      const socket = io(import.meta.env.VITE_API_BASE_URL || "http://localhost:8080", {
+      const socket = io(SOCKET_URL, {
         auth: { token },
         transports: ["websocket", "polling"], // Fallback to polling
         reconnection: true,

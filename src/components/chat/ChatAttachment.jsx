@@ -1,9 +1,10 @@
 import { FileText, Download, Image as ImageIcon, ExternalLink } from 'lucide-react';
+import { API_BASE_URL } from '../../config/constants';
 
 const ChatAttachment = ({ attachment, isOwnMessage }) => {
   const { fileName, fileUrl, fileType, fileSize } = attachment;
 
-  const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+  const baseURL = API_BASE_URL;
   const fullUrl = fileUrl.startsWith('http') ? fileUrl : `${baseURL}${fileUrl}`;
 
   // Format file size
@@ -43,15 +44,13 @@ const ChatAttachment = ({ attachment, isOwnMessage }) => {
       target="_blank"
       rel="noopener noreferrer"
       download={fileName}
-      className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-200 group ${
-        isOwnMessage
+      className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-200 group ${isOwnMessage
           ? 'bg-teal-800/50 hover:bg-teal-800/70 border border-teal-500/30'
           : 'bg-neutral-50 hover:bg-neutral-100 border border-neutral-200'
-      }`}
+        }`}
     >
-      <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
-        isOwnMessage ? 'bg-teal-600/50' : 'bg-teal-100'
-      }`}>
+      <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${isOwnMessage ? 'bg-teal-600/50' : 'bg-teal-100'
+        }`}>
         <FileText className={`w-5 h-5 ${isOwnMessage ? 'text-white' : 'text-teal-600'}`} />
       </div>
       <div className="flex-1 min-w-0">
@@ -62,11 +61,10 @@ const ChatAttachment = ({ attachment, isOwnMessage }) => {
           {formatFileSize(fileSize)}
         </p>
       </div>
-      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
-        isOwnMessage
+      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${isOwnMessage
           ? 'bg-teal-600/30 group-hover:bg-teal-600/50'
           : 'bg-neutral-200 group-hover:bg-neutral-300'
-      }`}>
+        }`}>
         <Download className={`w-4 h-4 ${isOwnMessage ? 'text-white' : 'text-neutral-600'}`} />
       </div>
     </a>

@@ -22,8 +22,9 @@ import { toast } from "react-toastify";
 import formatError from "../../utils/errorHandler";
 import ImageWithFallback from '../../components/fallbacks/ImageWithFallback';
 import { getCategoryImageUrl } from '../../utils/imageUrl';
+import { API_V1_URL } from '../../config/constants';
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
+const API_URL = API_V1_URL;
 
 export default function Categories() {
   const fileInputRef = useRef(null);

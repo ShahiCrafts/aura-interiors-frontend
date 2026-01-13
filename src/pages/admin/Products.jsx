@@ -31,9 +31,9 @@ import {
   getProductImageUrl,
 } from "../../utils/imageUrl";
 import formatError from "../../utils/errorHandler";
+import { API_V1_URL } from "../../config/constants";
 
-const API_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
+const API_URL = API_V1_URL;
 
 import Pagination from "../../components/common/Pagination";
 
