@@ -72,7 +72,6 @@ function HomePage() {
 function App() {
   return (
     <>
-      <AuthCallback />
       <Routes>
         <Route path="/" element={<HomePage />} />
 
@@ -142,6 +141,9 @@ function App() {
           <Route path="contacts" element={<AdminContacts />} />
           <Route path="users" element={<AdminUsers />} />
         </Route>
+
+        {/* Auth Callback Route */}
+        <Route path="/auth/success" element={<AuthCallback />} />
 
         {/* Catch-all route for 404 */}
         <Route path="*" element={<NotFoundPage />} />
