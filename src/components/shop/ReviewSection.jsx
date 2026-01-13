@@ -112,8 +112,8 @@ export default function ReviewSection({ productId }) {
                 })
               }
               className={`w-full flex items-center gap-3 py-1 group transition-colors ${filter.rating === item.stars
-                  ? "opacity-100"
-                  : "opacity-70 hover:opacity-100"
+                ? "opacity-100"
+                : "opacity-70 hover:opacity-100"
                 }`}
             >
               <span className="text-sm text-neutral-600 font-dm-sans w-12 text-left">
@@ -122,8 +122,8 @@ export default function ReviewSection({ productId }) {
               <div className="flex-1 h-2.5 bg-neutral-100 rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full transition-all ${filter.rating === item.stars
-                      ? "bg-teal-600"
-                      : "bg-amber-400"
+                    ? "bg-teal-600"
+                    : "bg-amber-400"
                     }`}
                   style={{
                     width:
@@ -251,8 +251,7 @@ export default function ReviewSection({ productId }) {
               disabled={isFetching}
               className="w-full mt-4 py-3 border border-neutral-200 rounded-lg text-neutral-700 font-semibold hover:bg-neutral-50 transition-colors font-dm-sans disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              {isFetching && <Loader2 size={18} className="animate-spin" />}
-              {isFetching ? "Loading..." : "Load More Reviews"}
+              {isFetching ? <Loader2 size={18} className="animate-spin" /> : "Load More Reviews"}
             </button>
           )}
 

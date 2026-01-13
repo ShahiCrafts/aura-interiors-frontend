@@ -282,10 +282,7 @@ export default function ContactPage() {
                   className="w-full py-4 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-dm-sans flex items-center justify-center gap-2 mt-4 text-base"
                 >
                   {isPending ? (
-                    <>
-                      <Loader2 size={20} className="animate-spin" />
-                      Sending...
-                    </>
+                    <Loader2 size={20} className="animate-spin" />
                   ) : (
                     <>
                       Send Message

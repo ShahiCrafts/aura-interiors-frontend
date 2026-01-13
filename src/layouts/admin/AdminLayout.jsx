@@ -301,7 +301,7 @@ export default function AdminLayout() {
       </div>
 
       {/* Toast Notifications Container */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-sm">
+      <div className="fixed z-50 flex flex-col gap-3 w-full max-w-[calc(100vw-2rem)] sm:w-auto sm:max-w-sm bottom-4 right-4 sm:bottom-6 sm:right-6 ml-auto">
         {toasts.map((toast) => (
           <div
             key={toast.id}

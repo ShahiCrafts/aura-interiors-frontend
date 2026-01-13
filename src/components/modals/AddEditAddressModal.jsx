@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Home, Building2, Users, MapPin } from "lucide-react";
+import { X, Home, Building2, Users, MapPin, Loader } from "lucide-react";
 import { toast } from "react-toastify";
 import { useCreateAddress, useUpdateAddress } from "../../hooks/profile/useAddressTan";
 import formatError from "../../utils/errorHandler";
@@ -384,13 +384,13 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
                 disabled={isPending}
                 className="flex-1 py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all duration-300 font-dm-sans"
               >
-                {isPending
-                  ? isEditing
-                    ? "Updating..."
-                    : "Adding..."
-                  : isEditing
-                    ? "Update Address"
-                    : "Add Address"}
+                {isPending ? (
+                  <Loader className="animate-spin mx-auto" size={20} />
+                ) : isEditing ? (
+                  "Update Address"
+                ) : (
+                  "Add Address"
+                )}
               </button>
             </div>
           </form>

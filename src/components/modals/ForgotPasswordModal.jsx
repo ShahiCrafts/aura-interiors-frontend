@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Mail, ArrowLeft } from "lucide-react";
+import { X, Mail, ArrowLeft, Loader } from "lucide-react";
 import { toast } from "react-toastify";
 import { useForgotPassword } from "../../hooks/auth/usePasswordTan";
 import formatError from "../../utils/errorHandler";
@@ -108,7 +108,7 @@ export default function ForgotPasswordModal({
                   disabled={isPending}
                   className="w-full py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full font-dm-sans mt-3"
                 >
-                  {isPending ? "Sending..." : "Send Reset Link"}
+                  {isPending ? <Loader className="animate-spin mx-auto" size={20} /> : "Send Reset Link"}
                 </button>
               </form>
             </>

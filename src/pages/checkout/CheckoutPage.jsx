@@ -59,7 +59,6 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [promoCode, setPromoCode] = useState("");
   const [appliedPromo, setAppliedPromo] = useState(null);
-  const [isInitialized, setIsInitialized] = useState(false);
 
   // Use appropriate cart based on authentication status
   const cart = cartData?.data?.cart;
@@ -94,23 +93,20 @@ export default function CheckoutPage() {
     }
   }, [setStep, setPaymentMethod]);
 
-  // Mark as initialized after first render
+  // Redirect if cart is empty (only if not submitting an order)
   useEffect(() => {
-    const timer = setTimeout(() => setIsInitialized(true), 100);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Redirect if cart is empty (only after initialization and not during submission)
-  useEffect(() => {
-    // Don't redirect if not initialized or if we're submitting an order
-    if (!isInitialized || isSubmitting) return;
+    if (isSubmitting) return;
 
     const isLoading = isAuthenticated && isCartLoading;
+    // Ensure we don't redirect while loading or if it's just mounting
     if (!isLoading && cartItems.length === 0) {
+      // Small check to ensure we don't redirect immediately on mount if data is essentially being fetched
+      // But since we removed the delay, we rely on TanStack Query's isLoading status.
+      // If user has no items, they get redirected.
       toast.error("Your cart is empty");
       navigate("/");
     }
-  }, [isCartLoading, isAuthenticated, cartItems.length, navigate, isInitialized, isSubmitting]);
+  }, [isCartLoading, isAuthenticated, cartItems.length, navigate, isSubmitting]);
 
   // Cart handlers
   const handleUpdateQuantity = (itemId, newQuantity) => {
@@ -339,10 +335,7 @@ export default function CheckoutPage() {
                       className="flex-1 py-4 bg-teal-700 text-white font-medium rounded-xl hover:bg-teal-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
                     >
                       {isSubmitting ? (
-                        <>
-                          <Loader2 size={20} className="animate-spin" />
-                          <span>Processing...</span>
-                        </>
+                        <Loader2 size={20} className="animate-spin" />
                       ) : (
                         <>
                           <span>Place Order</span>

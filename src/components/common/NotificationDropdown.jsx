@@ -1,5 +1,5 @@
 import React from "react";
-import { AlertCircle, BellOff, CheckCheck, Archive } from "lucide-react";
+import { AlertCircle, BellOff, CheckCheck, Archive, Loader } from "lucide-react";
 
 const NotificationDropdown = ({
   notifications = [],
@@ -42,8 +42,8 @@ const NotificationDropdown = ({
 
       <div className="flex-1 overflow-y-auto max-h-[400px]">
         {loading && notifications.length === 0 ? (
-          <div className="p-10 text-center text-xs text-gray-500">
-            Loading...
+          <div className="p-10 flex justify-center text-gray-500">
+            <Loader className="animate-spin" size={24} />
           </div>
         ) : notifications.length === 0 ? (
           <div className="p-10 text-center text-gray-400">
@@ -67,8 +67,8 @@ const NotificationDropdown = ({
                 <div
                   key={id || index}
                   className={`group relative flex items-start px-4 py-3 border-b border-gray-50 cursor-pointer transition-all ${!isRead
-                      ? "bg-blue-50/50 border-l-4 border-l-blue-500"
-                      : "hover:bg-gray-50 border-l-4 border-l-transparent"
+                    ? "bg-blue-50/50 border-l-4 border-l-blue-500"
+                    : "hover:bg-gray-50 border-l-4 border-l-transparent"
                     }`}
                   onClick={() => onNotificationClick(n)}
                 >

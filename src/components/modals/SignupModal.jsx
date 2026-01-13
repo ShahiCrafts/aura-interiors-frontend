@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { API_V1_URL } from "../../config/constants";
-import { X, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { X, Mail, Lock, Eye, EyeOff, Loader } from "lucide-react";
 import { toast } from "react-toastify";
 import useAuthStore from "../../store/authStore";
 import { useSignup } from "../../hooks/auth/useSignupTan";
@@ -234,7 +234,7 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
               disabled={isPending}
               className="w-full py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full font-dm-sans"
             >
-              {isPending ? "Signing up..." : "Sign Up"}
+              {isPending ? <Loader className="animate-spin mx-auto" size={20} /> : "Sign Up"}
             </button>
           </form>
 

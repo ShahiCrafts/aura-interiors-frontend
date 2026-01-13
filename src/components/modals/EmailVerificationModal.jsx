@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { X, Mail } from "lucide-react";
+import { X, Mail, Loader } from "lucide-react";
 import { toast } from "react-toastify";
 import {
   useVerifyEmail,
@@ -23,7 +23,10 @@ export default function EmailVerificationModal({
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
-      setTimeout(() => inputRefs.current[0]?.focus(), 100);
+      // Use requestAnimationFrame to ensure DOM is ready without arbitrary delay
+      requestAnimationFrame(() => {
+        inputRefs.current[0]?.focus();
+      });
     } else {
       document.body.style.overflow = "";
     }
@@ -169,7 +172,7 @@ export default function EmailVerificationModal({
               disabled={isPending || !isCodeComplete}
               className="w-full py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-dm-sans"
             >
-              {isPending ? "Verifying..." : "Verify Email"}
+              {isPending ? <Loader className="animate-spin mx-auto" size={20} /> : "Verify Email"}
             </button>
           </form>
 
@@ -181,7 +184,7 @@ export default function EmailVerificationModal({
               disabled={isResending}
               className="text-teal-700 font-semibold hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isResending ? "Sending..." : "Resend"}
+              {isResending ? <Loader className="animate-spin" size={16} /> : "Resend"}
             </button>
           </p>
         </div>

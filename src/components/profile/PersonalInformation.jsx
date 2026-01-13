@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Upload, Trash2, Lock, Check, Camera } from "lucide-react";
+import { Upload, Trash2, Lock, Check, Camera, Loader } from "lucide-react";
 import { toast } from "react-toastify";
 import useAuthStore from "../../store/authStore";
 import {
@@ -256,8 +256,14 @@ export default function PersonalInformation() {
                 disabled={isUploadingAvatar}
                 className="flex items-center gap-2 px-4 py-2 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 text-white text-sm font-semibold rounded-lg transition-all font-dm-sans"
               >
-                <Upload size={16} />
-                {isUploadingAvatar ? "Uploading..." : "Upload Photo"}
+                {isUploadingAvatar ? (
+                  <Loader className="animate-spin" size={16} />
+                ) : (
+                  <>
+                    <Upload size={16} />
+                    Upload Photo
+                  </>
+                )}
               </button>
               {user?.avatar && (
                 <button
@@ -265,8 +271,14 @@ export default function PersonalInformation() {
                   disabled={isRemovingAvatar}
                   className="flex items-center gap-2 px-4 py-2 border border-neutral-200 hover:bg-neutral-50 text-neutral-600 text-sm font-medium rounded-lg transition-all font-dm-sans"
                 >
-                  <Trash2 size={16} />
-                  {isRemovingAvatar ? "Removing..." : "Remove"}
+                  {isRemovingAvatar ? (
+                    <Loader className="animate-spin" size={16} />
+                  ) : (
+                    <>
+                      <Trash2 size={16} />
+                      Remove
+                    </>
+                  )}
                 </button>
               )}
             </div>
@@ -455,8 +467,14 @@ export default function PersonalInformation() {
               disabled={isUpdating || !hasChanges}
               className="flex items-center gap-2 px-6 py-2.5 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all font-dm-sans"
             >
-              <Check size={16} />
-              {isUpdating ? "Saving..." : "Save Changes"}
+              {isUpdating ? (
+                <Loader className="animate-spin" size={16} />
+              ) : (
+                <>
+                  <Check size={16} />
+                  Save Changes
+                </>
+              )}
             </button>
           </div>
         </form>

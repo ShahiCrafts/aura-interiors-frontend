@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Lock, Eye, EyeOff, Check, ShieldCheck } from "lucide-react";
+import { X, Lock, Eye, EyeOff, Check, ShieldCheck, Loader } from "lucide-react";
 import { toast } from "react-toastify";
 import { useUpdatePassword } from "../../hooks/auth/usePasswordTan";
 import formatError from "../../utils/errorHandler";
@@ -267,7 +267,7 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
                 disabled={isPending || !passwordsMatch}
                 className="flex-1 py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-xl font-dm-sans"
               >
-                {isPending ? "Updating..." : "Update Password"}
+                {isPending ? <Loader className="animate-spin mx-auto" size={20} /> : "Update Password"}
               </button>
             </div>
           </form>
