@@ -13,7 +13,7 @@
     "@tailwindcss/vite": "^4.1.17",
     "@tanstack/react-query": "^5.90.11",
     "axios": "^1.13.2",
-    "capacitor-arcore": "https://${GITHUB_TOKEN}@github.com/ShahiCrafts/capacitor-arcore",
+    "capacitor-arcore": "https://github.com/ShahiCrafts/capacitor-arcore.git",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.23.25",
     "lottie-react": "^2.4.1",
