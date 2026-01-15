@@ -50,6 +50,11 @@ export const getImageUrl = (path, type = "products", fallback = null) => {
     return path;
   }
 
+  // Handle Cloudinary URLs that might be missing the protocol (defensive)
+  if (path.includes('res.cloudinary.com')) {
+    return path.startsWith('//') ? `https:${path}` : `https://${path}`;
+  }
+
   // If it's an Unsplash photo ID, construct full Unsplash URL
   if (isUnsplashPhotoId(path)) {
     if (path.includes("?")) {

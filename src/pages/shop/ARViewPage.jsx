@@ -31,8 +31,8 @@ export default function ARViewPage() {
     name: "Aura Signature Sofa",
     description: "Experience modern luxury with our signature handcrafted sofa piece.",
     price: 45000,
-    modelFiles: [{ format: "glb", url: "/sofa_chair.glb" }],
-    modelUrl: "/sofa_chair.glb",
+    modelFiles: [{ format: "glb", url: "https://fabritor.s3.ap-southeast-1.amazonaws.com/models/sofa_chair.glb" }],
+    modelUrl: "https://fabritor.s3.ap-southeast-1.amazonaws.com/models/sofa_chair.glb",
     images: [{ url: "https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?w=800" }]
   };
 
