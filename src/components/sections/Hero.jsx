@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Star, X, Play } from "lucide-react";
+import ARViewModal from "../modals/ARViewModal";
 
 export default function Hero() {
   const leftColumnRef = useRef(null);
@@ -9,7 +10,16 @@ export default function Hero() {
   const bottomRowRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const [isARModalOpen, setIsARModalOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
+
+  const introProduct = {
+    _id: "intro",
+    slug: "intro",
+    name: "Aura Signature Sofa",
+    modelFiles: [{ format: "glb", url: "/sofa_chair.glb" }],
+    modelUrl: "/sofa_chair.glb",
+  };
 
   const gridImages = [
     "https://images.unsplash.com/photo-1631679706909-1844bbd07221?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600",
@@ -108,9 +118,8 @@ export default function Hero() {
   return (
     <section className="w-full min-h-[calc(100vh-64px)] lg:h-[calc(100vh-72px)] flex flex-col lg:flex-row items-center px-4 sm:px-6 md:px-12 lg:px-20 py-6 sm:py-8 lg:py-0 relative overflow-hidden bg-white mt-16 lg:mt-[72px]">
       <div
-        className={`w-full lg:flex-1 flex flex-col items-center lg:items-start text-center lg:text-left justify-center gap-3 sm:gap-4 relative z-10 transition-opacity duration-700 ${
-          isVisible ? "opacity-100" : "opacity-0"
-        }`}
+        className={`w-full lg:flex-1 flex flex-col items-center lg:items-start text-center lg:text-left justify-center gap-3 sm:gap-4 relative z-10 transition-opacity duration-700 ${isVisible ? "opacity-100" : "opacity-0"
+          }`}
       >
         <div className="inline-flex items-center gap-2 w-fit mb-2 sm:mb-3 bg-white rounded-full px-3 sm:px-4 py-1.5 sm:py-2 shadow-sm border border-neutral-100">
           <Star className="w-4 h-4 md:w-5 md:h-5 text-teal-700" />
@@ -137,18 +146,18 @@ export default function Hero() {
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6 w-full sm:w-auto font-dm-sans">
           <Link
             to="/shop"
-            className="bg-teal-700 hover:bg-teal-800 text-white px-6 sm:px-8 py-3 rounded-full font-semibold transition-all duration-300 hover:shadow-lg flex items-center justify-center"
+            className="bg-teal-700 hover:bg-teal-800 text-white px-6 sm:px-8 py-3 rounded-full font-semibold transition-all duration-300 flex items-center justify-center"
           >
             <span>Shop Now</span>
           </Link>
 
-          <Link
-            to="/native-ar"
-            className="bg-white text-gray-700 px-6 sm:px-8 py-3 rounded-full font-semibold border border-gray-200 hover:border-teal-700 hover:text-teal-700 transition-all duration-300 flex items-center justify-center gap-2"
+          <button
+            onClick={() => setIsARModalOpen(true)}
+            className="bg-white text-gray-700 px-6 sm:px-8 py-3 rounded-full font-semibold border border-gray-200 hover:border-teal-700 hover:text-teal-700 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
           >
             <Play className="w-4 h-4 sm:w-5 sm:h-5 text-teal-700" />
             <span>Try AR View</span>
-          </Link>
+          </button>
         </div>
 
         <div className="flex justify-center lg:justify-start gap-6 sm:gap-8">
@@ -258,7 +267,7 @@ export default function Hero() {
 
           <button
             onClick={handleOpenVideo}
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-40 w-14 h-14 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-2xl hover:bg-white hover:scale-110 transition-all duration-300"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-40 w-14 h-14 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white hover:scale-110 transition-all duration-300"
           >
             <Play
               className="w-5 h-5 text-teal-700 translate-x-0.5"
@@ -320,6 +329,12 @@ export default function Hero() {
           </div>
         </div>
       )}
+
+      <ARViewModal
+        isOpen={isARModalOpen}
+        onClose={() => setIsARModalOpen(false)}
+        product={introProduct}
+      />
     </section>
   );
 }

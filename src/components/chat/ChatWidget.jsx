@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { MessageSquare, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useMyChats, useStartChat } from '../../hooks/chat/useChatTan';
+import { useMyChats, useStartChat, useSendMessage } from '../../hooks/chat/useChatTan';
 import useAuthStore from '../../store/authStore';
 import ChatWindow from './ChatWindow';
 
@@ -55,10 +55,24 @@ const ChatWidget = () => {
     }
   };
 
-  const handleStartNewChat = () => {
+  const { mutate: sendMessage } = useSendMessage();
+
+  const handleResetView = () => {
+    setActiveChatId(null);
+  };
+
+  const handleStartNewChat = (initialMessage = null) => {
     startChatMutation.mutate(
-      { subject: 'Support Request', metadata: { userAgent: navigator.userAgent } },
-      { onSuccess: (res) => setActiveChatId(res.data.chat._id) }
+      { subject: initialMessage || 'Support Request', metadata: { userAgent: navigator.userAgent } },
+      {
+        onSuccess: (res) => {
+          const newChatId = res.data.chat._id;
+          setActiveChatId(newChatId);
+          if (initialMessage) {
+            sendMessage({ chatId: newChatId, content: initialMessage });
+          }
+        }
+      }
     );
   };
 
@@ -113,12 +127,14 @@ const ChatWidget = () => {
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="w-[calc(100vw-3rem)] h-[calc(100vh-8rem)] md:w-[400px] md:h-[600px] md:max-h-[80vh] bg-white rounded-2xl border border-stone-200/60 overflow-hidden pointer-events-auto"
+            className="fixed inset-4 sm:fixed sm:inset-auto sm:bottom-24 sm:right-6 sm:w-[400px] sm:h-[600px] sm:max-h-[80vh] bg-white rounded-2xl border border-stone-200/60 overflow-hidden pointer-events-auto"
           >
             <ChatWindow
               chat={activeChat}
               onClose={() => setIsOpen(false)}
               onStartNew={handleStartNewChat}
+              onResetView={handleResetView}
+              isCreatingChat={startChatMutation.isPending}
             />
           </motion.div>
         )}

@@ -8,6 +8,8 @@ import FilterSidebar from "../../components/shop/FilterSidebar";
 import { useCategory, useCategoryProducts, useCategoryTree } from "../../hooks/product/useCategoryTan";
 import { useProducts } from "../../hooks/product/useProductTan";
 import Skeleton from "../../components/common/Skeleton";
+import MobileFilterDrawer from "../../components/shop/MobileFilterDrawer";
+import { SlidersHorizontal } from "lucide-react";
 
 export default function ShopPage() {
   const { categorySlug } = useParams();
@@ -19,6 +21,7 @@ export default function ShopPage() {
   const [searchInput, setSearchInput] = useState(searchParams.get("search") || "");
   const [sortBy, setSortBy] = useState(searchParams.get("sort") || "featured");
   const [showSortDropdown, setShowSortDropdown] = useState(false);
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
   const limit = 12;
 
   // Filter states
@@ -205,7 +208,7 @@ export default function ShopPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-neutral-50 pt-20 font-dm-sans">
+      <main className="min-h-screen bg-linear-to-b from-zinc-50 to-white pt-20 font-dm-sans">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm mb-6">
@@ -255,9 +258,9 @@ export default function ShopPage() {
             </div>
 
             {/* Search, Sort, and View Controls */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <div className="flex flex-col lg:flex-row lg:items-center gap-4 mb-8">
               {/* Search Bar */}
-              <form onSubmit={handleSearch} className="sm:w-64">
+              <form onSubmit={handleSearch} className="w-full lg:w-72">
                 <div className="relative">
                   <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
                   <input
@@ -270,84 +273,102 @@ export default function ShopPage() {
                 </div>
               </form>
 
-              {/* Sort Dropdown */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowSortDropdown(!showSortDropdown)}
-                  className="w-full sm:w-auto flex items-center justify-between sm:justify-start gap-2 px-4 py-2.5 rounded-lg border border-neutral-200 bg-white text-sm font-dm-sans hover:border-neutral-300 transition-colors"
-                >
-                  <span className="text-neutral-500">Sort by:</span>
-                  <span className="font-medium text-neutral-700">
-                    {sortOptions.find(opt => opt.value === sortBy)?.label}
-                  </span>
-                  <ChevronDown size={16} className={`text-neutral-400 transition-transform ${showSortDropdown ? "rotate-180" : ""}`} />
-                </button>
-
-                {showSortDropdown && (
-                  <>
-                    <div
-                      className="fixed inset-0 z-10"
-                      onClick={() => setShowSortDropdown(false)}
-                    />
-                    <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-neutral-200 rounded-lg shadow-lg z-20 py-1">
-                      {sortOptions.map((option) => (
-                        <button
-                          key={option.value}
-                          onClick={() => handleSortChange(option.value)}
-                          className={`w-full text-left px-4 py-2 text-sm font-dm-sans hover:bg-neutral-50 transition-colors ${sortBy === option.value ? "text-teal-700 bg-teal-50" : "text-neutral-700"
-                            }`}
-                        >
-                          {option.label}
-                        </button>
-                      ))}
+              {/* Controls Row (Sort, Filter, View) */}
+              <div className="flex items-center gap-2 w-full lg:w-auto">
+                {/* Sort Dropdown */}
+                <div className="relative flex-1 lg:flex-none min-w-[140px]">
+                  <button
+                    onClick={() => setShowSortDropdown(!showSortDropdown)}
+                    className="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg border border-neutral-200 bg-white text-sm font-dm-sans hover:border-neutral-300 transition-colors"
+                  >
+                    <div className="flex items-center gap-1 overflow-hidden">
+                      <span className="text-neutral-500 hidden sm:inline">Sort:</span>
+                      <span className="font-medium text-neutral-700 truncate">
+                        {sortOptions.find(opt => opt.value === sortBy)?.label}
+                      </span>
                     </div>
-                  </>
-                )}
-              </div>
+                    <ChevronDown size={14} className={`text-neutral-400 shrink-0 transition-transform ${showSortDropdown ? "rotate-180" : ""}`} />
+                  </button>
 
-              {/* View Toggle */}
-              <div className="flex items-center gap-2">
+                  {showSortDropdown && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-10"
+                        onClick={() => setShowSortDropdown(false)}
+                      />
+                      <div className="absolute left-0 lg:right-0 lg:left-auto top-full mt-1 w-48 bg-white border border-neutral-200 rounded-lg shadow-lg z-20 py-1">
+                        {sortOptions.map((option) => (
+                          <button
+                            key={option.value}
+                            onClick={() => handleSortChange(option.value)}
+                            className={`w-full text-left px-4 py-2 text-sm font-dm-sans hover:bg-neutral-50 transition-colors ${sortBy === option.value ? "text-teal-700 bg-teal-50" : "text-neutral-700"
+                              }`}
+                          >
+                            {option.label}
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* Filter Button (Mobile only) */}
                 <button
-                  onClick={() => setViewMode("grid")}
-                  className={`p-2.5 rounded-lg transition-colors ${viewMode === "grid"
-                    ? "bg-teal-700 text-white"
-                    : "bg-white border border-neutral-200 text-neutral-600 hover:border-neutral-300"
-                    }`}
+                  onClick={() => setIsFilterDrawerOpen(true)}
+                  className="lg:hidden flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg bg-white border border-neutral-200 text-neutral-700 text-sm font-medium hover:border-neutral-300 transition-colors h-[42px]"
                 >
-                  <Grid3X3 size={18} />
+                  <SlidersHorizontal size={16} className="text-teal-700 shrink-0" />
+                  <span>Filters</span>
                 </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`p-2.5 rounded-lg transition-colors ${viewMode === "list"
-                    ? "bg-teal-700 text-white"
-                    : "bg-white border border-neutral-200 text-neutral-600 hover:border-neutral-300"
-                    }`}
-                >
-                  <List size={18} />
-                </button>
+
+                {/* View Toggles */}
+                <div className="flex items-center gap-1.5 shrink-0 bg-white p-1 rounded-lg border border-neutral-200">
+                  <button
+                    onClick={() => setViewMode("grid")}
+                    className={`p-1.5 rounded-md transition-all ${viewMode === "grid"
+                      ? "bg-teal-700 text-white"
+                      : "text-neutral-400 hover:text-neutral-600"
+                      }`}
+                    title="Grid view"
+                  >
+                    <Grid3X3 size={18} />
+                  </button>
+                  <button
+                    onClick={() => setViewMode("list")}
+                    className={`p-1.5 rounded-md transition-all ${viewMode === "list"
+                      ? "bg-teal-700 text-white"
+                      : "text-neutral-400 hover:text-neutral-600"
+                      }`}
+                    title="List view"
+                  >
+                    <List size={18} />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Main Content */}
           <div className="flex flex-col lg:flex-row gap-8">
-            {/* Sidebar */}
-            <aside className="lg:w-64 shrink-0">
-              <FilterSidebar
-                categories={categories}
-                selectedCategories={selectedCategories}
-                onCategoryChange={setSelectedCategories}
-                priceRange={{ min: 0, max: 500000 }}
-                selectedPriceRange={priceRange}
-                onPriceChange={setPriceRange}
-                selectedColors={selectedColors}
-                onColorChange={setSelectedColors}
-                selectedMaterials={selectedMaterials}
-                onMaterialChange={setSelectedMaterials}
-                selectedRating={selectedRating}
-                onRatingChange={setSelectedRating}
-                onResetFilters={handleResetFilters}
-              />
+            {/* Sidebar (Desktop only) */}
+            <aside className="hidden lg:block lg:w-64 shrink-0 h-fit">
+              <div className="bg-white p-6 rounded-xl border border-neutral-100 shadow-sm">
+                <FilterSidebar
+                  categories={categories}
+                  selectedCategories={selectedCategories}
+                  onCategoryChange={setSelectedCategories}
+                  priceRange={{ min: 0, max: 500000 }}
+                  selectedPriceRange={priceRange}
+                  onPriceChange={setPriceRange}
+                  selectedColors={selectedColors}
+                  onColorChange={setSelectedColors}
+                  selectedMaterials={selectedMaterials}
+                  onMaterialChange={setSelectedMaterials}
+                  selectedRating={selectedRating}
+                  onRatingChange={setSelectedRating}
+                  onResetFilters={handleResetFilters}
+                />
+              </div>
             </aside>
 
             {/* Products Section */}
@@ -361,9 +382,9 @@ export default function ShopPage() {
                   }
                 >
                   {[...Array(limit)].map((_, i) => (
-                    <div key={i} className="bg-white rounded-xl p-4 border border-neutral-100 space-y-4">
-                      <Skeleton className="w-full aspect-square md:aspect-4/3" />
-                      <div className="space-y-2">
+                    <div key={i} className="bg-white rounded-xl shadow-sm overflow-hidden flex flex-col h-full">
+                      <Skeleton className="w-full aspect-[3/2]" />
+                      <div className="p-3 space-y-2">
                         <Skeleton className="w-1/3 h-3" />
                         <Skeleton className="w-3/4 h-5" />
                         <Skeleton className="w-1/2 h-6" />
@@ -492,6 +513,26 @@ export default function ShopPage() {
         </div>
       </main>
       <Footer />
+
+      {/* Mobile Filter Drawer */}
+      <MobileFilterDrawer
+        isOpen={isFilterDrawerOpen}
+        onClose={() => setIsFilterDrawerOpen(false)}
+        totalProducts={totalProducts}
+        categories={categories}
+        selectedCategories={selectedCategories}
+        onCategoryChange={setSelectedCategories}
+        priceRange={{ min: 0, max: 500000 }}
+        selectedPriceRange={priceRange}
+        onPriceChange={setPriceRange}
+        selectedColors={selectedColors}
+        onColorChange={setSelectedColors}
+        selectedMaterials={selectedMaterials}
+        onMaterialChange={setSelectedMaterials}
+        selectedRating={selectedRating}
+        onRatingChange={setSelectedRating}
+        onResetFilters={handleResetFilters}
+      />
     </>
   );
 }

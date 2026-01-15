@@ -14,6 +14,7 @@ import Footer from "../../layouts/customer/Footer";
 import { useBlogs, useBlogCategories, usePopularBlogs, useToggleBlogLike } from "../../hooks/blog/useBlogTan";
 import { getBlogImageUrl, getAvatarUrl } from "../../utils/imageUrl";
 import Skeleton from "../../components/common/Skeleton";
+import { useNewsletterSubscribe } from "../../hooks/newsletter/useNewsletterTan";
 
 export default function BlogsPage() {
   const [activeCategory, setActiveCategory] = useState("all");
@@ -44,6 +45,7 @@ export default function BlogsPage() {
   const { data: popularData } = usePopularBlogs(3);
 
   const { mutate: toggleLike } = useToggleBlogLike();
+  const { mutate: subscribeNewsletter, isPending: isSubscribing } = useNewsletterSubscribe();
 
   const blogs = blogsData?.data?.blogs || [];
   const pagination = blogsData?.data?.pagination || {};
@@ -84,7 +86,11 @@ export default function BlogsPage() {
 
   const handleNewsletterSubmit = (e) => {
     e.preventDefault();
-    setNewsletterEmail("");
+    subscribeNewsletter({ email: newsletterEmail, source: 'blog' }, {
+      onSuccess: () => {
+        setNewsletterEmail("");
+      }
+    });
   };
 
   const loadMore = () => {
@@ -287,9 +293,10 @@ export default function BlogsPage() {
                   />
                   <button
                     type="submit"
-                    className="w-full py-2.5 rounded-lg bg-white text-teal-700 font-semibold text-sm hover:bg-teal-50 transition-colors"
+                    disabled={isSubscribing}
+                    className="w-full py-2.5 rounded-lg bg-white text-teal-700 font-semibold text-sm hover:bg-teal-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
-                    Subscribe
+                    {isSubscribing ? 'Subscribing...' : 'Subscribe'}
                   </button>
                 </form>
               </div>

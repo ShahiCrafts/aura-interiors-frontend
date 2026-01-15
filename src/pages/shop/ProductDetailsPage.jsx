@@ -107,6 +107,27 @@ export default function ProductDetailsPage() {
     }
   };
 
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: product.name,
+          text: `Check out ${product.name} on Aura Interiors`,
+          url: window.location.href,
+        });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success("Link copied to clipboard!");
+      }
+    } catch (error) {
+      // Ignore abort errors from user cancelling share
+      if (error.name !== "AbortError") {
+        console.error("Error sharing:", error);
+        toast.error("Failed to share");
+      }
+    }
+  };
+
   // Fetch related products
   const { data: relatedData } = useRelatedProducts(product?._id, 4);
   const relatedProducts = relatedData?.data?.products || [];
@@ -250,7 +271,7 @@ export default function ProductDetailsPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-white pt-20 font-dm-sans">
+      <main className="min-h-screen bg-white pt-20 font-dm-sans pb-24 lg:pb-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm mb-6 overflow-x-auto pb-2">
@@ -297,14 +318,17 @@ export default function ProductDetailsPage() {
                   <button
                     onClick={handleWishlistToggle}
                     disabled={isWishlistLoading}
-                    className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center hover:bg-neutral-50 transition-colors disabled:opacity-50"
+                    className="w-10 h-10 bg-white rounded-xl border border-neutral-100 flex items-center justify-center hover:bg-neutral-50 transition-colors disabled:opacity-50"
                   >
                     <Heart
                       size={18}
                       className={isInWishlist ? "fill-red-500 text-red-500" : "text-neutral-600"}
                     />
                   </button>
-                  <button className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center hover:bg-neutral-50 transition-colors">
+                  <button
+                    onClick={handleShare}
+                    className="w-10 h-10 bg-white rounded-xl border border-neutral-100 flex items-center justify-center hover:bg-neutral-50 transition-colors"
+                  >
                     <Share2 size={18} className="text-neutral-600" />
                   </button>
                 </div>
@@ -312,19 +336,19 @@ export default function ProductDetailsPage() {
                 {/* 3D/AR View Button */}
                 <button
                   onClick={() => setIsARModalOpen(true)}
-                  className="absolute bottom-4 right-4 w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center hover:bg-neutral-50 transition-colors"
+                  className="absolute bottom-4 right-4 w-10 h-10 bg-white rounded-xl border border-neutral-100 flex items-center justify-center hover:bg-neutral-50 transition-colors"
                 >
                   <img src={arIcon} alt="AR View" className="w-5 h-5" />
                 </button>
               </div>
 
               {/* Thumbnails - Horizontal */}
-              <div className="flex gap-3 overflow-x-auto pb-2">
+              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none no-scrollbar">
                 {images.map((image, index) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${selectedImage === index
+                    className={`shrink-0 w-16 sm:w-20 h-16 sm:h-20 rounded-lg overflow-hidden border-2 transition-all ${selectedImage === index
                       ? "border-teal-700"
                       : "border-transparent hover:border-neutral-300"
                       }`}
@@ -421,7 +445,7 @@ export default function ProductDetailsPage() {
                   <p className="text-sm text-neutral-700 font-dm-sans mb-3">
                     Color: <span className="text-neutral-500">{selectedColor && typeof selectedColor === "object" ? selectedColor.name : selectedColor}</span>
                   </p>
-                  <div className="flex gap-3">
+                  <div className="flex flex-wrap gap-3">
                     {colors.map((color, index) => {
                       const colorValue = typeof color === "object" ? color.hex : color;
                       const isSelected = selectedColor === color || (!selectedColor && index === 0);
@@ -429,9 +453,9 @@ export default function ProductDetailsPage() {
                         <button
                           key={index}
                           onClick={() => setSelectedColor(color)}
-                          className={`w-10 h-10 rounded-full transition-all ${isSelected
-                            ? "ring-2 ring-teal-700 ring-offset-2"
-                            : "hover:ring-2 hover:ring-neutral-300 hover:ring-offset-2"
+                          className={`w-10 h-10 rounded-full transition-all border border-neutral-100 ${isSelected
+                            ? "ring-2 ring-teal-700 ring-offset-2 scale-110"
+                            : "hover:ring-2 hover:ring-neutral-200 hover:ring-offset-2"
                             }`}
                           style={{ backgroundColor: colorValue }}
                           title={typeof color === "object" ? color.name : color}
@@ -510,9 +534,9 @@ export default function ProductDetailsPage() {
 
           {/* Feature Badges */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12">
-            <div className="flex items-start gap-4 p-5 bg-neutral-50 rounded-xl">
-              <div className="w-12 h-12 rounded-full bg-neutral-200 flex items-center justify-center shrink-0">
-                <RotateCcw size={22} className="text-neutral-700" />
+            <div className="flex items-start gap-4 p-4 sm:p-5 bg-neutral-50 rounded-xl">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-neutral-200 flex items-center justify-center shrink-0">
+                <RotateCcw size={20} className="text-neutral-700 sm:size-[22px]" />
               </div>
               <div>
                 <p className="font-semibold text-neutral-900 font-dm-sans mb-1">30 Day Returns</p>
@@ -522,9 +546,9 @@ export default function ProductDetailsPage() {
               </div>
             </div>
 
-            <div className="flex items-start gap-4 p-5 bg-neutral-50 rounded-xl">
-              <div className="w-12 h-12 rounded-full bg-neutral-200 flex items-center justify-center shrink-0">
-                <Truck size={22} className="text-neutral-700" />
+            <div className="flex items-start gap-4 p-4 sm:p-5 bg-neutral-50 rounded-xl">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-neutral-200 flex items-center justify-center shrink-0">
+                <Truck size={20} className="text-neutral-700 sm:size-[22px]" />
               </div>
               <div>
                 <p className="font-semibold text-neutral-900 font-dm-sans mb-1">Next Day Delivery</p>
@@ -534,9 +558,9 @@ export default function ProductDetailsPage() {
               </div>
             </div>
 
-            <div className="flex items-start gap-4 p-5 bg-neutral-50 rounded-xl">
-              <div className="w-12 h-12 rounded-full bg-neutral-200 flex items-center justify-center shrink-0">
-                <ShieldCheck size={22} className="text-neutral-700" />
+            <div className="flex items-start gap-4 p-4 sm:p-5 bg-neutral-50 rounded-xl">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-neutral-200 flex items-center justify-center shrink-0">
+                <ShieldCheck size={20} className="text-neutral-700 sm:size-[22px]" />
               </div>
               <div>
                 <p className="font-semibold text-neutral-900 font-dm-sans mb-1">Secure Payments</p>
@@ -600,7 +624,7 @@ export default function ProductDetailsPage() {
                   Handpicked items that perfectly match the {product.style || product.category?.name} aesthetic.
                 </p>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
                 {relatedProducts.map((relatedProduct) => (
                   <ProductCard key={relatedProduct._id} product={relatedProduct} />
                 ))}
@@ -617,6 +641,49 @@ export default function ProductDetailsPage() {
         onClose={() => setIsARModalOpen(false)}
         product={product}
       />
+
+      {/* Mobile Sticky Add to Cart */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 p-4 pb-6 bg-linear-to-t from-white via-white/95 to-transparent pointer-events-none">
+        <div className="bg-white rounded-2xl border border-neutral-100 p-3 shadow-2xl flex items-center gap-3 pointer-events-auto">
+          {/* Main Price Mini Info */}
+          <div className="flex-1 pl-1">
+            <p className="text-[10px] text-neutral-500 uppercase tracking-wider font-bold">Total Price</p>
+            <p className="text-base font-bold text-neutral-900 font-playfair">
+              NRs. {formatPrice(product.price * quantity)}
+            </p>
+          </div>
+
+          {/* Action Button */}
+          <button
+            onClick={handleAddToCart}
+            disabled={isAddingToCart}
+            className="flex-3 bg-teal-700 text-white h-12 rounded-xl font-bold text-sm hover:bg-teal-800 transition-all flex items-center justify-center disabled:opacity-50"
+          >
+            {isAddingToCart ? (
+              <Loader2 className="animate-spin" size={20} />
+            ) : (
+              "Add to Cart"
+            )}
+          </button>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes slideUp {
+          from { transform: translateY(100%); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-slideUp {
+          animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .scrollbar-none::-webkit-scrollbar {
+          display: none;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </>
   );
 }

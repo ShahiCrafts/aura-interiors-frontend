@@ -10,7 +10,7 @@ import { toast } from "react-toastify";
 import { getProductImageUrl } from "../../utils/imageUrl";
 import { useAddToCart } from "../../hooks/cart/useCartTan";
 import useGuestCartStore from "../../store/guestCartStore";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import formatError from "../../utils/errorHandler";
 
 export default function ProductCard({ product, viewMode = "grid" }) {
@@ -99,9 +99,9 @@ export default function ProductCard({ product, viewMode = "grid" }) {
     return (
       <Link
         to={`/product/${slug || _id}`}
-        className="group flex bg-white rounded-xl overflow-hidden border border-neutral-100 hover:shadow-lg transition-all duration-300"
+        className="group flex h-40 bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300"
       >
-        <div className="relative w-48 sm:w-56 shrink-0 overflow-hidden bg-neutral-100">
+        <div className="relative w-40 sm:w-48 shrink-0 overflow-hidden bg-white">
           <img
             src={imageUrl}
             alt={name}
@@ -126,7 +126,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
           </button>
         </div>
 
-        <div className="flex-1 p-4 sm:p-5 flex flex-col justify-center">
+        <div className="flex-1 p-3 sm:p-4 flex flex-col justify-center">
           {category?.name && (
             <span className="text-xs font-semibold text-teal-700 uppercase tracking-wide font-dm-sans">
               {category.name}
@@ -173,82 +173,73 @@ export default function ProductCard({ product, viewMode = "grid" }) {
   return (
     <Link
       to={`/product/${slug || _id}`}
-      className="group bg-white rounded-xl overflow-hidden border border-neutral-100 hover:shadow-lg transition-all duration-300"
+      className="group flex flex-col h-full bg-white rounded-xl overflow-hidden shadow-sm transition-all duration-300 hover:shadow-lg"
     >
-      <div className="relative aspect-4/3 overflow-hidden bg-neutral-100">
+      <div className="relative aspect-[3/2] overflow-hidden bg-white">
         <img
           src={imageUrl}
           alt={name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
         />
 
         {arAvailable && (
-          <div className="absolute top-3 left-3 bg-teal-700 text-white text-xs font-semibold px-2.5 py-1 rounded-md font-dm-sans">
-            AR
+          <div className="absolute top-2 left-2 bg-teal-700 text-white text-[10px] font-semibold px-2 py-1 uppercase tracking-wider font-dm-sans">
+            AR View
           </div>
         )}
 
-        <button
-          onClick={handleWishlistToggle}
-          disabled={isWishlistLoading}
-          className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:scale-110 transition-transform disabled:opacity-50 z-10"
-        >
-          <Heart
-            size={16}
-            className={
-              isInWishlist ? "fill-red-500 text-red-500" : "text-neutral-400"
-            }
-          />
-        </button>
-
-        {/* Quick Add Button on Hover */}
-        <div className="absolute inset-x-0 bottom-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300 pointer-events-none group-hover:pointer-events-auto">
+        <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 translate-x-0 lg:translate-x-4 lg:group-hover:translate-x-0 transition-all duration-300 z-10">
+          <button
+            onClick={handleWishlistToggle}
+            disabled={isWishlistLoading}
+            className="w-9 h-9 sm:w-8 sm:h-8 bg-white/95 backdrop-blur-sm border border-neutral-100 rounded-full flex items-center justify-center hover:bg-teal-700 hover:text-white transition-colors disabled:opacity-50"
+          >
+            <Heart
+              size={16}
+              className={isInWishlist ? "fill-red-500 text-red-500" : "text-neutral-600"}
+            />
+          </button>
           <button
             onClick={handleAddToCart}
             disabled={isAddingToCart}
-            className="w-full bg-teal-700 text-white py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-2 shadow-lg shadow-teal-900/20 hover:bg-teal-800 transition-colors"
+            className="w-9 h-9 sm:w-8 sm:h-8 bg-white/95 backdrop-blur-sm border border-neutral-100 rounded-full flex items-center justify-center hover:bg-teal-700 hover:text-white transition-colors disabled:opacity-50"
           >
-            {isAddingToCart ? "..." : (
-              <>
-                <ShoppingCart size={14} />
-                Add to Cart
-              </>
-            )}
+            <ShoppingBag size={16} />
           </button>
         </div>
       </div>
 
-      <div className="p-4">
+      <div className="p-3 space-y-1">
         {category?.name && (
-          <span className="text-xs font-semibold text-teal-700 uppercase tracking-wide font-dm-sans">
+          <p className="text-[10px] sm:text-xs font-semibold tracking-[0.15em] text-zinc-500 uppercase font-dm-sans">
             {category.name}
-          </span>
+          </p>
         )}
 
-        <h3 className="text-neutral-900 font-semibold mt-1 line-clamp-1 font-playfair text-base">
+        <h3 className="text-sm sm:text-base font-medium text-zinc-900 group-hover:text-teal-700 transition-colors duration-300 font-playfair leading-snug line-clamp-1">
           {name}
         </h3>
 
-        <div className="flex items-center gap-1.5 mt-2">
+        <div className="flex items-center gap-1.5">
           <div className="flex items-center">
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
-                size={14}
+                size={12}
                 className={
                   i < Math.round(displayRating)
                     ? "fill-amber-400 text-amber-400"
-                    : "fill-neutral-200 text-neutral-200"
+                    : "fill-zinc-200 text-zinc-200"
                 }
               />
             ))}
           </div>
-          <span className="text-sm text-neutral-500 font-dm-sans">
-            {displayRating.toFixed(1)}
+          <span className="text-xs text-zinc-500 font-dm-sans">
+            ({displayRating.toFixed(1)})
           </span>
         </div>
 
-        <p className="text-teal-700 font-bold mt-2 font-playfair text-lg">
+        <p className="text-base font-bold text-teal-700 font-playfair">
           {formattedPrice}
         </p>
       </div>

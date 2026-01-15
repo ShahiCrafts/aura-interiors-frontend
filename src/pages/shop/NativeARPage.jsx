@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import NativeARView from "../../components/ar/NativeARView";
 import { useProducts } from "../../hooks/product/useProductTan";
 import { useCategories } from "../../hooks/product/useCategoryTan";
@@ -8,6 +8,9 @@ import useAuthStore from "../../store/authStore";
 
 export default function NativeARPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const initialProductSlug = queryParams.get("select");
   const { isAuthenticated } = useAuthStore();
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [customization, setCustomization] = useState({});
@@ -34,11 +37,31 @@ export default function NativeARPage() {
     return hasModelFiles || hasLegacyModel;
   });
 
+  const introProduct = {
+    _id: "intro",
+    slug: "intro",
+    name: "Aura Signature Sofa",
+    description: "Experience modern luxury with our signature handcrafted sofa piece.",
+    price: 45000,
+    modelFiles: [{ format: "glb", url: "/sofa_chair.glb" }],
+    modelUrl: "/sofa_chair.glb",
+    images: [{ url: "https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?w=800" }]
+  };
+
+  const allArProducts = [introProduct, ...arProducts];
+
   useEffect(() => {
-    if (arProducts.length > 0 && !selectedProduct) {
-      setSelectedProduct(arProducts[0]);
+    if (allArProducts.length > 0 && !selectedProduct) {
+      if (initialProductSlug) {
+        const found = allArProducts.find(p => p.slug === initialProductSlug || p._id === initialProductSlug);
+        if (found) {
+          setSelectedProduct(found);
+          return;
+        }
+      }
+      setSelectedProduct(allArProducts[0]);
     }
-  }, [arProducts, selectedProduct]);
+  }, [allArProducts, selectedProduct, initialProductSlug]);
 
   const handleClose = () => {
     navigate(-1);
@@ -74,7 +97,7 @@ export default function NativeARPage() {
 
   return (
     <NativeARView
-      products={arProducts}
+      products={allArProducts}
       categories={categories}
       selectedProduct={selectedProduct}
       onProductSelect={handleProductSelect}

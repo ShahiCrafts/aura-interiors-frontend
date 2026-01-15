@@ -11,17 +11,140 @@ import { toast } from "react-toastify";
 import Skeleton from "../../components/common/Skeleton";
 import formatError from "../../utils/errorHandler";
 
-export default function FeaturedPieces() {
-  const sectionRef = useRef(null);
-  const [isVisible, setIsVisible] = useState(false);
+function FeaturedProductCard({ p, i, isVisible }) {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
 
-  const { data: featuredData, isLoading: isFeaturedLoading } = useFeaturedProducts(4);
   const { mutate: addToCart, isPending: isAddingToCart } = useAddToCart();
   const { addItem: addToGuestCart } = useGuestCartStore();
   const { mutate: addToWishlist } = useAddToWishlist();
   const { mutate: removeFromWishlist } = useRemoveFromWishlist();
+
+  const { data: wishlistCheck } = useCheckWishlist(p._id, {
+    enabled: !!isAuthenticated
+  });
+
+  const isInWishlist = wishlistCheck?.data?.inWishlist || false;
+
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isAuthenticated) {
+      addToGuestCart(p, 1);
+      toast.success("Added to cart");
+      return;
+    }
+
+    addToCart(
+      { productId: p._id, quantity: 1 },
+      {
+        onSuccess: () => toast.success("Added to cart"),
+        onError: (err) => toast.error(formatError(err, "Failed to add to cart")),
+      }
+    );
+  };
+
+  const handleWishlistToggle = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isAuthenticated) {
+      toast.error("Please login to add items to wishlist");
+      return;
+    }
+
+    if (isInWishlist) {
+      removeFromWishlist(p._id, {
+        onSuccess: () => toast.success("Removed from wishlist"),
+        onError: (err) => toast.error(formatError(err, "Failed to remove from wishlist")),
+      });
+    } else {
+      addToWishlist(p._id, {
+        onSuccess: () => toast.success("Added to wishlist"),
+        onError: (err) => toast.error(formatError(err, "Failed to add to wishlist")),
+      });
+    }
+  };
+
+  return (
+    <div
+      className={`group cursor-pointer relative transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+        }`}
+      style={{
+        transitionDelay: isVisible ? `${150 + i * 100}ms` : "0ms",
+      }}
+      onClick={() => navigate(`/product/${p.slug || p._id}`)}
+    >
+      <div className="relative w-full aspect-square md:aspect-4/5 lg:aspect-3/4 overflow-hidden bg-zinc-100">
+        <img
+          src={p.image}
+          alt={p.name}
+          className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
+        />
+
+        {p.badge && (
+          <div className="absolute top-2 left-2 sm:top-4 sm:left-4">
+            <span
+              className={`px-2 py-1 sm:px-3 sm:py-1.5 text-[10px] sm:text-xs font-semibold rounded-full ${p.badge === "New"
+                  ? "bg-teal-700 text-white"
+                  : "bg-amber-500 text-white"
+                }`}
+            >
+              {p.badge}
+            </span>
+          </div>
+        )}
+
+        <div className="absolute top-2 right-2 sm:top-4 sm:right-4 flex flex-col gap-1.5 sm:gap-2 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300">
+          <button
+            onClick={handleWishlistToggle}
+            className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-teal-700 hover:text-white transition-colors"
+          >
+            <Heart
+              size={14}
+              className={`sm:w-[18px] sm:h-[18px] ${isInWishlist ? "fill-red-500 text-red-500" : ""}`}
+            />
+          </button>
+          <button
+            onClick={handleAddToCart}
+            className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-teal-700 hover:text-white transition-colors"
+          >
+            <ShoppingBag
+              size={14}
+              className="sm:w-[18px] sm:h-[18px]"
+            />
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-3 sm:mt-4 space-y-1 sm:space-y-1.5">
+        <p className="text-[10px] sm:text-xs font-semibold tracking-[0.15em] text-zinc-500 uppercase font-dm-sans">
+          {p.category}
+        </p>
+        <h3 className="text-sm sm:text-base md:text-lg font-medium text-zinc-900 group-hover:text-teal-700 transition-colors duration-300 font-playfair leading-snug">
+          {p.name}
+        </h3>
+        <div className="flex items-center gap-2">
+          <p className="text-base sm:text-lg md:text-xl font-bold text-teal-700 font-playfair">
+            {p.formattedPrice}
+          </p>
+          {p.formattedOriginalPrice && (
+            <p className="text-xs sm:text-sm text-zinc-400 line-through font-dm-sans">
+              {p.formattedOriginalPrice}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function FeaturedPieces() {
+  const sectionRef = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  const { data: featuredData, isLoading: isFeaturedLoading } = useFeaturedProducts(4);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -55,52 +178,6 @@ export default function FeaturedPieces() {
     image: getProductImageUrl(p),
     badge: p.isNewArrival ? "New" : (p.originalPrice > p.price ? "Sale" : null),
   }));
-
-  const handleAddToCart = (e, product) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (!isAuthenticated) {
-      addToGuestCart(product, 1);
-      toast.success("Added to cart");
-      return;
-    }
-
-    addToCart(
-      { productId: product._id, quantity: 1 },
-      {
-        onSuccess: () => toast.success("Added to cart"),
-        onError: (err) => toast.error(formatError(err, "Failed to add to cart")),
-      }
-    );
-  };
-
-  const handleWishlistToggle = (e, product) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (!isAuthenticated) {
-      toast.error("Please login to add items to wishlist");
-      return;
-    }
-
-    // Since we don't have individual isInWishlist state for multiple products easily here
-    // We'll just try to add, if it's already there backend should handle or we could fetch individual status
-    // For simplicity and speed in sections, let's just use addToWishlist.
-    addToWishlist(product._id, {
-      onSuccess: () => toast.success("Added to wishlist"),
-      onError: (err) => {
-        if (err?.response?.status === 400 && err?.response?.data?.message?.includes('already in wishlist')) {
-          removeFromWishlist(product._id, {
-            onSuccess: () => toast.success("Removed from wishlist"),
-            onError: (err) => toast.error(formatError(err, "Failed to remove from wishlist")),
-          });
-        } else {
-          toast.error(formatError(err, "Failed to update wishlist"));
-        }
-      },
-    });
-  };
 
   return (
     <section
@@ -140,75 +217,12 @@ export default function FeaturedPieces() {
             ))
           ) : (
             products.map((p, i) => (
-              <div
-                key={i}
-                className={`group cursor-pointer relative transition-all duration-700 ${isVisible
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-12"
-                  }`}
-                style={{
-                  transitionDelay: isVisible ? `${150 + i * 100}ms` : "0ms",
-                }}
-                onClick={() => navigate(`/product/${p.slug || p._id}`)}
-              >
-                <div className="relative w-full aspect-square md:aspect-4/5 lg:aspect-3/4 overflow-hidden bg-zinc-100">
-                  <img
-                    src={p.image}
-                    alt={p.name}
-                    className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
-                  />
-
-                  {p.badge && (
-                    <div className="absolute top-2 left-2 sm:top-4 sm:left-4">
-                      <span
-                        className={`px-2 py-1 sm:px-3 sm:py-1.5 text-[10px] sm:text-xs font-semibold rounded-full ${p.badge === "New"
-                          ? "bg-teal-700 text-white"
-                          : "bg-amber-500 text-white"
-                          }`}
-                      >
-                        {p.badge}
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="absolute top-2 right-2 sm:top-4 sm:right-4 flex flex-col gap-1.5 sm:gap-2 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300">
-                    <button
-                      onClick={(e) => handleWishlistToggle(e, p)}
-                      className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-teal-700 hover:text-white transition-colors"
-                    >
-                      <Heart size={14} className="sm:w-[18px] sm:h-[18px]" />
-                    </button>
-                    <button
-                      onClick={(e) => handleAddToCart(e, p)}
-                      className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-teal-700 hover:text-white transition-colors"
-                    >
-                      <ShoppingBag
-                        size={14}
-                        className="sm:w-[18px] sm:h-[18px]"
-                      />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="mt-3 sm:mt-4 space-y-1 sm:space-y-1.5">
-                  <p className="text-[10px] sm:text-xs font-semibold tracking-[0.15em] text-zinc-500 uppercase font-dm-sans">
-                    {p.category}
-                  </p>
-                  <h3 className="text-sm sm:text-base md:text-lg font-medium text-zinc-900 group-hover:text-teal-700 transition-colors duration-300 font-playfair leading-snug">
-                    {p.name}
-                  </h3>
-                  <div className="flex items-center gap-2">
-                    <p className="text-base sm:text-lg md:text-xl font-bold text-teal-700 font-playfair">
-                      {p.formattedPrice}
-                    </p>
-                    {p.formattedOriginalPrice && (
-                      <p className="text-xs sm:text-sm text-zinc-400 line-through font-dm-sans">
-                        {p.formattedOriginalPrice}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
+              <FeaturedProductCard
+                key={p._id || i}
+                p={p}
+                i={i}
+                isVisible={isVisible}
+              />
             ))
           )}
         </div>
@@ -218,12 +232,15 @@ export default function FeaturedPieces() {
             }`}
           style={{ transitionDelay: isVisible ? "600ms" : "0ms" }}
         >
-          <button className="group inline-flex items-center gap-3 px-6 sm:px-8 py-3 sm:py-4 bg-teal-700 text-white hover:bg-teal-800 transition-all duration-300 rounded-full shadow-lg hover:shadow-xl">
-            <span className="text-sm sm:text-base font-semibold tracking-wide">
+          <Link
+            to="/shop"
+            className="group inline-flex items-center gap-2 text-teal-700 font-bold hover:text-teal-800 transition-colors"
+          >
+            <span className="text-base font-dm-sans font-bold tracking-wide border-b-2 border-transparent group-hover:border-teal-700 transition-all">
               Explore Full Collection
             </span>
-            <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 group-hover:translate-x-1" />
-          </button>
+            <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
+          </Link>
         </div>
       </div>
     </section>

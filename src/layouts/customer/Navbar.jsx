@@ -202,7 +202,8 @@ export default function Navbar() {
         <div className="flex items-center justify-between max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
           {/* Logo */}
           <div className="flex items-center shrink-0">
-            <a href="/" onClick={closeMobileMenu}>
+            <a href="/" onClick={closeMobileMenu} className="flex items-center gap-2">
+              <img src="/brand_crown.svg" alt="Aura Logo" className="h-6 w-auto" />
               <h1
                 className="font-playfair text-xl sm:text-2xl lg:text-xl font-bold tracking-wide text-black-800 cursor-pointer"
                 style={{
@@ -481,7 +482,7 @@ export default function Navbar() {
                 }}
                 className="w-full flex items-center gap-3 p-3 bg-neutral-50 rounded-xl hover:bg-neutral-100 transition-colors"
               >
-                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
                   <User size={24} className="text-neutral-400" />
                 </div>
                 <div className="flex-1 text-left">

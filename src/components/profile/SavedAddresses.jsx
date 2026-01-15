@@ -146,7 +146,7 @@ export default function SavedAddresses() {
             <div
               key={address._id}
               className={`relative p-5 rounded-xl border-2 transition-all bg-white ${address.isDefault
-                ? "border-teal-200 bg-teal-50/30"
+                ? "border-neutral-200 bg-teal-50/30"
                 : "border-neutral-100 hover:border-neutral-200"
                 }`}
             >
@@ -227,7 +227,7 @@ export default function SavedAddresses() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleEdit(address)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-teal-700 border border-teal-200 rounded-lg hover:bg-teal-50 transition-colors font-dm-sans"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-teal-700 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors font-dm-sans"
                   >
                     <Pencil size={14} />
                     Edit

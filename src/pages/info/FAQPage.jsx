@@ -110,18 +110,18 @@ export default function FAQPage() {
     return (
         <>
             <Navbar />
-            <main className="min-h-screen bg-stone-50 font-dm-sans pt-32 pb-20">
+            <main className="min-h-screen bg-white font-dm-sans pt-32 pb-20">
                 <div className="max-w-4xl mx-auto px-6">
                     {/* Header */}
                     <div className="text-center mb-16">
                         <motion.h1
                             initial={{ opacity: 0, y: -20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="text-5xl font-playfair font-bold text-gray-950 mb-6"
+                            className="text-3xl sm:text-4xl md:text-5xl font-light text-zinc-900 mb-4 tracking-tight font-playfair"
                         >
                             Frequently Asked <span className="italic text-teal-700">Questions</span>
                         </motion.h1>
-                        <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-10">
+                        <p className="text-zinc-600 text-base md:text-lg max-w-2xl mx-auto leading-relaxed font-dm-sans mb-10">
                             Find answers to common questions about our products, ordering process, shipping, and augmented reality features.
                         </p>
 
@@ -133,17 +133,17 @@ export default function FAQPage() {
                                 placeholder="Search for answers..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-12 pr-6 py-4 bg-white rounded-2xl border border-gray-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all shadow-sm"
+                                className="w-full pl-12 pr-6 py-4 bg-white rounded-xl shadow-sm border border-gray-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all"
                             />
                         </div>
                     </div>
 
                     {/* FAQ Sections */}
-                    <div className="space-y-12">
+                    <div className="space-y-12 max-w-3xl mx-auto">
                         {filteredFaqs.length > 0 ? (
                             filteredFaqs.map((category) => (
-                                <div key={category.category} className="space-y-4">
-                                    <div className="flex items-center gap-3 mb-6">
+                                <div key={category.category} className="space-y-6">
+                                    <div className="flex items-center gap-3">
                                         <div className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center text-teal-700">
                                             <category.icon size={20} />
                                         </div>
@@ -152,21 +152,21 @@ export default function FAQPage() {
                                         </h2>
                                     </div>
 
-                                    <div className="grid gap-3">
+                                    <div className="border border-gray-200 divide-y divide-gray-200 rounded-lg overflow-hidden">
                                         {category.questions.map((item) => (
                                             <div
                                                 key={item.id}
-                                                className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden transition-all duration-300"
+                                                className="bg-white overflow-hidden transition-all duration-300"
                                             >
                                                 <button
                                                     onClick={() => toggleAccordion(item.id)}
-                                                    className="w-full px-6 py-5 flex items-center justify-between text-left group"
+                                                    className="w-full px-6 py-5 flex items-start justify-between text-left group hover:bg-gray-50/50 transition-colors"
                                                 >
-                                                    <span className={`text-lg font-medium transition-colors duration-300 ${activeId === item.id ? 'text-teal-700' : 'text-gray-800'}`}>
+                                                    <span className={`text-base font-medium transition-colors duration-300 pr-4 leading-relaxed ${activeId === item.id ? 'text-teal-700' : 'text-zinc-800'}`}>
                                                         {item.q}
                                                     </span>
-                                                    <div className={`shrink-0 ml-4 w-8 h-8 rounded-full border border-gray-100 flex items-center justify-center transition-all duration-300 ${activeId === item.id ? 'bg-teal-700 border-teal-700 text-white rotate-180' : 'text-gray-400 group-hover:border-teal-700 group-hover:text-teal-700'}`}>
-                                                        <ChevronDown size={18} />
+                                                    <div className={`shrink-0 w-6 h-6 flex items-center justify-center transition-all duration-300 ${activeId === item.id ? 'text-teal-700 rotate-180' : 'text-zinc-400 group-hover:text-teal-700'}`}>
+                                                        <ChevronDown size={20} />
                                                     </div>
                                                 </button>
 
@@ -178,7 +178,7 @@ export default function FAQPage() {
                                                             exit={{ height: 0, opacity: 0 }}
                                                             transition={{ duration: 0.3, ease: "easeInOut" }}
                                                         >
-                                                            <div className="px-6 pb-6 text-gray-600 leading-relaxed border-t border-gray-50 pt-4">
+                                                            <div className="px-6 pb-6 text-zinc-600 leading-relaxed pt-2">
                                                                 {item.a}
                                                             </div>
                                                         </motion.div>
@@ -203,26 +203,7 @@ export default function FAQPage() {
                         )}
                     </div>
 
-                    {/* Still have questions? */}
-                    <div className="mt-20 p-10 bg-teal-900 rounded-3xl text-center text-white relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-teal-800/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
-                        <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-500/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl" />
 
-                        <div className="relative z-10">
-                            <h3 className="text-3xl font-playfair font-bold mb-4">Still have questions?</h3>
-                            <p className="text-teal-100 mb-8 max-w-lg mx-auto">
-                                Our support team is always here to help. Reach out to us via call or email and we'll get back to you within 24 hours.
-                            </p>
-                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                <a
-                                    href="/contact"
-                                    className="px-8 py-3 bg-white text-teal-900 rounded-full font-bold hover:bg-stone-100 transition-all shadow-lg"
-                                >
-                                    Contact Support
-                                </a>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </main>
             <Footer />

@@ -64,7 +64,7 @@ const ChatInput = ({ chatId, onTyping }) => {
         )}
       </AnimatePresence>
 
-  
+
       <div className="flex items-end gap-2">
         <input
           ref={fileInputRef}
@@ -76,9 +76,9 @@ const ChatInput = ({ chatId, onTyping }) => {
 
         <button
           onClick={() => fileInputRef.current?.click()}
-          className="shrink-0 w-11 h-11 rounded-xl bg-gray-50 border border-gray-200 text-gray-400 hover:text-[#0d9488] hover:bg-teal-50 transition-all flex items-center justify-center"
+          className="shrink-0 w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gray-50 border border-gray-200 text-gray-400 hover:text-[#0d9488] hover:bg-teal-50 transition-all flex items-center justify-center"
         >
-          <Paperclip size={20} />
+          <Paperclip size={18} sm:size={20} />
         </button>
 
         <div className="flex-1 min-w-0">
@@ -88,30 +88,35 @@ const ChatInput = ({ chatId, onTyping }) => {
             rows={1}
             onChange={(e) => {
               handleTypingChange(e.target.value);
-              e.target.style.height = "44px"; // Base height
+              e.target.style.height = "40px"; // Adjusted base height
               e.target.style.height = `${Math.min(
                 e.target.scrollHeight,
                 120
               )}px`;
             }}
             placeholder="Type your message..."
-            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-[10px] text-gray-800 text-[14px] leading-[22px] resize-none focus:outline-none focus:border-[#0d9488] focus:bg-white transition-all min-h-[44px] max-h-[120px] block shadow-inner overflow-y-auto"
+            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 sm:px-4 py-2 sm:py-[10px] text-gray-800 text-[13px] sm:text-[14px] leading-[20px] sm:leading-[22px] resize-none focus:outline-none focus:border-[#0d9488] focus:bg-white transition-all min-h-[40px] max-h-[120px] block shadow-inner overflow-y-auto"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+              }
+            }}
           />
         </div>
 
         <motion.button
           onClick={handleSend}
           disabled={!canSend}
-          className={`flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center transition-all ${
-            canSend
-              ? "bg-[#0d9488] text-white shadow-md shadow-teal-500/10"
-              : "bg-gray-100 text-gray-300"
-          }`}
+          className={`flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center transition-all ${canSend
+            ? "bg-[#0d9488] text-white"
+            : "bg-gray-100 text-gray-300"
+            }`}
         >
           {sendMessageMutation.isPending ? (
-            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           ) : (
-            <Send size={20} strokeWidth={2.5} />
+            <Send size={18} sm:size={20} strokeWidth={2.5} />
           )}
         </motion.button>
       </div>

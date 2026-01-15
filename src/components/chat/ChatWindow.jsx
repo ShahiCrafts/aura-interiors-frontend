@@ -7,7 +7,14 @@ import {
   CheckCircle2,
   ArrowRight,
   Shield,
-  X
+  X,
+  Loader2,
+  Zap,
+  HelpCircle,
+  Truck,
+  ShoppingBag,
+  RotateCcw,
+  Headset
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useChatMessages, useMarkMessagesRead, useSendMessage } from '../../hooks/chat/useChatTan';
@@ -17,7 +24,7 @@ import useAuthStore from '../../store/authStore';
 import ChatMessageList from './ChatMessageList';
 import ChatInput from './ChatInput';
 
-const ChatWindow = ({ chat, onClose, onStartNew }) => {
+const ChatWindow = ({ chat, onClose, onStartNew, onResetView, isCreatingChat }) => {
   const { user } = useAuthStore();
   const token = localStorage.getItem('token');
   const { socket } = useNotificationSocket(token, user?._id);
@@ -46,33 +53,30 @@ const ChatWindow = ({ chat, onClose, onStartNew }) => {
   return (
     <div className="flex flex-col h-full bg-white font-dm-sans overflow-hidden">
       {/* Refined Professional Header - No Gradients */}
-      <div className="shrink-0 bg-white border-b border-gray-100 p-4 shadow-sm relative z-10">
+      {/* Minimalist Header */}
+      <div className="shrink-0 bg-white border-b border-gray-100 p-3 sm:p-4 shadow-sm relative z-10">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center border border-gray-100 shadow-sm text-[#0d9488]">
-              <Shield size={20} strokeWidth={2.5} />
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#E0F2F1] flex items-center justify-center text-[#009688]">
+              {/* Using a Robot icon or similar if available, else standard Shield/Headset */}
+              <Headset size={18} sm:size={20} strokeWidth={2.5} />
             </div>
             <div>
-              <h3 className="text-gray-900 font-bold text-base tracking-tight leading-none">Aura Support</h3>
-              <div className="flex items-center gap-1.5 mt-1.5">
-                <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-teal-50 border border-teal-100">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#0d9488] animate-pulse" />
-                  <span className="text-[10px] font-bold text-[#0d9488] uppercase tracking-wider">Expert Online</span>
-                </div>
-              </div>
+              <h3 className="text-gray-900 font-bold text-sm sm:text-base tracking-tight leading-none">Aura Assistant</h3>
+              <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5">Expert help for your home</p>
             </div>
           </div>
-          
-          <div className="flex gap-1">
-            <button 
-              onClick={onStartNew}
-              className="p-2 rounded-full text-gray-400 hover:text-[#0d9488] hover:bg-teal-50 transition-all"
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={onResetView}
+              className="text-sm font-semibold text-[#009688] hover:text-[#00796b] flex items-center gap-1 transition-colors"
             >
-              <Plus size={20} />
+              <Plus size={16} /> New Chat
             </button>
-            <button 
+            <button
               onClick={onClose}
-              className="p-2 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all"
+              className="p-1 rounded-full text-gray-400 hover:bg-gray-100 transition-all"
             >
               <X size={20} />
             </button>
@@ -83,30 +87,92 @@ const ChatWindow = ({ chat, onClose, onStartNew }) => {
       <div className="flex-1 overflow-hidden bg-gray-50/30">
         {chat ? (
           <div className="h-full flex flex-col">
-            <div className="flex-1 overflow-hidden">
-              <ChatMessageList
-                messages={allMessages}
-                isLoading={isLoading}
-                onLoadMore={() => hasNextPage && !isFetchingNextPage && fetchNextPage()}
-                hasMore={hasNextPage}
-                isFetchingMore={isFetchingNextPage}
-                currentUserId={user?._id}
-              />
+            <div className="flex-1 overflow-hidden relative">
+              {allMessages.length > 0 && (
+                <ChatMessageList
+                  messages={allMessages}
+                  isLoading={isLoading}
+                  onLoadMore={() => hasNextPage && !isFetchingNextPage && fetchNextPage()}
+                  hasMore={hasNextPage}
+                  isFetchingMore={isFetchingNextPage}
+                  currentUserId={user?._id}
+                />
+              )}
+              {allMessages.length === 0 && !isLoading && (
+                <div className="absolute inset-0 flex flex-col justify-end px-4 pb-0 bg-gray-50/30">
+                  <div className="flex-1 overflow-y-auto p-4 flex flex-col items-start space-y-4">
+                    {/* Greeting Bubble */}
+                    <div className="bg-[#E0F2F1] p-4 rounded-2xl rounded-tl-none max-w-[85%] text-sm text-gray-800 leading-relaxed shadow-sm">
+                      Hello! Welcome to Aura Interiors. How can I help you find the perfect piece for your home today? 🛋️
+                    </div>
+                  </div>
+
+                  <div className="p-3 sm:p-4 pt-2 bg-white/50 backdrop-blur-sm border-t border-gray-100">
+                    <h4 className="text-[9px] sm:text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2 sm:mb-3">Quick Messages</h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        "Show sofas",
+                        "Bedroom furniture",
+                        "Best deals",
+                        "Track order",
+                        "Return Policy",
+                        "Speak to agent"
+                      ].map((text) => (
+                        <button
+                          key={text}
+                          onClick={() => sendMessageMutation.mutate({ chatId: chat._id, content: text })}
+                          className="px-3 py-2 sm:px-4 sm:py-2.5 bg-white border border-gray-200 rounded-full text-xs sm:text-sm font-medium text-gray-700 hover:border-[#009688] hover:text-[#009688] hover:shadow-sm transition-all text-left truncate"
+                        >
+                          {text}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center h-full px-8 text-center bg-white">
-            <div className="w-20 h-20 rounded-3xl bg-gray-50 border border-gray-100 flex items-center justify-center mb-6 shadow-sm">
-              <MessageCircle className="w-10 h-10 text-[#0d9488]" />
-            </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-2">How can we help today?</h2>
-            <p className="text-gray-500 text-sm mb-8 leading-relaxed max-w-[240px]">Our experts are ready to assist you in real-time.</p>
-            <button
-              onClick={onStartNew}
-              className="px-8 py-3 bg-[#0d9488] text-white rounded-xl font-bold shadow-md hover:shadow-lg transition-all flex items-center gap-2"
-            >
-              Start Conversation <ArrowRight size={18} />
-            </button>
+          <div className="flex flex-col items-center justify-center h-full px-6 bg-white">
+            {isCreatingChat ? (
+              <div className="text-center">
+                <Loader2 className="w-10 h-10 text-[#0d9488] animate-spin mx-auto mb-4" />
+                <p className="text-gray-500 font-medium animate-pulse">Starting conversation...</p>
+              </div>
+            ) : (
+              <div className="w-full max-w-xs">
+                <div className="w-full">
+                  {/* Greeting Bubble Fallback */}
+                  <div className="bg-[#E0F2F1] p-4 rounded-2xl rounded-tl-none text-sm text-gray-800 leading-relaxed shadow-sm mb-6 text-left">
+                    Hello! Select a topic below to get started. 👇
+                  </div>
+
+                  <h4 className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3 text-left">Quick Messages</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      "Show sofas",
+                      "Bedroom furniture",
+                      "Best deals",
+                      "Track order"
+                    ].map((text) => (
+                      <button
+                        key={text}
+                        onClick={() => onStartNew(text)}
+                        className="px-4 py-2.5 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-700 hover:border-[#009688] hover:text-[#009688] hover:shadow-sm transition-all text-left truncate shadow-sm"
+                      >
+                        {text}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => onStartNew()}
+                    className="w-full text-center mt-4 text-xs font-semibold text-gray-400 hover:text-[#009688] transition-colors"
+                  >
+                    Start a blank conversation
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -134,8 +200,8 @@ const ChatWindow = ({ chat, onClose, onStartNew }) => {
         </AnimatePresence>
 
         {chat && (chat.status === 'waiting' || chat.status === 'active') && (
-          <div className="p-4 bg-white border-t border-gray-50">
-            <div className="rounded-2xl border border-gray-100 bg-gray-50 overflow-hidden focus-within:border-teal-200 transition-all">
+          <div className="p-3 sm:p-4 bg-white border-t border-gray-50">
+            <div>
               <ChatInput
                 chatId={chat._id}
                 onTyping={(isTyping) => sendTypingIndicator(isTyping)}

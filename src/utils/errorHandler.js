@@ -32,8 +32,11 @@ export const formatError = (error, defaultMessage = "Something went wrong. Pleas
     const status = error.response.status;
     const serverMessage = error.response.data?.message;
 
-    // Handle common technical validation strings from the server
-    if (serverMessage && typeof serverMessage === 'string') {
+    // 1. Fallback to server-provided message if it's reasonably descriptive
+    // We check if it's a string, not empty, and not just a status code number
+    if (serverMessage && typeof serverMessage === 'string' && serverMessage.length > 0 && !/^\d+$/.test(serverMessage)) {
+
+        // However, if it's a technical validation string, we still want to clean it up
         const technicalTerms = [
             'validation failed',
             'is not a valid enum value',
@@ -46,16 +49,13 @@ export const formatError = (error, defaultMessage = "Something went wrong. Pleas
         if (technicalTerms.some(term => serverMessage.toLowerCase().includes(term.toLowerCase()))) {
             return "Please check your information. Some fields have invalid or missing data.";
         }
+
+        return serverMessage;
     }
 
-    // Prioritize professional mapped messages for common status codes
+    // 2. Prioritize professional mapped messages for common status codes if no server message
     if (ERROR_MESSAGES[status]) {
         return ERROR_MESSAGES[status];
-    }
-
-    // Fallback to server-provided message if it's reasonably descriptive
-    if (serverMessage && typeof serverMessage === 'string' && serverMessage.length > 0 && !/^\d+$/.test(serverMessage)) {
-        return serverMessage;
     }
 
     return defaultMessage;

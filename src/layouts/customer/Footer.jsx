@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Instagram, Facebook, Twitter, Linkedin } from "lucide-react";
+import { useNewsletterSubscribe } from "../../hooks/newsletter/useNewsletterTan";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
   const sectionRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
+
+  const { mutate: subscribe, isPending } = useNewsletterSubscribe();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -26,7 +29,11 @@ export default function Footer() {
 
   const handleSubscribe = (e) => {
     e.preventDefault();
-    setEmail("");
+    subscribe({ email, source: 'footer' }, {
+      onSuccess: () => {
+        setEmail("");
+      }
+    });
   };
 
   const links = {
@@ -37,7 +44,7 @@ export default function Footer() {
   return (
     <footer
       ref={sectionRef}
-      className="bg-white text-gray-900 font-dm-sans"
+      className="bg-linear-to-b from-zinc-50 to-white text-gray-900 font-dm-sans"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 lg:px-20 py-12 sm:py-16">
         {/* Newsletter Section */}
@@ -73,9 +80,10 @@ export default function Footer() {
             />
             <button
               type="submit"
-              className="w-full sm:w-auto bg-teal-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full hover:bg-teal-800 transition-colors duration-300 whitespace-nowrap font-semibold"
+              disabled={isPending}
+              className="w-full sm:w-auto bg-teal-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full hover:bg-teal-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300 whitespace-nowrap font-semibold"
             >
-              Subscribe
+              {isPending ? 'Subscribing...' : 'Subscribe'}
             </button>
           </form>
         </div>
@@ -96,15 +104,34 @@ export default function Footer() {
               timeless design.
             </p>
             <div className="flex gap-3 sm:gap-4 mt-4">
-              {[Facebook, Instagram, Twitter, Linkedin].map((Icon, i) => (
-                <a
-                  key={i}
-                  href="#"
-                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-gray-300 flex items-center justify-center hover:border-teal-700 hover:bg-teal-700/10 transition-all duration-300"
-                >
-                  <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
-                </a>
-              ))}
+              <a
+                href="https://www.facebook.com/saugata.sahi.thakuri.2025"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-gray-300 flex items-center justify-center hover:border-teal-700 hover:bg-teal-700/10 transition-all duration-300"
+              >
+                <Facebook className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+              </a>
+              <a
+                href="https://www.instagram.com/its.saugat.shahi/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-gray-300 flex items-center justify-center hover:border-teal-700 hover:bg-teal-700/10 transition-all duration-300"
+              >
+                <Instagram className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+              </a>
+              <a
+                href="#"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-gray-300 flex items-center justify-center hover:border-teal-700 hover:bg-teal-700/10 transition-all duration-300"
+              >
+                <Twitter className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+              </a>
+              <a
+                href="#"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-gray-300 flex items-center justify-center hover:border-teal-700 hover:bg-teal-700/10 transition-all duration-300"
+              >
+                <Linkedin className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+              </a>
             </div>
           </div>
 
@@ -152,8 +179,8 @@ export default function Footer() {
             <ul className="space-y-2 text-gray-600 text-sm sm:text-base">
               <li>Chwakpa Tole, Hattiban</li>
               <li>Lalitpur, 44600</li>
-              <li>+977 98XXXXXXXX</li>
-              <li className="break-all">support.desk@aurainteriors.com</li>
+              <li>+977 9866291003</li>
+              <li className="break-all">support@aurainteriors.live</li>
             </ul>
           </div>
         </div>

@@ -5,6 +5,24 @@ import { QRCodeSVG } from "qrcode.react";
 export default function ARViewModal({ isOpen, onClose, product }) {
   const [isMobile, setIsMobile] = useState(false);
   const [deviceInfo, setDeviceInfo] = useState({ isIOS: false, isAndroid: false });
+  const [localIp, setLocalIp] = useState(null);
+
+  useEffect(() => {
+    const fetchIp = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:8080"}/api/v1/system/info`);
+        const result = await response.json();
+        if (result.status === "success") {
+          setLocalIp(result.data.localIp);
+        }
+      } catch (err) {
+        console.error("Failed to fetch local IP:", err);
+      }
+    };
+    if (import.meta.env.DEV) {
+      fetchIp();
+    }
+  }, []);
 
   useEffect(() => {
     const checkDevice = () => {
@@ -33,9 +51,9 @@ export default function ARViewModal({ isOpen, onClose, product }) {
     if (!product) return { hasGlb: false, hasUsdz: false, hasAny: false };
 
     const hasGlb = product.modelFiles?.some(m => m.format === "glb" || m.format === "gltf") ||
-                   product.modelUrl?.includes(".glb") || product.modelUrl?.includes(".gltf");
+      product.modelUrl?.includes(".glb") || product.modelUrl?.includes(".gltf");
     const hasUsdz = product.modelFiles?.some(m => m.format === "usdz") ||
-                    product.modelUrl?.includes(".usdz");
+      product.modelUrl?.includes(".usdz");
 
     return {
       hasGlb,
@@ -64,7 +82,13 @@ export default function ARViewModal({ isOpen, onClose, product }) {
   };
 
   const baseUrl = getBaseUrl();
-  const arViewUrl = `${baseUrl}/ar/${product.slug || product._id}`;
+
+  // Use local IP for QR code if available during development
+  const displayBaseUrl = (import.meta.env.DEV && localIp)
+    ? baseUrl.replace("localhost", localIp).replace("127.0.0.1", localIp)
+    : baseUrl;
+
+  const arViewUrl = `${displayBaseUrl}/ar/${product.slug || product._id}`;
 
   const handleOpenLink = () => {
     window.location.href = arViewUrl;
@@ -198,8 +222,8 @@ export default function ARViewModal({ isOpen, onClose, product }) {
             {hasCompatibleModel
               ? "Launch AR to see this furniture in your room"
               : deviceInfo.isIOS
-              ? "This product only has an Android AR model"
-              : "This product only has an iOS AR model"}
+                ? "This product only has an Android AR model"
+                : "This product only has an iOS AR model"}
           </p>
 
           {modelAvailability.hasAny && (

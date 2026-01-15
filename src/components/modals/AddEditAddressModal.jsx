@@ -178,7 +178,7 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
                         }))
                       }
                       className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all ${isSelected
-                        ? "border-teal-500 bg-teal-50 text-teal-700"
+                        ? "border-neutral-400 bg-teal-50 text-teal-700"
                         : "border-neutral-200 hover:border-neutral-300 text-neutral-600"
                         }`}
                     >
@@ -218,7 +218,7 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
                   <label
                     key={option.value}
                     className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 cursor-pointer transition-all ${formData.type === option.value
-                      ? "border-teal-500 bg-teal-50 text-teal-700"
+                      ? "border-neutral-400 bg-teal-50 text-teal-700"
                       : "border-neutral-200 hover:border-neutral-300 text-neutral-600"
                       }`}
                   >
