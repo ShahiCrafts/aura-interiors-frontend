@@ -171,7 +171,7 @@ export default function ReviewItem({ review, productId, onEdit, isOwner }) {
             </h4>
           )}
 
-          <p className="text-sm text-neutral-600 font-dm-sans leading-relaxed mb-3">
+          <p className="text-sm text-neutral-600 font-dm-sans leading-relaxed mb-3 break-words">
             {review.comment}
           </p>
 

@@ -271,7 +271,7 @@ export default function ProductDetailsPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-white pt-20 font-dm-sans pb-24 lg:pb-0">
+      <main className="min-h-screen bg-white pt-20 font-dm-sans pb-24 lg:pb-0 overflow-x-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm mb-6 overflow-x-auto pb-2">
@@ -434,7 +434,7 @@ export default function ProductDetailsPage() {
 
               {/* Description */}
               {product.description && (
-                <p className="text-neutral-600 font-dm-sans mb-6 leading-relaxed text-sm">
+                <p className="text-neutral-600 font-dm-sans mb-6 leading-relaxed text-sm break-words">
                   {product.description}
                 </p>
               )}
