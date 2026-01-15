@@ -142,9 +142,9 @@ const ChatWidget = () => {
 
       <button
         onClick={handleToggle}
-        className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-105 pointer-events-auto relative z-10 border ${isOpen
-          ? 'bg-white text-[#109383] border-stone-200'
-          : 'bg-[#109383] text-white border-teal-700/30'
+        className={`w-14 h-14 rounded-full items-center justify-center transition-all duration-300 hover:scale-105 pointer-events-auto relative z-10 border ${isOpen
+          ? 'hidden sm:flex bg-white text-[#109383] border-stone-200'
+          : 'flex bg-[#109383] text-white border-teal-700/30'
           }`}
       >
         {isOpen ? (
@@ -160,7 +160,7 @@ const ChatWidget = () => {
           </>
         )}
       </button>
-    </div>
+    </div >
   );
 };
 

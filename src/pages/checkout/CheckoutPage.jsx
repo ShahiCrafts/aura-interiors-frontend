@@ -343,7 +343,7 @@ export default function CheckoutPage() {
                         type="submit"
                         disabled={isSubmitting}
                         className={`${
-                          currentStep === 2 ? "sm:flex-[2]" : "w-full"
+                          currentStep === 2 ? "sm:flex-2" : "w-full"
                         } py-3 bg-teal-700 text-white font-semibold rounded-xl hover:bg-teal-800 transition-all duration-200 flex items-center justify-center gap-2 shadow-sm text-sm order-1 sm:order-2`}
                       >
                         {isSubmitting ? (
@@ -377,7 +377,7 @@ export default function CheckoutPage() {
                     const price = product.salePrice || product.price || 0;
                     return (
                       <div key={item._id} className="flex gap-3 sm:gap-4">
-                        <div className="w-16 h-16 sm:w-[72px] sm:h-[72px] rounded-lg overflow-hidden bg-neutral-100 flex-shrink-0">
+                        <div className="w-16 h-16 sm:w-[72px] sm:h-[72px] rounded-lg overflow-hidden bg-neutral-100 shrink-0">
                           <img
                             src={getImageUrl(product)}
                             alt={product.name}
@@ -391,7 +391,7 @@ export default function CheckoutPage() {
                             </h4>
                             <button
                               onClick={() => handleRemoveItem(item._id)}
-                              className="text-orange-400 hover:text-orange-500 transition-colors p-0.5 flex-shrink-0"
+                              className="text-orange-400 hover:text-orange-500 transition-colors p-0.5 shrink-0"
                             >
                               <Trash2 size={16} />
                             </button>
@@ -437,14 +437,14 @@ export default function CheckoutPage() {
                   {appliedPromo ? (
                     <div className="flex items-center justify-between p-3 bg-teal-50/50 border border-teal-100 rounded-lg">
                       <div className="flex items-center gap-2 overflow-hidden">
-                        <Tag className="w-4 h-4 text-teal-600 flex-shrink-0" />
+                        <Tag className="w-4 h-4 text-teal-600 shrink-0" />
                         <span className="text-xs sm:text-sm font-medium text-teal-700 truncate">
                           {appliedPromo.discount.code} applied
                         </span>
                       </div>
                       <button
                         onClick={handleRemovePromo}
-                        className="text-teal-600 hover:text-teal-700 text-xs sm:text-sm font-medium flex-shrink-0 ml-2"
+                        className="text-teal-600 hover:text-teal-700 text-xs sm:text-sm font-medium shrink-0 ml-2"
                       >
                         Remove
                       </button>
