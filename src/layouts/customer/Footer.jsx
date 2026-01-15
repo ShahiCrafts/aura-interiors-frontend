@@ -1,13 +1,22 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Instagram, Facebook, Twitter, Linkedin } from "lucide-react";
-import { useNewsletterSubscribe } from "../../hooks/newsletter/useNewsletterTan";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { newsletterSchema } from "../../utils/validationSchemas";
 
 export default function Footer() {
-  const [email, setEmail] = useState("");
   const sectionRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
 
   const { mutate: subscribe, isPending } = useNewsletterSubscribe();
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(newsletterSchema),
+    mode: "onTouched",
+  });
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -27,11 +36,14 @@ export default function Footer() {
     return () => observer.disconnect();
   }, []);
 
-  const handleSubscribe = (e) => {
-    e.preventDefault();
-    subscribe({ email, source: 'footer' }, {
+  const onSubmit = (data) => {
+    subscribe({ email: data.email, source: 'footer' }, {
       onSuccess: () => {
-        setEmail("");
+        reset();
+        toast.success("Subscribed successfully!");
+      },
+      onError: (err) => {
+        toast.error(err.response?.data?.message || "Failed to subscribe.");
       }
     });
   };
@@ -67,24 +79,27 @@ export default function Footer() {
           </p>
 
           <form
-            onSubmit={handleSubscribe}
-            className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center w-full max-w-xl"
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col items-center w-full max-w-xl gap-2"
           >
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              required
-              className="flex-1 w-full sm:w-auto bg-white border border-gray-300 rounded-full px-6 sm:px-8 py-3 sm:py-4 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-teal-700 transition-colors font-dm-sans"
-            />
-            <button
-              type="submit"
-              disabled={isPending}
-              className="w-full sm:w-auto bg-teal-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full hover:bg-teal-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300 whitespace-nowrap font-semibold"
-            >
-              {isPending ? 'Subscribing...' : 'Subscribe'}
-            </button>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center w-full">
+              <input
+                type="email"
+                {...register("email")}
+                placeholder="Enter your email"
+                className={`flex-1 w-full sm:w-auto bg-white border rounded-full px-6 sm:px-8 py-3 sm:py-4 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-teal-700 transition-colors font-dm-sans ${errors.email ? "border-red-500 focus:border-red-500" : "border-gray-300"}`}
+              />
+              <button
+                type="submit"
+                disabled={isPending}
+                className="w-full sm:w-auto bg-teal-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full hover:bg-teal-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300 whitespace-nowrap font-semibold"
+              >
+                {isPending ? 'Subscribing...' : 'Subscribe'}
+              </button>
+            </div>
+            {errors.email && (
+              <p className="text-xs text-red-500 self-start ml-4 font-dm-sans">{errors.email.message}</p>
+            )}
           </form>
         </div>
 

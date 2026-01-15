@@ -19,6 +19,9 @@ import {
 import Navbar from "../../layouts/customer/Navbar";
 import Footer from "../../layouts/customer/Footer";
 import { useSubmitContact } from "../../hooks/admin/useContactTan";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { contactSchema } from "../../utils/validationSchemas";
 
 const contactCategories = [
   {
@@ -49,39 +52,32 @@ const fadeInUp = {
 };
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    subject: "",
-    message: "",
-  });
-
   const { mutate: submitContact, isPending } = useSubmitContact();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: yupResolver(contactSchema),
+    mode: "onTouched",
+  });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    submitContact(formData, {
-      onSuccess: () => {
-        toast.success("Message sent successfully! We'll get back to you soon.");
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          subject: "",
-          message: "",
-        });
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      },
-      onError: (error) => {
-        toast.error(error.response?.data?.message || "Failed to send message.");
-      },
-    });
+  const onSubmit = (data) => {
+    submitContact(
+      { name: data.fullName, ...data }, // Mapping fullName to name as expected by API if needed, or adjust API to accept fullName
+      {
+        onSuccess: () => {
+          toast.success("Message sent successfully! We'll get back to you soon.");
+          reset();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        },
+        onError: (error) => {
+          toast.error(error.response?.data?.message || "Failed to send message.");
+        },
+      }
+    );
   };
 
   return (
@@ -145,7 +141,7 @@ export default function ContactPage() {
             <div className="max-w-lg mx-auto lg:mx-0 lg:mr-auto w-full bg-white p-6 sm:p-7 md:p-8 rounded-2xl shadow-sm border border-gray-100">
               <h2 className="text-2xl sm:text-3xl font-playfair font-light text-gray-950 mb-6 sm:mb-8 text-center lg:text-left">Send a Message</h2>
 
-              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-5">
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                   <div>
@@ -155,15 +151,14 @@ export default function ContactPage() {
                     <div className="relative">
                       <input
                         type="text"
-                        name="name"
-                        required
-                        minLength={3}
-                        value={formData.name}
-                        onChange={handleChange}
+                        {...register("fullName")}
                         placeholder="John Doe"
-                        className="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-gray-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-sm text-gray-900 placeholder:text-gray-400 bg-white"
+                        className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border focus:ring-1 outline-none transition-all font-dm-sans text-sm text-gray-900 placeholder:text-gray-400 bg-white ${errors.fullName ? "border-red-400 focus:border-red-500 focus:ring-red-500/20" : "border-gray-200 focus:border-teal-700 focus:ring-teal-700"}`}
                       />
                     </div>
+                    {errors.fullName && (
+                      <p className="text-xs text-red-500 mt-1 font-dm-sans">{errors.fullName.message}</p>
+                    )}
                   </div>
 
                   <div>
@@ -173,14 +168,14 @@ export default function ContactPage() {
                     <div className="relative">
                       <input
                         type="email"
-                        name="email"
-                        required
-                        value={formData.email}
-                        onChange={handleChange}
+                        {...register("email")}
                         placeholder="you@example.com"
-                        className="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-gray-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-sm text-gray-900 placeholder:text-gray-400 bg-white"
+                        className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border focus:ring-1 outline-none transition-all font-dm-sans text-sm text-gray-900 placeholder:text-gray-400 bg-white ${errors.email ? "border-red-400 focus:border-red-500 focus:ring-red-500/20" : "border-gray-200 focus:border-teal-700 focus:ring-teal-700"}`}
                       />
                     </div>
+                    {errors.email && (
+                      <p className="text-xs text-red-500 mt-1 font-dm-sans">{errors.email.message}</p>
+                    )}
                   </div>
                 </div>
 
@@ -192,9 +187,7 @@ export default function ContactPage() {
                     <div className="relative">
                       <input
                         type="tel"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
+                        {...register("phone")}
                         placeholder="+1 (555) 000-0000"
                         className="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-gray-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-sm text-gray-900 placeholder:text-gray-400 bg-white"
                       />
@@ -208,15 +201,14 @@ export default function ContactPage() {
                     <div className="relative">
                       <input
                         type="text"
-                        name="subject"
-                        required
-                        minLength={5}
-                        value={formData.subject}
-                        onChange={handleChange}
+                        {...register("subject")}
                         placeholder="Inquiry Topic"
-                        className="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-gray-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-sm text-gray-900 placeholder:text-gray-400 bg-white"
+                        className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border focus:ring-1 outline-none transition-all font-dm-sans text-sm text-gray-900 placeholder:text-gray-400 bg-white ${errors.subject ? "border-red-400 focus:border-red-500 focus:ring-red-500/20" : "border-gray-200 focus:border-teal-700 focus:ring-teal-700"}`}
                       />
                     </div>
+                    {errors.subject && (
+                      <p className="text-xs text-red-500 mt-1 font-dm-sans">{errors.subject.message}</p>
+                    )}
                   </div>
                 </div>
 
@@ -226,16 +218,15 @@ export default function ContactPage() {
                   </label>
                   <div className="relative">
                     <textarea
-                      name="message"
-                      required
-                      minLength={10}
+                      {...register("message")}
                       rows={4}
-                      value={formData.message}
-                      onChange={handleChange}
                       placeholder="How can we help you today?"
-                      className="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-gray-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-sm text-gray-900 placeholder:text-gray-400 resize-none bg-white"
+                      className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border focus:ring-1 outline-none transition-all font-dm-sans text-sm text-gray-900 placeholder:text-gray-400 resize-none bg-white ${errors.message ? "border-red-400 focus:border-red-500 focus:ring-red-500/20" : "border-gray-200 focus:border-teal-700 focus:ring-teal-700"}`}
                     />
                   </div>
+                  {errors.message && (
+                    <p className="text-xs text-red-500 mt-1 font-dm-sans">{errors.message.message}</p>
+                  )}
                 </div>
 
                 <button

@@ -1,8 +1,11 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { X, Home, Building2, Users, MapPin, Loader } from "lucide-react";
 import { toast } from "react-toastify";
 import { useCreateAddress, useUpdateAddress } from "../../hooks/profile/useAddressTan";
 import formatError from "../../utils/errorHandler";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { addressSchema } from "../../utils/validationSchemas";
 
 const labelOptions = [
   { value: "home", label: "Home", icon: Home },
@@ -19,31 +22,44 @@ const typeOptions = [
 export default function AddEditAddressModal({ isOpen, onClose, address }) {
   const isEditing = !!address;
 
-  const [formData, setFormData] = useState({
-    label: "home",
-    customLabel: "",
-    type: "delivery",
-    fullName: "",
-    phone: "",
-    addressLine1: "",
-    addressLine2: "",
-    city: "",
-    state: "",
-    postalCode: "",
-    country: "Nepal",
-    isDefault: false,
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(addressSchema),
+    mode: "onTouched",
+    defaultValues: {
+      label: "home",
+      customLabel: "",
+      type: "delivery",
+      fullName: "",
+      phone: "",
+      addressLine1: "",
+      addressLine2: "",
+      city: "",
+      state: "",
+      postalCode: "",
+      country: "Nepal",
+      isDefault: false,
+    },
   });
 
   const { mutate: createAddress, isPending: isCreating } = useCreateAddress();
   const { mutate: updateAddress, isPending: isUpdating } = useUpdateAddress();
 
   const isPending = isCreating || isUpdating;
+  const currentLabel = watch("label");
+  const currentType = watch("type");
 
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
       if (address) {
-        setFormData({
+        reset({
           label: address.label || "home",
           customLabel: address.customLabel || "",
           type: address.type || "delivery",
@@ -58,7 +74,7 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
           isDefault: address.isDefault || false,
         });
       } else {
-        setFormData({
+        reset({
           label: "home",
           customLabel: "",
           type: "delivery",
@@ -79,20 +95,10 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [isOpen, address]);
+  }, [isOpen, address, reset]);
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const payload = { ...formData };
+  const onSubmit = (data) => {
+    const payload = { ...data };
     if (payload.label !== "other") {
       payload.customLabel = "";
     }
@@ -158,7 +164,7 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-neutral-800 mb-2 font-dm-sans">
                 Address Label
@@ -166,17 +172,12 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
               <div className="grid grid-cols-4 gap-2">
                 {labelOptions.map((option) => {
                   const Icon = option.icon;
-                  const isSelected = formData.label === option.value;
+                  const isSelected = currentLabel === option.value;
                   return (
                     <button
                       key={option.value}
                       type="button"
-                      onClick={() =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          label: option.value,
-                        }))
-                      }
+                      onClick={() => setValue("label", option.value)}
                       className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all ${isSelected
                         ? "border-neutral-400 bg-teal-50 text-teal-700"
                         : "border-neutral-200 hover:border-neutral-300 text-neutral-600"
@@ -192,20 +193,20 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
               </div>
             </div>
 
-            {formData.label === "other" && (
+            {currentLabel === "other" && (
               <div>
                 <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
                   Custom Label <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
-                  name="customLabel"
-                  value={formData.customLabel}
-                  onChange={handleChange}
+                  {...register("customLabel")}
                   placeholder="e.g., Parents' Home"
-                  required
-                  className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
+                  className={`w-full px-4 py-2.5 rounded-lg border focus:ring-1 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400 ${errors.customLabel ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-neutral-200 focus:border-teal-700 focus:ring-teal-700"}`}
                 />
+                {errors.customLabel && (
+                  <p className="text-xs text-red-500 mt-1 font-dm-sans">{errors.customLabel.message}</p>
+                )}
               </div>
             )}
 
@@ -217,17 +218,15 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
                 {typeOptions.map((option) => (
                   <label
                     key={option.value}
-                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 cursor-pointer transition-all ${formData.type === option.value
+                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 cursor-pointer transition-all ${currentType === option.value
                       ? "border-neutral-400 bg-teal-50 text-teal-700"
                       : "border-neutral-200 hover:border-neutral-300 text-neutral-600"
                       }`}
                   >
                     <input
                       type="radio"
-                      name="type"
                       value={option.value}
-                      checked={formData.type === option.value}
-                      onChange={handleChange}
+                      {...register("type")}
                       className="sr-only"
                     />
                     <span className="text-sm font-medium font-dm-sans">
@@ -244,14 +243,13 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
               </label>
               <input
                 type="text"
-                name="fullName"
-                value={formData.fullName}
-                onChange={handleChange}
+                {...register("fullName")}
                 placeholder="John Doe"
-                required
-                minLength={3}
-                className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
+                className={`w-full px-4 py-2.5 rounded-lg border focus:ring-1 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400 ${errors.fullName ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-neutral-200 focus:border-teal-700 focus:ring-teal-700"}`}
               />
+              {errors.fullName && (
+                <p className="text-xs text-red-500 mt-1 font-dm-sans">{errors.fullName.message}</p>
+              )}
             </div>
 
             <div>
@@ -260,15 +258,13 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
               </label>
               <input
                 type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
+                {...register("phone")}
                 placeholder="+977 98XXXXXXXX"
-                required
-                minLength={7}
-                maxLength={15}
-                className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
+                className={`w-full px-4 py-2.5 rounded-lg border focus:ring-1 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400 ${errors.phone ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-neutral-200 focus:border-teal-700 focus:ring-teal-700"}`}
               />
+              {errors.phone && (
+                <p className="text-xs text-red-500 mt-1 font-dm-sans">{errors.phone.message}</p>
+              )}
             </div>
 
             <div>
@@ -277,14 +273,13 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
               </label>
               <input
                 type="text"
-                name="addressLine1"
-                value={formData.addressLine1}
-                onChange={handleChange}
+                {...register("addressLine1")}
                 placeholder="Street address, P.O. box"
-                required
-                minLength={3}
-                className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
+                className={`w-full px-4 py-2.5 rounded-lg border focus:ring-1 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400 ${errors.addressLine1 ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-neutral-200 focus:border-teal-700 focus:ring-teal-700"}`}
               />
+              {errors.addressLine1 && (
+                <p className="text-xs text-red-500 mt-1 font-dm-sans">{errors.addressLine1.message}</p>
+              )}
             </div>
 
             <div>
@@ -293,9 +288,7 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
               </label>
               <input
                 type="text"
-                name="addressLine2"
-                value={formData.addressLine2}
-                onChange={handleChange}
+                {...register("addressLine2")}
                 placeholder="Apartment, suite, unit, building, floor, etc."
                 className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
               />
@@ -308,14 +301,13 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
                 </label>
                 <input
                   type="text"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleChange}
+                  {...register("city")}
                   placeholder="Kathmandu"
-                  required
-                  minLength={2}
-                  className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
+                  className={`w-full px-4 py-2.5 rounded-lg border focus:ring-1 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400 ${errors.city ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-neutral-200 focus:border-teal-700 focus:ring-teal-700"}`}
                 />
+                {errors.city && (
+                  <p className="text-xs text-red-500 mt-1 font-dm-sans">{errors.city.message}</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
@@ -323,14 +315,13 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
                 </label>
                 <input
                   type="text"
-                  name="postalCode"
-                  value={formData.postalCode}
-                  onChange={handleChange}
+                  {...register("postalCode")}
                   placeholder="44600"
-                  required
-                  minLength={4}
-                  className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
+                  className={`w-full px-4 py-2.5 rounded-lg border focus:ring-1 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400 ${errors.postalCode ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-neutral-200 focus:border-teal-700 focus:ring-teal-700"}`}
                 />
+                {errors.postalCode && (
+                  <p className="text-xs text-red-500 mt-1 font-dm-sans">{errors.postalCode.message}</p>
+                )}
               </div>
             </div>
 
@@ -341,9 +332,7 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
                 </label>
                 <input
                   type="text"
-                  name="state"
-                  value={formData.state}
-                  onChange={handleChange}
+                  {...register("state")}
                   placeholder="Bagmati"
                   className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
                 />
@@ -354,22 +343,20 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
                 </label>
                 <input
                   type="text"
-                  name="country"
-                  value={formData.country}
-                  onChange={handleChange}
+                  {...register("country")}
                   placeholder="Nepal"
-                  required
-                  className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
+                  className={`w-full px-4 py-2.5 rounded-lg border focus:ring-1 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400 ${errors.country ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-neutral-200 focus:border-teal-700 focus:ring-teal-700"}`}
                 />
+                {errors.country && (
+                  <p className="text-xs text-red-500 mt-1 font-dm-sans">{errors.country.message}</p>
+                )}
               </div>
             </div>
 
             <div className="flex items-center gap-2">
               <input
                 type="checkbox"
-                name="isDefault"
-                checked={formData.isDefault}
-                onChange={handleChange}
+                {...register("isDefault")}
                 className="w-4 h-4 rounded border-neutral-300 accent-teal-700 cursor-pointer"
               />
               <label className="text-sm text-neutral-700 font-dm-sans cursor-pointer">

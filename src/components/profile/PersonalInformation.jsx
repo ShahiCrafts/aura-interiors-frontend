@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Upload, Trash2, Lock, Check, Camera, Loader } from "lucide-react";
 import { toast } from "react-toastify";
 import useAuthStore from "../../store/authStore";
@@ -11,6 +11,9 @@ import {
 import ChangePasswordModal from "../modals/ChangePasswordModal";
 import { getAvatarUrl } from "../../utils/imageUrl";
 import formatError from "../../utils/errorHandler";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { personalInfoSchema } from "../../utils/validationSchemas";
 
 const currentYear = new Date().getFullYear();
 
@@ -28,20 +31,31 @@ export default function PersonalInformation() {
 
   const user = data?.data?.user;
 
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    gender: "",
-    dateOfBirth: "",
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    formState: { errors, isDirty },
+  } = useForm({
+    resolver: yupResolver(personalInfoSchema),
+    mode: "onTouched",
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      gender: "",
+      dateOfBirth: "",
+    },
   });
 
-  const [hasChanges, setHasChanges] = useState(false);
+  const gender = watch("gender");
 
   useEffect(() => {
     if (user) {
-      setFormData({
+      reset({
         firstName: user.firstName || "",
         lastName: user.lastName || "",
         email: user.email || "",
@@ -50,25 +64,11 @@ export default function PersonalInformation() {
         dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : "",
       });
     }
-  }, [user]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    setHasChanges(true);
-  };
-
-  const handleGenderSelect = (gender) => {
-    setFormData((prev) => ({ ...prev, gender }));
-    setHasChanges(true);
-  };
+  }, [user, reset]);
 
   const handleCancel = () => {
     if (user) {
-      setFormData({
+      reset({
         firstName: user.firstName || "",
         lastName: user.lastName || "",
         email: user.email || "",
@@ -76,30 +76,26 @@ export default function PersonalInformation() {
         gender: user.gender || "",
         dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : "",
       });
-      setHasChanges(false);
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    let dateOfBirth = formData.dateOfBirth || null;
-
+  const onSubmit = (data) => {
     const updateData = {
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      phone: formData.phone,
-      gender: formData.gender || null,
-      dateOfBirth,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      phone: data.phone,
+      gender: data.gender || null,
+      dateOfBirth: data.dateOfBirth || null,
     };
 
     updateProfile(updateData, {
-      onSuccess: (data) => {
+      onSuccess: (resData) => {
         toast.success("Profile updated successfully");
-        setHasChanges(false);
-        if (data?.data?.user) {
+        // Reset form with new values to clear isDirty
+        reset(data);
+        if (resData?.data?.user) {
           const token = localStorage.getItem("token");
-          signIn(data.data.user, token);
+          signIn(resData.data.user, token);
         }
       },
       onError: (err) => {
@@ -264,7 +260,7 @@ export default function PersonalInformation() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {/* First Name & Last Name */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -273,13 +269,12 @@ export default function PersonalInformation() {
               </label>
               <input
                 type="text"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                required
-                minLength={2}
-                className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900"
+                {...register("firstName")}
+                className={`w-full px-4 py-2.5 rounded-lg border focus:ring-1 outline-none transition-all font-dm-sans text-neutral-900 ${errors.firstName ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-neutral-200 focus:border-teal-700 focus:ring-teal-700"}`}
               />
+              {errors.firstName && (
+                <p className="text-xs text-red-500 mt-1 font-dm-sans">{errors.firstName.message}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
@@ -287,13 +282,12 @@ export default function PersonalInformation() {
               </label>
               <input
                 type="text"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                required
-                minLength={2}
-                className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900"
+                {...register("lastName")}
+                className={`w-full px-4 py-2.5 rounded-lg border focus:ring-1 outline-none transition-all font-dm-sans text-neutral-900 ${errors.lastName ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-neutral-200 focus:border-teal-700 focus:ring-teal-700"}`}
               />
+              {errors.lastName && (
+                <p className="text-xs text-red-500 mt-1 font-dm-sans">{errors.lastName.message}</p>
+              )}
             </div>
           </div>
 
@@ -305,8 +299,7 @@ export default function PersonalInformation() {
               <div className="relative">
                 <input
                   type="email"
-                  name="email"
-                  value={formData.email}
+                  {...register("email")}
                   disabled
                   className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 bg-neutral-50 text-neutral-500 font-dm-sans cursor-not-allowed"
                 />
@@ -337,15 +330,14 @@ export default function PersonalInformation() {
                 </select>
                 <input
                   type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
+                  {...register("phone")}
                   placeholder="98XXXXXXXX"
-                  minLength={7}
-                  maxLength={15}
-                  className="flex-1 px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900"
+                  className={`flex-1 px-4 py-2.5 rounded-lg border focus:ring-1 outline-none transition-all font-dm-sans text-neutral-900 ${errors.phone ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-neutral-200 focus:border-teal-700 focus:ring-teal-700"}`}
                 />
               </div>
+              {errors.phone && (
+                <p className="text-xs text-red-500 mt-1 font-dm-sans">{errors.phone.message}</p>
+              )}
             </div>
           </div>
 
@@ -355,20 +347,23 @@ export default function PersonalInformation() {
                 Gender
               </label>
               <div className="flex flex-wrap gap-2">
-                {["male", "female", "other"].map((gender) => (
+                {["male", "female", "other"].map((option) => (
                   <button
-                    key={gender}
+                    key={option}
                     type="button"
-                    onClick={() => handleGenderSelect(gender)}
-                    className={`px-4 py-2.5 rounded-lg border-2 text-sm font-medium transition-all font-dm-sans capitalize flex-1 sm:flex-none min-w-[80px] ${formData.gender === gender
+                    onClick={() => setValue("gender", option, { shouldDirty: true })}
+                    className={`px-4 py-2.5 rounded-lg border-2 text-sm font-medium transition-all font-dm-sans capitalize flex-1 sm:flex-none min-w-[80px] ${gender === option
                       ? "border-teal-500 bg-teal-50 text-teal-700"
                       : "border-neutral-200 text-neutral-600 hover:border-neutral-300"
                       }`}
                   >
-                    {gender}
+                    {option}
                   </button>
                 ))}
               </div>
+              {errors.gender && (
+                <p className="text-xs text-red-500 mt-1 font-dm-sans">{errors.gender.message}</p>
+              )}
             </div>
 
             <div>
@@ -377,12 +372,13 @@ export default function PersonalInformation() {
               </label>
               <input
                 type="date"
-                name="dateOfBirth"
-                value={formData.dateOfBirth}
-                onChange={handleChange}
+                {...register("dateOfBirth")}
                 max={new Date().toISOString().split('T')[0]}
-                className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 bg-white"
+                className={`w-full px-4 py-2.5 rounded-lg border focus:ring-1 outline-none transition-all font-dm-sans text-neutral-900 bg-white ${errors.dateOfBirth ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-neutral-200 focus:border-teal-700 focus:ring-teal-700"}`}
               />
+              {errors.dateOfBirth && (
+                <p className="text-xs text-red-500 mt-1 font-dm-sans">{errors.dateOfBirth.message}</p>
+              )}
             </div>
           </div>
 
@@ -390,14 +386,14 @@ export default function PersonalInformation() {
             <button
               type="button"
               onClick={handleCancel}
-              disabled={!hasChanges}
+              disabled={!isDirty}
               className="w-full sm:w-auto px-6 py-3 sm:py-2.5 border border-neutral-200 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed text-neutral-700 font-semibold rounded-lg transition-all font-dm-sans"
             >
               Cancel
             </button>
             <button
               type="submit"
-              disabled={isUpdating || !hasChanges}
+              disabled={isUpdating || !isDirty}
               className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 sm:py-2.5 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all font-dm-sans"
             >
               {isUpdating ? (

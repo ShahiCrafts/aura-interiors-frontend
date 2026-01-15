@@ -27,12 +27,6 @@ export const signupSchema = yup.object().shape({
     firstName: yup.string().required("First name is required").min(2, "Minimum 2 characters"),
     lastName: yup.string().required("Last name is required").min(2, "Minimum 2 characters"),
     email: yup.string().email("Invalid email format").required("Email is required"),
-    phone: yup
-        .string()
-        .required("Phone number is required")
-        .matches(phoneRegExp, "Phone number is not valid")
-        .min(7, "Minimum 7 digits")
-        .max(15, "Maximum 15 digits"),
     password: yup.string().required("Password is required").min(6, "Password must be at least 6 characters"),
 });
 
@@ -45,7 +39,9 @@ export const addressSchema = yup.object().shape({
         .min(7, "Minimum 7 digits")
         .max(15, "Maximum 15 digits"),
     addressLine1: yup.string().required("Street address is required").min(3, "Too short"),
+    addressLine2: yup.string().nullable(),
     city: yup.string().required("City is required").min(2, "Too short"),
+    state: yup.string().nullable(),
     postalCode: yup.string().required("Postal code is required").min(4, "Too short"),
     country: yup.string().required("Country is required").min(2, "Too short"),
     label: yup.string().required(),
@@ -54,6 +50,8 @@ export const addressSchema = yup.object().shape({
         then: (schema) => schema.required("Custom label is required"),
         otherwise: (schema) => schema.notRequired(),
     }),
+    type: yup.string().oneOf(["delivery", "billing"]).required("Address type is required"),
+    isDefault: yup.boolean(),
 });
 
 export const personalInfoSchema = yup.object().shape({
@@ -96,10 +94,18 @@ export const changePasswordSchema = yup.object().shape({
 });
 
 export const trackOrderSchema = yup.object().shape({
-    orderId: yup.string().required("Order ID is required"),
-    email: yup.string().email("Invalid email").required("Email is required"),
+    orderId: yup.string().trim().required("Order ID is required"),
+    email: yup.string().email("Invalid email").trim().required("Email is required"),
 });
 
 export const newsletterSchema = yup.object().shape({
     email: yup.string().email("Invalid email address").required("Email is required"),
+});
+
+export const resetPasswordSchema = yup.object().shape({
+    password: yup.string().required("Password is required").min(8, "Minimum 8 characters"),
+    confirmPassword: yup
+        .string()
+        .required("Confirm password is required")
+        .oneOf([yup.ref("password"), null], "Passwords must match"),
 });

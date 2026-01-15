@@ -17,6 +17,9 @@ import Footer from "../../layouts/customer/Footer";
 import { useTrackOrder } from "../../hooks/order/useOrderTan";
 import OrderTrackingTimeline from "../../components/profile/OrderTrackingTimeline";
 import { getImageUrl as getImageUrlUtil } from "../../utils/imageUrl";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { trackOrderSchema } from "../../utils/validationSchemas";
 
 const STATUS_COLORS = {
   pending: "bg-amber-50 text-amber-600 border-amber-200",
@@ -41,45 +44,57 @@ export default function TrackOrderPage() {
   const initialOrderId = searchParams.get("orderId") || "";
   const initialEmail = searchParams.get("email") || "";
 
-  const [orderId, setOrderId] = useState(initialOrderId);
-  const [email, setEmail] = useState(initialEmail);
   const [order, setOrder] = useState(null);
-  const [error, setError] = useState("");
+  const [apiError, setApiError] = useState("");
 
   const trackOrderMutation = useTrackOrder();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = useForm({
+    resolver: yupResolver(trackOrderSchema),
+    mode: "onTouched",
+    defaultValues: {
+      orderId: initialOrderId,
+      email: initialEmail,
+    },
+  });
 
   // Auto-track if params are provided
   useEffect(() => {
     if (initialOrderId && initialEmail) {
-      handleTrackOrder();
+      setValue("orderId", initialOrderId);
+      setValue("email", initialEmail);
+      handleTrackOrder({ orderId: initialOrderId, email: initialEmail });
     }
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleTrackOrder = (e) => {
-    e?.preventDefault();
-    setError("");
-
-    if (!orderId.trim() || !email.trim()) {
-      setError("Please enter both Order ID and Email");
-      return;
-    }
+  const handleTrackOrder = (data) => {
+    setApiError("");
 
     trackOrderMutation.mutate(
-      { orderId: orderId.trim(), email: email.trim() },
+      { orderId: data.orderId.trim(), email: data.email.trim() },
       {
         onSuccess: (data) => {
           setOrder(data.data.order);
-          setError("");
+          setApiError("");
         },
         onError: (err) => {
           setOrder(null);
-          setError(
+          setApiError(
             err.response?.data?.message ||
             "Order not found. Please check your order ID and email."
           );
         },
       }
     );
+  };
+
+  const onSubmit = (data) => {
+    handleTrackOrder(data);
   };
 
   const formatDate = (dateString) => {
@@ -129,7 +144,7 @@ export default function TrackOrderPage() {
 
           {/* Search Form */}
           <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6 sm:p-8 mb-8">
-            <form onSubmit={handleTrackOrder} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-neutral-700 mb-2 font-dm-sans">
@@ -142,13 +157,17 @@ export default function TrackOrderPage() {
                     />
                     <input
                       type="text"
-                      required
                       placeholder="e.g., AU1234567890"
-                      value={orderId}
-                      onChange={(e) => setOrderId(e.target.value.toUpperCase())}
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-neutral-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all font-dm-sans"
+                      {...register("orderId")}
+                      className={`w-full pl-10 pr-4 py-3 rounded-xl border appearance-none outline-none transition-all font-dm-sans ${errors.orderId ? "border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20" : "border-neutral-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"}`}
+                      onChange={(e) => {
+                        setValue("orderId", e.target.value.toUpperCase());
+                      }}
                     />
                   </div>
+                  {errors.orderId && (
+                    <p className="text-xs text-red-500 mt-1 font-dm-sans">{errors.orderId.message}</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-neutral-700 mb-2 font-dm-sans">
@@ -161,20 +180,22 @@ export default function TrackOrderPage() {
                     />
                     <input
                       type="email"
-                      required
                       placeholder="Enter your email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-neutral-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all font-dm-sans"
+                      {...register("email")}
+                      className={`w-full pl-10 pr-4 py-3 rounded-xl border appearance-none outline-none transition-all font-dm-sans ${errors.email ? "border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20" : "border-neutral-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"}`}
                     />
                   </div>
+                  {errors.email && (
+                    <p className="text-xs text-red-500 mt-1 font-dm-sans">{errors.email.message}</p>
+                  )}
                 </div>
               </div>
 
-              {error && (
+              {/* Status Global Error */}
+              {apiError && (
                 <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600">
                   <AlertCircle size={18} />
-                  <span className="text-sm font-dm-sans">{error}</span>
+                  <span className="text-sm font-dm-sans">{apiError}</span>
                 </div>
               )}
 
