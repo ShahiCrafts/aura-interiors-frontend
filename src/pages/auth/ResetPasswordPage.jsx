@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Lock, Eye, EyeOff, Check, AlertCircle, Loader } from "lucide-react";
+import {
+  Lock,
+  Eye,
+  EyeOff,
+  Check,
+  AlertCircle,
+  Loader,
+  ShieldCheck,
+} from "lucide-react";
 import { toast } from "react-toastify";
 import { useResetPassword } from "../../hooks/auth/usePasswordTan";
 import { useForm } from "react-hook-form";
@@ -26,10 +34,30 @@ export default function ResetPasswordPage() {
     mode: "onTouched",
   });
 
-  const password = watch("password");
-  const confirmPassword = watch("confirmPassword");
+  const password = watch("password", "");
+  const confirmPassword = watch("confirmPassword", "");
 
-  const passwordsMatch = password && confirmPassword && password === confirmPassword;
+  // Password strength logic
+  const getPasswordStrength = (pass) => {
+    if (!pass) return { level: 0, text: "", color: "text-gray-400" };
+    let strength = 0;
+    if (pass.length >= 8) strength++;
+    if (/[a-z]/.test(pass) && /[A-Z]/.test(pass)) strength++;
+    if (/\d/.test(pass)) strength++;
+    if (/[^a-zA-Z0-9]/.test(pass)) strength++;
+
+    if (strength <= 1)
+      return { level: 1, text: "Weak password", color: "text-red-500" };
+    if (strength === 2)
+      return { level: 2, text: "Fair password", color: "text-amber-500" };
+    if (strength === 3)
+      return { level: 3, text: "Good password", color: "text-blue-500" };
+    return { level: 4, text: "Strong password", color: "text-teal-600" };
+  };
+
+  const strength = getPasswordStrength(password);
+  const passwordsMatch =
+    password && confirmPassword && password === confirmPassword;
 
   const onSubmit = (data) => {
     if (!token) {
@@ -53,6 +81,7 @@ export default function ResetPasswordPage() {
     );
   };
 
+  // Error State UI (If token is missing)
   if (!token) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-zinc-50 font-dm-sans">
@@ -78,121 +107,148 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-zinc-50 p-4">
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-zinc-50 p-4 font-dm-sans">
+      <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden p-8 border border-white">
         {/* Header */}
-        <div className="bg-teal-900 px-8 py-10 text-center relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
-          <div className="relative z-10">
-            <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-4 text-white shadow-lg">
-              <Lock size={32} />
-            </div>
-            <h2 className="text-3xl font-bold text-white mb-2 font-playfair">
-              Reset Password
+        <div className="flex items-start gap-4 mb-8">
+          <div className="w-12 h-12 rounded-xl border border-teal-100 bg-teal-50/50 flex items-center justify-center text-teal-700 shrink-0">
+            <Lock size={24} strokeWidth={1.5} />
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-neutral-900 font-playfair">
+              Reset <span className="text-teal-700 italic">Password</span>
             </h2>
-            <p className="text-teal-100 font-dm-sans">
-              Create a strong password for your account
+            <p className="text-neutral-500 text-sm font-dm-sans mt-1">
+              Create a new secure password
             </p>
           </div>
         </div>
 
-        <div className="p-8">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* New Password */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2 font-dm-sans">
-                New Password
-              </label>
-              <div className="relative group">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  {...register("password")}
-                  className={`w-full pl-5 pr-12 py-3.5 rounded-xl border bg-gray-50 focus:bg-white outline-none transition-all font-dm-sans placeholder:text-gray-400 ${errors.password
-                      ? "border-red-300 focus:border-red-500 focus:ring-4 focus:ring-red-500/10"
-                      : "border-gray-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
-                    }`}
-                  placeholder="At least 8 characters"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors bg-transparent p-1 rounded-full hover:bg-gray-100"
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
-              {errors.password && (
-                <p className="text-sm text-red-500 mt-1.5 font-dm-sans flex items-center gap-1.5">
-                  <AlertCircle size={14} />
-                  {errors.password.message}
-                </p>
-              )}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          {/* New Password */}
+          <div>
+            <label className="block text-sm font-bold text-neutral-800 mb-2 font-dm-sans">
+              New Password <span className="text-red-500">*</span>
+            </label>
+            <div className="relative group">
+              <input
+                type={showPassword ? "text" : "password"}
+                {...register("password")}
+                className={`w-full px-4 py-3.5 rounded-xl border focus:ring-1 outline-none font-dm-sans text-neutral-900 placeholder:text-neutral-400 bg-white ${errors.password
+                  ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
+                  : "border-neutral-200 focus:border-teal-700 focus:ring-teal-700"
+                  }`}
+                placeholder="Minimum 8 characters"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
             </div>
 
-            {/* Confirm Password */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2 font-dm-sans">
-                Confirm Password
-              </label>
-              <div className="relative group">
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  {...register("confirmPassword")}
-                  className={`w-full pl-5 pr-12 py-3.5 rounded-xl border bg-gray-50 focus:bg-white outline-none transition-all font-dm-sans placeholder:text-gray-400 ${errors.confirmPassword
-                      ? "border-red-300 focus:border-red-500 focus:ring-4 focus:ring-red-500/10"
-                      : "border-gray-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
-                    }`}
-                  placeholder="Re-enter your password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors bg-transparent p-1 rounded-full hover:bg-gray-100"
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff size={20} />
-                  ) : (
-                    <Eye size={20} />
-                  )}
-                </button>
-              </div>
-
-              {/* Password Match Indicator */}
-              {confirmPassword && !errors.confirmPassword && (
-                <div className="flex items-center gap-1.5 mt-2 animate-in fade-in slide-in-from-top-1">
-                  <Check size={14} className="text-teal-600" />
-                  <span className="text-xs font-medium text-teal-600 font-dm-sans">
-                    Passwords match
-                  </span>
+            {/* Password Strength Indicator */}
+            {password && !errors.password && (
+              <div className="mt-2 flex items-center justify-between text-xs font-dm-sans">
+                <div className="flex gap-1 h-1 flex-1 mr-4">
+                  {[1, 2, 3, 4].map((level) => (
+                    <div
+                      key={level}
+                      className={`flex-1 rounded-full ${level <= strength.level
+                        ? strength.color.replace("text-", "bg-")
+                        : "bg-neutral-100"
+                        }`}
+                    />
+                  ))}
                 </div>
-              )}
+                <span className={`font-medium ${strength.color}`}>
+                  {strength.text}
+                </span>
+              </div>
+            )}
 
-              {errors.confirmPassword && (
-                <p className="text-sm text-red-500 mt-1.5 font-dm-sans flex items-center gap-1.5">
-                  <AlertCircle size={14} />
-                  {errors.confirmPassword.message}
-                </p>
-              )}
+            {errors.password && (
+              <p className="text-xs text-red-500 mt-1 font-dm-sans flex items-center gap-1.5">
+                <AlertCircle size={14} />
+                {errors.password.message}
+              </p>
+            )}
+          </div>
+
+          {/* Confirm Password */}
+          <div>
+            <label className="block text-sm font-bold text-neutral-800 mb-2 font-dm-sans">
+              Confirm New Password <span className="text-red-500">*</span>
+            </label>
+            <div className="relative group">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                {...register("confirmPassword")}
+                className={`w-full px-4 py-3.5 rounded-xl border focus:ring-1 outline-none font-dm-sans text-neutral-900 placeholder:text-neutral-400 bg-white ${errors.confirmPassword
+                  ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
+                  : "border-neutral-200 focus:border-teal-700 focus:ring-teal-700"
+                  }`}
+                placeholder="Re-enter new password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors"
+              >
+                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
             </div>
 
-            <button
-              type="submit"
-              disabled={isPending}
-              className="w-full py-4 bg-teal-800 hover:bg-teal-900 text-white font-bold rounded-xl shadow-lg shadow-teal-900/20 disabled:opacity-70 disabled:cursor-not-allowed transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 font-dm-sans mt-4"
-            >
-              {isPending ? (
-                <Loader className="animate-spin" size={20} />
-              ) : (
-                "Reset Password"
-              )}
-            </button>
-          </form>
+            {/* Match Indicator */}
+            {confirmPassword && !errors.confirmPassword && (
+              <div className="flex items-center gap-1.5 mt-2">
+                {passwordsMatch ? (
+                  <>
+                    <Check size={14} className="text-teal-600" />
+                    <span className="text-xs font-medium text-teal-600 font-dm-sans">
+                      Passwords match
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <AlertCircle size={14} className="text-red-500" />
+                    <span className="text-xs font-medium text-red-500 font-dm-sans">
+                      Passwords do not match
+                    </span>
+                  </>
+                )}
+              </div>
+            )}
 
-          <p className="text-center mt-8 text-gray-500 font-dm-sans text-sm">
+            {errors.confirmPassword && (
+              <p className="text-xs text-red-500 mt-1 font-dm-sans flex items-center gap-1.5">
+                <AlertCircle size={14} />
+                {errors.confirmPassword.message}
+              </p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            disabled={isPending}
+            className="w-full py-3.5 bg-teal-700 hover:bg-teal-800 text-white font-bold rounded-xl disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-dm-sans"
+          >
+            {isPending ? (
+              <Loader className="animate-spin" size={20} />
+            ) : (
+              "Reset Password"
+            )}
+          </button>
+        </form>
+
+        <div className="mt-8 pt-6 border-t border-neutral-100 text-center">
+          <p className="text-neutral-500 font-dm-sans text-sm">
             Remember your password?{" "}
             <Link
               to="/"
-              className="text-teal-700 font-bold hover:text-teal-800 transition-colors"
+              className="text-teal-700 font-semibold hover:text-teal-800 transition-colors hover:underline"
             >
               Back to Login
             </Link>

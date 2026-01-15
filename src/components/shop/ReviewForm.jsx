@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Star, Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
-import { useSubmitReview } from "../../hooks/order/useReviewTan";
+import { useCreateReview, useUpdateReview } from "../../hooks/review/useReviewTan";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { reviewSchema } from "../../utils/validationSchemas";
@@ -35,7 +35,10 @@ export default function ReviewForm({
   const title = watch("title", "");
   const comment = watch("comment", "");
 
-  const { mutate: submitReview, isPending } = useSubmitReview();
+  const { mutate: createReview, isPending: isCreating } = useCreateReview();
+  const { mutate: updateReview, isPending: isUpdating } = useUpdateReview();
+
+  const isPending = isCreating || isUpdating;
   const isEditing = !!existingReview;
 
   const handleStarClick = (star) => {
@@ -43,23 +46,27 @@ export default function ReviewForm({
   };
 
   const onSubmit = (data) => {
-    submitReview(
-      {
-        productId,
-        rating: data.rating,
-        title: data.title,
-        comment: data.comment,
+    const payload = {
+      rating: data.rating,
+      title: data.title,
+      comment: data.comment,
+    };
+
+    const options = {
+      onSuccess: () => {
+        toast.success(isEditing ? "Review updated successfully" : "Review submitted successfully");
+        if (onReviewSubmitted) onReviewSubmitted();
       },
-      {
-        onSuccess: () => {
-          toast.success("Review submitted successfully");
-          if (onReviewSubmitted) onReviewSubmitted();
-        },
-        onError: (err) => {
-          toast.error(err.response?.data?.message || "Failed to submit review");
-        },
-      }
-    );
+      onError: (err) => {
+        toast.error(err.response?.data?.message || "Failed to submit review");
+      },
+    };
+
+    if (isEditing) {
+      updateReview({ productId, reviewId: existingReview._id, data: payload }, options);
+    } else {
+      createReview({ productId, data: payload }, options);
+    }
   };
 
   return (
@@ -86,8 +93,8 @@ export default function ReviewForm({
                 <Star
                   size={28}
                   className={`${star <= (hoveredRating || rating)
-                      ? "fill-amber-400 text-amber-400"
-                      : "text-neutral-300"
+                    ? "fill-amber-400 text-amber-400"
+                    : "text-neutral-300"
                     } transition-colors`}
                 />
               </button>

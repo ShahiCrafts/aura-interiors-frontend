@@ -1,6 +1,9 @@
+import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { newsletterSchema } from "../../utils/validationSchemas";
+import { Facebook, Instagram, Twitter, Linkedin } from "lucide-react";
+import { useNewsletterSubscribe } from "../../hooks/newsletter/useNewsletterTan";
 
 export default function Footer() {
   const sectionRef = useRef(null);
@@ -40,11 +43,7 @@ export default function Footer() {
     subscribe({ email: data.email, source: 'footer' }, {
       onSuccess: () => {
         reset();
-        toast.success("Subscribed successfully!");
       },
-      onError: (err) => {
-        toast.error(err.response?.data?.message || "Failed to subscribe.");
-      }
     });
   };
 
