@@ -5,22 +5,36 @@ import { toast } from "react-toastify";
 import useAuthStore from "../../store/authStore";
 import { useSignup } from "../../hooks/auth/useSignupTan";
 import EmailVerificationModal from "./EmailVerificationModal";
-import formatError from "../../utils/errorHandler";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { signupSchema } from "../../utils/validationSchemas";
 
 export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    agreeToTerms: false,
-  });
   const [showPassword, setShowPassword] = useState(false);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [signupData, setSignupData] = useState(null);
 
   const { signIn } = useAuthStore();
   const { mutate: signup, isPending, isError, error } = useSignup();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm({
+    resolver: yupResolver(signupSchema),
+    mode: "onTouched",
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      agreeToTerms: false,
+    }
+  });
+
+  const email = watch("email");
 
   useEffect(() => {
     if (isOpen) {
@@ -33,17 +47,8 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
     };
   }, [isOpen]);
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const { firstName, lastName, email, password } = formData;
+  const onSubmit = (data) => {
+    const { firstName, lastName, email, password } = data;
     signup(
       { firstName, lastName, email, password },
       {
@@ -79,7 +84,7 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
       <EmailVerificationModal
         isOpen={showVerificationModal}
         onClose={() => setShowVerificationModal(false)}
-        email={formData.email}
+        email={email}
         onSuccess={handleVerificationSuccess}
       />
     );
@@ -116,7 +121,7 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
@@ -124,13 +129,14 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
                 </label>
                 <input
                   type="text"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleChange}
+                  {...register("firstName")}
                   placeholder="Saugat"
-                  required
-                  className="w-full px-4 py-2 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
+                  className={`w-full px-4 py-2 rounded-lg border focus:ring-1 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400 ${errors.firstName ? "border-red-400 focus:border-red-500 focus:ring-red-500/20" : "border-neutral-200 focus:border-teal-700 focus:ring-teal-700"
+                    }`}
                 />
+                {errors.firstName && (
+                  <p className="text-xs text-red-500 mt-1 font-dm-sans">{errors.firstName.message}</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
@@ -138,13 +144,14 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
                 </label>
                 <input
                   type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleChange}
+                  {...register("lastName")}
                   placeholder="Shahi"
-                  required
-                  className="w-full px-4 py-2 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
+                  className={`w-full px-4 py-2 rounded-lg border focus:ring-1 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400 ${errors.lastName ? "border-red-400 focus:border-red-500 focus:ring-red-500/20" : "border-neutral-200 focus:border-teal-700 focus:ring-teal-700"
+                    }`}
                 />
+                {errors.lastName && (
+                  <p className="text-xs text-red-500 mt-1 font-dm-sans">{errors.lastName.message}</p>
+                )}
               </div>
             </div>
 
@@ -159,14 +166,15 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
                 />
                 <input
                   type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
+                  {...register("email")}
                   placeholder="you@example.com"
-                  required
-                  className="w-full pl-11 pr-4 py-2 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
+                  className={`w-full pl-11 pr-4 py-2 rounded-lg border focus:ring-1 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400 ${errors.email ? "border-red-400 focus:border-red-500 focus:ring-red-500/20" : "border-neutral-200 focus:border-teal-700 focus:ring-teal-700"
+                    }`}
                 />
               </div>
+              {errors.email && (
+                <p className="text-xs text-red-500 mt-1 font-dm-sans">{errors.email.message}</p>
+              )}
             </div>
 
             <div>
@@ -180,12 +188,10 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
                 />
                 <input
                   type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
+                  {...register("password")}
                   placeholder="Enter your password"
-                  required
-                  className="w-full pl-11 pr-11 py-2 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
+                  className={`w-full pl-11 pr-11 py-2 rounded-lg border focus:ring-1 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400 ${errors.password ? "border-red-400 focus:border-red-500 focus:ring-red-500/20" : "border-neutral-200 focus:border-teal-700 focus:ring-teal-700"
+                    }`}
                 />
                 <button
                   type="button"
@@ -195,15 +201,15 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
+              {errors.password && (
+                <p className="text-xs text-red-500 mt-1 font-dm-sans">{errors.password.message}</p>
+              )}
             </div>
 
             <div className="flex items-start gap-3">
               <input
                 type="checkbox"
-                name="agreeToTerms"
-                checked={formData.agreeToTerms}
-                onChange={handleChange}
-                required
+                {...register("agreeToTerms")}
                 className="w-5 h-5 mt-0.5 rounded border-neutral-300 accent-teal-700 focus:ring-teal-700 cursor-pointer"
               />
               <label className="text-sm text-neutral-700 font-dm-sans leading-relaxed">

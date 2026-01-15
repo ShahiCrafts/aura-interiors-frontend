@@ -12,24 +12,7 @@ import ChangePasswordModal from "../modals/ChangePasswordModal";
 import { getAvatarUrl } from "../../utils/imageUrl";
 import formatError from "../../utils/errorHandler";
 
-const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-
-const days = Array.from({ length: 31 }, (_, i) => i + 1);
 const currentYear = new Date().getFullYear();
-const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
 
 export default function PersonalInformation() {
   const fileInputRef = useRef(null);
@@ -51,25 +34,20 @@ export default function PersonalInformation() {
     email: "",
     phone: "",
     gender: "",
-    dobDay: "",
-    dobMonth: "",
-    dobYear: "",
+    dateOfBirth: "",
   });
 
   const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
     if (user) {
-      const dob = user.dateOfBirth ? new Date(user.dateOfBirth) : null;
       setFormData({
         firstName: user.firstName || "",
         lastName: user.lastName || "",
         email: user.email || "",
         phone: user.phone || "",
         gender: user.gender || "",
-        dobDay: dob ? dob.getDate().toString() : "",
-        dobMonth: dob ? months[dob.getMonth()] : "",
-        dobYear: dob ? dob.getFullYear().toString() : "",
+        dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : "",
       });
     }
   }, [user]);
@@ -90,16 +68,13 @@ export default function PersonalInformation() {
 
   const handleCancel = () => {
     if (user) {
-      const dob = user.dateOfBirth ? new Date(user.dateOfBirth) : null;
       setFormData({
         firstName: user.firstName || "",
         lastName: user.lastName || "",
         email: user.email || "",
         phone: user.phone || "",
         gender: user.gender || "",
-        dobDay: dob ? dob.getDate().toString() : "",
-        dobMonth: dob ? months[dob.getMonth()] : "",
-        dobYear: dob ? dob.getFullYear().toString() : "",
+        dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : "",
       });
       setHasChanges(false);
     }
@@ -108,15 +83,7 @@ export default function PersonalInformation() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    let dateOfBirth = null;
-    if (formData.dobDay && formData.dobMonth && formData.dobYear) {
-      const monthIndex = months.indexOf(formData.dobMonth);
-      dateOfBirth = new Date(
-        parseInt(formData.dobYear),
-        monthIndex,
-        parseInt(formData.dobDay)
-      ).toISOString();
-    }
+    let dateOfBirth = formData.dateOfBirth || null;
 
     const updateData = {
       firstName: formData.firstName,
@@ -220,30 +187,30 @@ export default function PersonalInformation() {
           </p>
         </div>
 
-        <div className="flex items-center gap-6">
-          <div className="relative">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+          <div className="relative shrink-0">
             {user?.avatar ? (
               <img
                 src={getUserAvatar()}
                 alt="Profile"
-                className="w-20 h-20 rounded-2xl object-cover"
+                className="w-24 h-24 rounded-2xl object-cover"
               />
             ) : (
-              <div className="w-20 h-20 rounded-2xl bg-teal-700 flex items-center justify-center text-white text-2xl font-semibold font-dm-sans">
+              <div className="w-24 h-24 rounded-2xl bg-teal-700 flex items-center justify-center text-white text-3xl font-semibold font-dm-sans">
                 {getInitials(user?.firstName, user?.lastName)}
               </div>
             )}
           </div>
 
-          <div className="flex-1">
+          <div className="flex-1 text-center sm:text-left">
             <p className="font-medium text-neutral-800 font-dm-sans mb-1">
               Upload a new photo
             </p>
-            <p className="text-sm text-neutral-500 font-dm-sans mb-3">
+            <p className="text-sm text-neutral-500 font-dm-sans mb-4">
               Recommended: Square image, at least 400x400 pixels. Max file size:
               5MB
             </p>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
               <input
                 type="file"
                 ref={fileInputRef}
@@ -254,7 +221,7 @@ export default function PersonalInformation() {
               <button
                 onClick={handleAvatarClick}
                 disabled={isUploadingAvatar}
-                className="flex items-center gap-2 px-4 py-2 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 text-white text-sm font-semibold rounded-lg transition-all font-dm-sans"
+                className="flex items-center gap-2 px-4 py-2.5 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 text-white text-sm font-semibold rounded-lg transition-all font-dm-sans"
               >
                 {isUploadingAvatar ? (
                   <Loader className="animate-spin" size={16} />
@@ -269,7 +236,7 @@ export default function PersonalInformation() {
                 <button
                   onClick={handleRemoveAvatar}
                   disabled={isRemovingAvatar}
-                  className="flex items-center gap-2 px-4 py-2 border border-neutral-200 hover:bg-neutral-50 text-neutral-600 text-sm font-medium rounded-lg transition-all font-dm-sans"
+                  className="flex items-center gap-2 px-4 py-2.5 border border-neutral-200 hover:bg-neutral-50 text-neutral-600 text-sm font-medium rounded-lg transition-all font-dm-sans"
                 >
                   {isRemovingAvatar ? (
                     <Loader className="animate-spin" size={16} />
@@ -310,6 +277,7 @@ export default function PersonalInformation() {
                 value={formData.firstName}
                 onChange={handleChange}
                 required
+                minLength={2}
                 className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900"
               />
             </div>
@@ -323,6 +291,7 @@ export default function PersonalInformation() {
                 value={formData.lastName}
                 onChange={handleChange}
                 required
+                minLength={2}
                 className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900"
               />
             </div>
@@ -372,6 +341,8 @@ export default function PersonalInformation() {
                   value={formData.phone}
                   onChange={handleChange}
                   placeholder="98XXXXXXXX"
+                  minLength={7}
+                  maxLength={15}
                   className="flex-1 px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900"
                 />
               </div>
@@ -383,22 +354,17 @@ export default function PersonalInformation() {
               <label className="block text-sm font-medium text-neutral-800 mb-2 font-dm-sans">
                 Gender
               </label>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {["male", "female", "other"].map((gender) => (
                   <button
                     key={gender}
                     type="button"
                     onClick={() => handleGenderSelect(gender)}
-                    className={`px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all font-dm-sans capitalize ${formData.gender === gender
+                    className={`px-4 py-2.5 rounded-lg border-2 text-sm font-medium transition-all font-dm-sans capitalize flex-1 sm:flex-none min-w-[80px] ${formData.gender === gender
                       ? "border-teal-500 bg-teal-50 text-teal-700"
                       : "border-neutral-200 text-neutral-600 hover:border-neutral-300"
                       }`}
                   >
-                    {formData.gender === gender && (
-                      <span className="inline-flex items-center gap-1">
-                        <span className="w-2 h-2 bg-teal-700 rounded-full" />
-                      </span>
-                    )}{" "}
                     {gender}
                   </button>
                 ))}
@@ -406,66 +372,33 @@ export default function PersonalInformation() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-neutral-800 mb-2 font-dm-sans">
+              <label className="block text-sm font-medium text-neutral-800 mb-2 font-dm-sans text-left">
                 Date of Birth
               </label>
-              <div className="grid grid-cols-3 gap-2">
-                <select
-                  name="dobDay"
-                  value={formData.dobDay}
-                  onChange={handleChange}
-                  className="px-3 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 bg-white text-sm"
-                >
-                  <option value="">Day</option>
-                  {days.map((day) => (
-                    <option key={day} value={day}>
-                      {day}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  name="dobMonth"
-                  value={formData.dobMonth}
-                  onChange={handleChange}
-                  className="px-3 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 bg-white text-sm"
-                >
-                  <option value="">Month</option>
-                  {months.map((month) => (
-                    <option key={month} value={month}>
-                      {month}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  name="dobYear"
-                  value={formData.dobYear}
-                  onChange={handleChange}
-                  className="px-3 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 bg-white text-sm"
-                >
-                  <option value="">Year</option>
-                  {years.map((year) => (
-                    <option key={year} value={year}>
-                      {year}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <input
+                type="date"
+                name="dateOfBirth"
+                value={formData.dateOfBirth}
+                onChange={handleChange}
+                max={new Date().toISOString().split('T')[0]}
+                className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 bg-white"
+              />
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4">
+          <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4">
             <button
               type="button"
               onClick={handleCancel}
               disabled={!hasChanges}
-              className="px-6 py-2.5 border border-neutral-200 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed text-neutral-700 font-semibold rounded-lg transition-all font-dm-sans"
+              className="w-full sm:w-auto px-6 py-3 sm:py-2.5 border border-neutral-200 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed text-neutral-700 font-semibold rounded-lg transition-all font-dm-sans"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isUpdating || !hasChanges}
-              className="flex items-center gap-2 px-6 py-2.5 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all font-dm-sans"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 sm:py-2.5 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all font-dm-sans"
             >
               {isUpdating ? (
                 <Loader className="animate-spin" size={16} />
@@ -491,16 +424,16 @@ export default function PersonalInformation() {
           </p>
         </div>
 
-        <div className="flex items-center justify-between p-4 bg-neutral-50 rounded-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-neutral-50 rounded-xl">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
+            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm shrink-0">
               <Lock size={20} className="text-neutral-500" />
             </div>
-            <div>
+            <div className="min-w-0">
               <p className="font-medium text-neutral-800 font-dm-sans">
                 Password
               </p>
-              <p className="text-sm text-neutral-500 font-dm-sans">
+              <p className="text-sm text-neutral-500 font-dm-sans truncate">
                 Last changed{" "}
                 {user?.passwordChangedAt
                   ? getTimeAgo(user.passwordChangedAt)
@@ -510,7 +443,7 @@ export default function PersonalInformation() {
           </div>
           <button
             onClick={() => setChangePasswordModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 border border-neutral-200 hover:bg-white text-neutral-700 text-sm font-medium rounded-lg transition-all font-dm-sans"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 border border-neutral-200 hover:bg-white text-neutral-700 text-sm font-medium rounded-lg transition-all font-dm-sans shrink-0"
           >
             <Lock size={14} />
             Change Password

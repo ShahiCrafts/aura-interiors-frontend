@@ -368,7 +368,7 @@ export default function Promotions() {
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white rounded-lg shadow-sm text-sm font-semibold hover:bg-teal-700 transition-all active:scale-95"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white rounded-lg text-sm font-semibold hover:bg-teal-700 transition-all active:scale-95"
         >
           <Plus className="w-4 h-4" />
           New Campaign
@@ -766,7 +766,7 @@ export default function Promotions() {
               <button
                 onClick={handleSavePromotion}
                 disabled={createMutation.isPending || updateMutation.isPending}
-                className="flex-1 px-4 py-2.5 bg-teal-600 text-white rounded-lg hover:bg-teal-700 text-sm font-semibold flex items-center justify-center gap-2 shadow-md shadow-teal-100 transition-all active:scale-95 disabled:opacity-50"
+                className="flex-1 px-4 py-2.5 bg-teal-600 text-white rounded-lg hover:bg-teal-700 text-sm font-semibold flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50"
               >
                 {(createMutation.isPending || updateMutation.isPending) && (
                   <Loader2 className="w-4 h-4 animate-spin" />

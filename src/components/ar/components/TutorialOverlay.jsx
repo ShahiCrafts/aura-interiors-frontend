@@ -23,7 +23,7 @@ const TutorialOverlay = ({
                 size={32}
                 className="text-teal-400 transform -rotate-12"
               />
-              <div className="w-3 h-3 bg-teal-400 rounded-full mt-1 shadow-lg shadow-teal-400/50" />
+              <div className="w-3 h-3 bg-teal-400 rounded-full mt-1" />
             </div>
             <div className="flex items-center gap-2">
               <BsArrowLeftRight size={24} className="text-white/80" />
@@ -36,7 +36,7 @@ const TutorialOverlay = ({
                 size={32}
                 className="text-teal-400 transform rotate-12"
               />
-              <div className="w-3 h-3 bg-teal-400 rounded-full mt-1 shadow-lg shadow-teal-400/50" />
+              <div className="w-3 h-3 bg-teal-400 rounded-full mt-1" />
             </div>
           </div>
         </div>
@@ -78,7 +78,7 @@ const TutorialOverlay = ({
             </div>
             <div className="flex flex-col items-center animate-bounce">
               <TbHandFinger size={36} className="text-teal-400" />
-              <div className="w-4 h-4 bg-teal-400 rounded-full shadow-lg shadow-teal-400/50" />
+              <div className="w-4 h-4 bg-teal-400 rounded-full" />
             </div>
             <div className="flex flex-col items-center gap-1 mt-2">
               <div className="w-0.5 h-6 bg-linear-to-t from-teal-400 to-transparent rounded-full" />

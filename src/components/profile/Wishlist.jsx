@@ -100,6 +100,28 @@ export default function Wishlist() {
     toast.success("Adding all items to cart");
   };
 
+  const handleShareWishlist = async () => {
+    const shareData = {
+      title: 'My Aura Interiors Wishlist',
+      text: `Check out these beautiful pieces I found at Aura Interiors!`,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success("Wishlist link copied to clipboard!");
+      }
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success("Wishlist link copied to clipboard!");
+      }
+    }
+  };
+
   const getImageUrl = (product) => getProductImageUrl(product);
 
   const getDiscountPercentage = (product) => {
@@ -132,9 +154,9 @@ export default function Wishlist() {
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-6">
       {/* Header & Stats Section */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-6">
         <div>
           <h2 className="text-2xl font-playfair text-neutral-900">
             <span className="font-medium">My</span>{" "}
@@ -146,25 +168,29 @@ export default function Wishlist() {
         </div>
 
         {wishlistItems.length > 0 && (
-          <div className="flex items-center gap-3">
-            <button className="p-3 bg-white border border-neutral-200 rounded-xl text-neutral-500 hover:bg-neutral-50 transition-colors">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={handleShareWishlist}
+              className="p-3 bg-white border border-neutral-200 rounded-xl text-neutral-500 hover:bg-neutral-50 transition-colors shrink-0"
+              title="Share Wishlist"
+            >
               <Share2 size={20} />
             </button>
             <button
               onClick={handleAddAllToCart}
               disabled={isAddingToCart}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-xl transition-all duration-300 font-dm-sans text-sm disabled:opacity-50"
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-xl transition-all duration-300 font-dm-sans text-sm disabled:opacity-50"
             >
               <ShoppingCart size={18} />
-              {isAddingToCart ? "Adding..." : "Add All to Cart"}
+              <span className="whitespace-nowrap">{isAddingToCart ? "Adding..." : "Add All to Cart"}</span>
             </button>
           </div>
         )}
       </div>
 
       {wishlistItems.length > 0 && (
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1 relative">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="relative flex-1">
             <Search
               size={18}
               className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400"
@@ -178,8 +204,8 @@ export default function Wishlist() {
             />
           </div>
 
-          <div className="flex gap-3">
-            <div className="relative min-w-[160px]">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 sm:flex sm:flex-row">
+            <div className="relative sm:min-w-[160px]">
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
@@ -195,7 +221,7 @@ export default function Wishlist() {
               <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
             </div>
 
-            <div className="relative min-w-[160px]">
+            <div className="relative sm:min-w-[160px]">
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
@@ -225,7 +251,7 @@ export default function Wishlist() {
           </p>
           <Link
             to="/shop"
-            className="inline-flex items-center gap-3 px-8 py-4 bg-teal-700 hover:bg-teal-800 text-white font-bold rounded-full transition-all duration-300 font-dm-sans shadow-lg shadow-teal-900/10 hover:shadow-xl"
+            className="inline-flex items-center gap-3 px-8 py-4 bg-teal-700 hover:bg-teal-800 text-white font-bold rounded-full transition-all duration-300 font-dm-sans"
           >
             Start Exploring
           </Link>
@@ -239,7 +265,7 @@ export default function Wishlist() {
       )}
 
       {filteredItems.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
           {filteredItems.map((item) => {
             const product = item.product;
             if (!product) return null;
@@ -253,7 +279,7 @@ export default function Wishlist() {
                 key={item._id || product._id}
                 className="group bg-white rounded-xl border border-neutral-100 overflow-hidden hover:shadow-lg transition-all duration-300"
               >
-                <div className="relative aspect-4/3 overflow-hidden bg-neutral-100">
+                <div className="relative aspect-[16/10] overflow-hidden bg-neutral-100">
                   <Link to={`/product/${product.slug || product._id}`}>
                     <img
                       src={getImageUrl(product)}
@@ -292,7 +318,7 @@ export default function Wishlist() {
                     </h3>
                   </Link>
 
-                  <div className="flex items-center gap-1.5 mt-2">
+                  <div className="flex items-center gap-1.5 mt-1.5">
                     <div className="flex items-center">
                       <Star
                         size={14}
@@ -302,14 +328,9 @@ export default function Wishlist() {
                     <span className="text-sm text-neutral-700 font-dm-sans font-medium">
                       {rating.toFixed(1)}
                     </span>
-                    {reviewCount > 0 && (
-                      <span className="text-sm text-neutral-400 font-dm-sans">
-                        ({reviewCount})
-                      </span>
-                    )}
                   </div>
 
-                  <div className="flex items-center gap-2 mt-2">
+                  <div className="flex items-center gap-2 mt-1.5">
                     <p className="text-teal-700 font-bold font-playfair text-lg">
                       NRs. {product.price?.toLocaleString()}
                     </p>
@@ -328,7 +349,7 @@ export default function Wishlist() {
                       className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-lg transition-colors font-dm-sans text-sm disabled:opacity-50"
                     >
                       <ShoppingCart size={16} />
-                      {isAddingToCart ? "Adding..." : "Add to Cart"}
+                      {isAddingToCart ? "..." : "Add to Cart"}
                     </button>
                     <Link
                       to={`/product/${product.slug || product._id}`}

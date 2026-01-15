@@ -325,7 +325,7 @@ export default function CartSlider({ isOpen, onClose }) {
             <Link
               to="/checkout"
               onClick={onClose}
-              className="w-full flex items-center justify-center py-3.5 bg-teal-700 hover:bg-teal-800 text-white text-sm font-medium rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
+              className="w-full flex items-center justify-center py-3 bg-teal-700 hover:bg-teal-800 text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
             >
               Proceed to Checkout
             </Link>
@@ -337,7 +337,7 @@ export default function CartSlider({ isOpen, onClose }) {
                 );
                 onClose();
               }}
-              className="w-full flex items-center justify-center py-3.5 bg-teal-700 hover:bg-teal-800 text-white text-sm font-medium rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
+              className="w-full flex items-center justify-center py-3 bg-teal-700 hover:bg-teal-800 text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
             >
               Proceed to Checkout
             </button>

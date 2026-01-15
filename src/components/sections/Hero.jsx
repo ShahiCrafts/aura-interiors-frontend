@@ -128,9 +128,9 @@ export default function Hero() {
           </span>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl md:text-[2.75rem] lg:text-[3rem] xl:text-5xl font-semibold font-playfair text-gray-950 leading-tight">
+        <h1 className="text-[1.75rem] sm:text-4xl md:text-[2.75rem] lg:text-[3rem] xl:text-5xl font-semibold font-playfair text-gray-950 leading-[1.2] sm:leading-tight">
           <span className="block">Redefine Your Space with</span>
-          <span className="text-teal-700 font-semibold italic block mt-1 lg:hidden">
+          <span className="text-teal-700 font-semibold italic block mt-0.5 lg:hidden">
             modern luxury & AR
           </span>
           <span className="text-teal-700 font-semibold italic hidden lg:block mt-1">
@@ -138,7 +138,7 @@ export default function Hero() {
           </span>
         </h1>
 
-        <p className="text-base md:text-lg text-gray-600 mb-2 sm:mb-3 font-dm-sans leading-relaxed max-w-sm sm:max-w-md lg:max-w-lg">
+        <p className="text-[15px] md:text-lg text-gray-600 mb-2 sm:mb-3 font-dm-sans leading-relaxed max-w-sm sm:max-w-md lg:max-w-lg">
           Premium furniture crafted for modern living. Experience pieces in your
           space with AR before you buy.
         </p>

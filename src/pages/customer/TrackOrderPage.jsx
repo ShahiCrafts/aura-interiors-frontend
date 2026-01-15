@@ -142,6 +142,7 @@ export default function TrackOrderPage() {
                     />
                     <input
                       type="text"
+                      required
                       placeholder="e.g., AU1234567890"
                       value={orderId}
                       onChange={(e) => setOrderId(e.target.value.toUpperCase())}
@@ -160,6 +161,7 @@ export default function TrackOrderPage() {
                     />
                     <input
                       type="email"
+                      required
                       placeholder="Enter your email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}

@@ -31,9 +31,7 @@ export default function BlogDetailsPage() {
   const relatedBlogs = relatedData?.data?.blogs || [];
 
   // Extract sections from content for TOC
-  const sections = blog?.content
-    ? extractSections(blog.content)
-    : [];
+  const sections = blog?.content ? extractSections(blog.content) : [];
 
   // Track scroll position for TOC highlighting
   useEffect(() => {
@@ -89,7 +87,8 @@ export default function BlogDetailsPage() {
 
   const getImageUrl = (imagePath) => getBlogImageUrl(imagePath);
 
-  const getAuthorAvatar = (author) => getAvatarUrl(author, author?.name || 'Author');
+  const getAuthorAvatar = (author) =>
+    getAvatarUrl(author, author?.name || "Author");
 
   if (isLoading) {
     return (
@@ -127,15 +126,15 @@ export default function BlogDetailsPage() {
 
   const formattedDate = blog.publishedAt
     ? new Date(blog.publishedAt).toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    })
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      })
     : new Date(blog.createdAt).toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      });
 
   return (
     <>
@@ -257,7 +256,9 @@ export default function BlogDetailsPage() {
                   prose-strong:text-neutral-800
                   prose-ul:my-4 prose-li:my-1
                   prose-img:rounded-xl prose-img:my-6"
-                dangerouslySetInnerHTML={{ __html: renderContent(blog.content) }}
+                dangerouslySetInnerHTML={{
+                  __html: renderContent(blog.content),
+                }}
               />
 
               {/* Tags */}
@@ -289,12 +290,18 @@ export default function BlogDetailsPage() {
                           src={blog.source.logo}
                           alt={blog.source.name}
                           className="h-8 w-auto object-contain"
-                          onError={(e) => { e.target.style.display = 'none'; }}
+                          onError={(e) => {
+                            e.target.style.display = "none";
+                          }}
                         />
                       )}
                       <div>
-                        <p className="text-sm text-neutral-500">Originally published on</p>
-                        <p className="font-medium text-neutral-900">{blog.source.name}</p>
+                        <p className="text-sm text-neutral-500">
+                          Originally published on
+                        </p>
+                        <p className="font-medium text-neutral-900">
+                          {blog.source.name}
+                        </p>
                       </div>
                     </div>
                     {blog.originalUrl && (
@@ -342,10 +349,11 @@ export default function BlogDetailsPage() {
                         <button
                           key={section.id}
                           onClick={() => scrollToSection(section.id)}
-                          className={`block w-full text-left px-3 py-2 text-sm rounded-lg transition-all duration-200 ${activeSection === section.id
-                            ? "bg-teal-50 text-teal-700 font-medium border-l-2 border-teal-700"
-                            : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900"
-                            }`}
+                          className={`block w-full text-left px-3 py-2 text-sm rounded-lg transition-all duration-200 ${
+                            activeSection === section.id
+                              ? "bg-teal-50 text-teal-700 font-medium border-l-2 border-teal-700"
+                              : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900"
+                          }`}
                         >
                           {section.title}
                         </button>

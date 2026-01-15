@@ -192,19 +192,19 @@ export default function ProductCard({ product, viewMode = "grid" }) {
           <button
             onClick={handleWishlistToggle}
             disabled={isWishlistLoading}
-            className="w-9 h-9 sm:w-8 sm:h-8 bg-white/95 backdrop-blur-sm border border-neutral-100 rounded-full flex items-center justify-center hover:bg-teal-700 hover:text-white transition-colors disabled:opacity-50"
+            className="w-11 h-11 lg:w-9 lg:h-9 bg-white/95 backdrop-blur-sm border border-neutral-100 rounded-full flex items-center justify-center hover:bg-teal-700 hover:text-white transition-colors disabled:opacity-50"
           >
             <Heart
-              size={16}
-              className={isInWishlist ? "fill-red-500 text-red-500" : "text-neutral-600"}
+              size={20}
+              className={`lg:w-4 lg:h-4 ${isInWishlist ? "fill-red-500 text-red-500" : "text-neutral-600"}`}
             />
           </button>
           <button
             onClick={handleAddToCart}
             disabled={isAddingToCart}
-            className="w-9 h-9 sm:w-8 sm:h-8 bg-white/95 backdrop-blur-sm border border-neutral-100 rounded-full flex items-center justify-center hover:bg-teal-700 hover:text-white transition-colors disabled:opacity-50"
+            className="w-11 h-11 lg:w-9 lg:h-9 bg-white/95 backdrop-blur-sm border border-neutral-100 rounded-full flex items-center justify-center hover:bg-teal-700 hover:text-white transition-colors disabled:opacity-50"
           >
-            <ShoppingBag size={16} />
+            <ShoppingBag size={20} className="lg:w-4 lg:h-4" />
           </button>
         </div>
       </div>

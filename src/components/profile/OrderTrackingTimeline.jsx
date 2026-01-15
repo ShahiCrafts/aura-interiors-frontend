@@ -54,8 +54,8 @@ export default function OrderTrackingTimeline({ status }) {
 
                 <div
                   className={`w-14 h-14 rounded-full flex items-center justify-center shrink-0 transition-all duration-500 ${isCompleted
-                      ? "bg-teal-600 text-white shadow-lg shadow-teal-600/20 ring-4 ring-white"
-                      : "bg-white text-neutral-300 border-2 border-neutral-100"
+                    ? "bg-teal-600 text-white ring-4 ring-white"
+                    : "bg-white text-neutral-300 border-2 border-neutral-100"
                     }`}
                 >
                   {isLastCompleted && status !== "delivered" ? (

@@ -123,9 +123,9 @@ export default function BlogsPage() {
 
         {/* Filters Section */}
         <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-8 sm:mb-12">
-          <div className="flex flex-wrap items-center gap-3">
-            {/* Category Pills */}
-            <div className="flex flex-wrap gap-2 sm:gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+            {/* Category Pills - Can wrap */}
+            <div className="flex-1 flex flex-wrap gap-2 sm:gap-3">
               {categories
                 .slice(0, showMoreCategories ? categories.length : 5)
                 .map((category) => (
@@ -150,10 +150,10 @@ export default function BlogsPage() {
               )}
             </div>
 
-            {/* Search Input */}
+            {/* Search Input - Fixed on right */}
             <form
               onSubmit={handleSearch}
-              className="relative w-full sm:w-auto sm:ml-auto mt-3 sm:mt-0"
+              className="relative w-full sm:w-64 shrink-0"
             >
               <Search
                 size={18}
@@ -164,7 +164,7 @@ export default function BlogsPage() {
                 placeholder="Search articles..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                className="w-full sm:w-64 pl-10 pr-4 py-2 rounded-full border border-neutral-300 text-sm focus:outline-none focus:border-teal-700 focus:ring-1 focus:ring-teal-700 transition-all"
+                className="w-full pl-10 pr-4 py-2 rounded-full border border-neutral-300 text-sm focus:outline-none focus:border-teal-700 focus:ring-1 focus:ring-teal-700 transition-all"
               />
             </form>
           </div>

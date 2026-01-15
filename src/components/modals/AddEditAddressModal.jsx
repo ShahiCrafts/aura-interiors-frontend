@@ -249,6 +249,7 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
                 onChange={handleChange}
                 placeholder="John Doe"
                 required
+                minLength={3}
                 className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
               />
             </div>
@@ -264,6 +265,8 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
                 onChange={handleChange}
                 placeholder="+977 98XXXXXXXX"
                 required
+                minLength={7}
+                maxLength={15}
                 className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
               />
             </div>
@@ -279,6 +282,7 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
                 onChange={handleChange}
                 placeholder="Street address, P.O. box"
                 required
+                minLength={3}
                 className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
               />
             </div>
@@ -309,6 +313,7 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
                   onChange={handleChange}
                   placeholder="Kathmandu"
                   required
+                  minLength={2}
                   className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
                 />
               </div>
@@ -323,6 +328,7 @@ export default function AddEditAddressModal({ isOpen, onClose, address }) {
                   onChange={handleChange}
                   placeholder="44600"
                   required
+                  minLength={4}
                   className="w-full px-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
                 />
               </div>

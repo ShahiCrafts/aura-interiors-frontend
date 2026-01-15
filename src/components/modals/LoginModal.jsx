@@ -7,19 +7,26 @@ import useAuthStore from "../../store/authStore";
 import { useLogin } from "../../hooks/auth/useLoginTan";
 import ForgotPasswordModal from "./ForgotPasswordModal";
 import formatError from "../../utils/errorHandler";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { loginSchema } from "../../utils/validationSchemas";
 
 export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    rememberMe: false,
-  });
   const [showPassword, setShowPassword] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const navigate = useNavigate();
   const { signIn } = useAuthStore();
-  const { mutate: login, isPending, isError, error } = useLogin();
+  const { mutate: login, isPending } = useLogin();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(loginSchema),
+    mode: "onTouched",
+  });
 
   useEffect(() => {
     if (isOpen) {
@@ -32,17 +39,8 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
     };
   }, [isOpen]);
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const { email, password } = formData;
+  const onSubmit = (data) => {
+    const { email, password } = data;
     login(
       { email, password },
       {
@@ -100,7 +98,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
                 Email Address <span className="text-red-500">*</span>
@@ -112,13 +110,16 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
                 />
                 <input
                   type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
+                  {...register("email")}
                   placeholder="you@example.com"
-                  required
-                  className="w-full pl-11 pr-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
+                  className={`w-full pl-11 pr-4 py-2.5 rounded-lg border focus:ring-1 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400 ${errors.email
+                    ? "border-red-400 focus:border-red-500 focus:ring-red-500/20"
+                    : "border-neutral-200 focus:border-teal-700 focus:ring-teal-700"
+                    }`}
                 />
+                {errors.email && (
+                  <p className="text-xs text-red-500 mt-1 font-dm-sans">{errors.email.message}</p>
+                )}
               </div>
             </div>
 
@@ -133,12 +134,12 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
                 />
                 <input
                   type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
+                  {...register("password")}
                   placeholder="Enter your password"
-                  required
-                  className="w-full pl-11 pr-11 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
+                  className={`w-full pl-11 pr-11 py-2.5 rounded-lg border focus:ring-1 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400 ${errors.password
+                    ? "border-red-400 focus:border-red-500 focus:ring-red-500/20"
+                    : "border-neutral-200 focus:border-teal-700 focus:ring-teal-700"
+                    }`}
                 />
                 <button
                   type="button"
@@ -148,15 +149,16 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
+              {errors.password && (
+                <p className="text-xs text-red-500 mt-1 font-dm-sans">{errors.password.message}</p>
+              )}
             </div>
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
-                  name="rememberMe"
-                  checked={formData.rememberMe}
-                  onChange={handleChange}
+                  {...register("rememberMe")}
                   className="w-4 h-4 rounded border-neutral-300 accent-teal-700 focus:ring-teal-700 cursor-pointer"
                 />
                 <label className="text-sm text-neutral-700 font-dm-sans">
@@ -172,9 +174,6 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
               </button>
             </div>
 
-            {isError && (
-              <p className="text-red-500 text-sm font-dm-sans">{formatError(error)}</p>
-            )}
 
             <button
               type="submit"

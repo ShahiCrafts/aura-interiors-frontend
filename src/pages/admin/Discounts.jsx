@@ -203,7 +203,7 @@ export default function Discounts() {
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white rounded-lg shadow-sm text-sm font-semibold hover:bg-teal-700 transition-all active:scale-95"
+          className="flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white rounded-lg text-sm font-semibold hover:bg-teal-700 transition-all active:scale-95"
         >
           <Plus className="w-4 h-4" /> Add New Discount
         </button>

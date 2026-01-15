@@ -39,7 +39,27 @@ export default function ProductDetailsPage() {
   const [quantity, setQuantity] = useState(1);
   const [expandedSections, setExpandedSections] = useState({});
   const [isARModalOpen, setIsARModalOpen] = useState(false);
+  const [scrolledPastAction, setScrolledPastAction] = useState(false);
   const reviewsSectionRef = useRef(null);
+  const mainActionRef = useRef(null);
+
+  // Check scroll position to toggle sticky "Add to Cart"
+  useEffect(() => {
+    const handleScroll = () => {
+      const mainBtn = document.getElementById("main-add-to-cart");
+      if (mainBtn) {
+        const rect = mainBtn.getBoundingClientRect();
+        // Hide sticky when main button is in view
+        setScrolledPastAction(rect.bottom < 0);
+      } else {
+        // Fallback to fixed scroll position if button not found
+        setScrolledPastAction(window.scrollY > 800);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Fetch product data
   const { data: productData, isLoading, error } = useProduct(productSlug);
@@ -274,16 +294,16 @@ export default function ProductDetailsPage() {
       <main className="min-h-screen bg-white pt-20 font-dm-sans pb-24 lg:pb-0 overflow-x-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-sm mb-6 overflow-x-auto pb-2">
+          <nav className="flex flex-wrap items-center gap-y-2 gap-x-2 text-sm mb-6">
             {breadcrumbs.map((crumb, index) => (
-              <div key={index} className="flex items-center gap-2 whitespace-nowrap">
+              <div key={index} className="flex items-center gap-2">
                 {index > 0 && <ChevronRight size={14} className="text-neutral-400 shrink-0" />}
                 {index === breadcrumbs.length - 1 ? (
-                  <span className="text-neutral-500 font-dm-sans truncate max-w-[200px]">{crumb.name}</span>
+                  <span className="text-neutral-500 font-dm-sans truncate max-w-[150px] sm:max-w-[300px]">{crumb.name}</span>
                 ) : (
                   <Link
                     to={crumb.path}
-                    className="text-neutral-600 hover:text-teal-700 transition-colors font-dm-sans"
+                    className="text-neutral-600 hover:text-teal-700 transition-colors font-dm-sans whitespace-nowrap"
                   >
                     {crumb.name}
                   </Link>
@@ -340,6 +360,17 @@ export default function ProductDetailsPage() {
                 >
                   <img src={arIcon} alt="AR View" className="w-5 h-5" />
                 </button>
+
+                {/* Pagination Dots - Mobile Only */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 lg:hidden">
+                  {images.map((_, index) => (
+                    <div
+                      key={index}
+                      className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${selectedImage === index ? "w-4 bg-teal-700" : "bg-neutral-300/60"
+                        }`}
+                    />
+                  ))}
+                </div>
               </div>
 
               {/* Thumbnails - Horizontal */}
@@ -522,9 +553,10 @@ export default function ProductDetailsPage() {
 
                 {/* Add to Cart Button */}
                 <button
+                  id="main-add-to-cart"
                   onClick={handleAddToCart}
                   disabled={isAddingToCart}
-                  className="flex-1 bg-teal-700 text-white px-8 py-3 rounded-full font-semibold hover:bg-teal-800 transition-colors font-dm-sans disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 bg-teal-700 text-white px-8 py-3 rounded-xl font-semibold text-sm hover:bg-teal-800 transition-colors font-dm-sans disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
                 >
                   {isAddingToCart ? "Adding..." : "Add to Cart"}
                 </button>
@@ -642,8 +674,11 @@ export default function ProductDetailsPage() {
         product={product}
       />
 
-      {/* Mobile Sticky Add to Cart */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 p-4 pb-6 bg-linear-to-t from-white via-white/95 to-transparent pointer-events-none">
+      {/* Mobile Sticky Add to Cart - Only show after scrolling past main action area */}
+      <div
+        className={`lg:hidden fixed bottom-0 left-0 right-0 z-50 p-4 pb-6 bg-linear-to-t from-white via-white/95 to-transparent transition-all duration-300 ${scrolledPastAction ? "translate-y-0 opacity-100 visible" : "translate-y-full opacity-0 invisible"
+          }`}
+      >
         <div className="bg-white rounded-2xl border border-neutral-100 p-3 shadow-2xl flex items-center gap-3 pointer-events-auto">
           {/* Main Price Mini Info */}
           <div className="flex-1 pl-1">

@@ -211,16 +211,16 @@ export default function ShopPage() {
       <main className="min-h-screen bg-linear-to-b from-zinc-50 to-white pt-20 font-dm-sans">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-sm mb-6">
+          <nav className="flex flex-wrap items-center gap-y-2 gap-x-2 text-sm mb-6">
             {breadcrumbs.map((crumb, index) => (
               <div key={crumb.path} className="flex items-center gap-2">
-                {index > 0 && <ChevronRight size={14} className="text-neutral-400" />}
+                {index > 0 && <ChevronRight size={14} className="text-neutral-400 shrink-0" />}
                 {index === breadcrumbs.length - 1 ? (
-                  <span className="text-neutral-500 font-dm-sans">{crumb.name}</span>
+                  <span className="text-neutral-500 font-dm-sans truncate max-w-[150px] sm:max-w-[300px]">{crumb.name}</span>
                 ) : (
                   <Link
                     to={crumb.path}
-                    className="text-neutral-600 hover:text-teal-700 transition-colors font-dm-sans"
+                    className="text-neutral-600 hover:text-teal-700 transition-colors font-dm-sans shrink-0"
                   >
                     {crumb.name}
                   </Link>
@@ -377,7 +377,7 @@ export default function ShopPage() {
                 <div
                   className={
                     viewMode === "grid"
-                      ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
+                      ? "grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
                       : "flex flex-col gap-4"
                   }
                 >
@@ -424,7 +424,7 @@ export default function ShopPage() {
                   <div
                     className={
                       viewMode === "grid"
-                        ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
+                        ? "grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
                         : "flex flex-col gap-4"
                     }
                   >

@@ -168,6 +168,7 @@ export default function ReviewForm({
             placeholder="Summarize your experience"
             maxLength={100}
             className="w-full px-4 py-3 border border-neutral-200 rounded-lg text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent font-dm-sans"
+            minLength={3}
           />
           {errors.title && (
             <p className="mt-1 text-sm text-red-500 font-dm-sans">
@@ -194,6 +195,8 @@ export default function ReviewForm({
             rows={4}
             maxLength={1000}
             className="w-full px-4 py-3 border border-neutral-200 rounded-lg text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none font-dm-sans"
+            required
+            minLength={10}
           />
           {errors.comment && (
             <p className="mt-1 text-sm text-red-500 font-dm-sans">

@@ -3,21 +3,39 @@ import { X, Mail, ArrowLeft, Loader } from "lucide-react";
 import { toast } from "react-toastify";
 import { useForgotPassword } from "../../hooks/auth/usePasswordTan";
 import formatError from "../../utils/errorHandler";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { forgotPasswordSchema } from "../../utils/validationSchemas";
 
 export default function ForgotPasswordModal({
   isOpen,
   onClose,
   onBackToLogin,
 }) {
-  const [email, setEmail] = useState("");
   const [emailSent, setEmailSent] = useState(false);
 
   const { mutate: forgotPassword, isPending } = useForgotPassword();
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    reset: resetForm,
+  } = useForm({
+    resolver: yupResolver(forgotPasswordSchema),
+    mode: "onTouched",
+    defaultValues: {
+      email: "",
+    }
+  });
+
+  const email = watch("email");
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
-      setEmail("");
+      resetForm({ email: "" });
       setEmailSent(false);
     } else {
       document.body.style.overflow = "";
@@ -25,10 +43,10 @@ export default function ForgotPasswordModal({
     return () => {
       document.body.style.overflow = "";
     };
-  }, [isOpen]);
+  }, [isOpen, resetForm]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const onSubmit = (data) => {
+    const { email } = data;
     forgotPassword(email, {
       onSuccess: () => {
         setEmailSent(true);
@@ -82,7 +100,7 @@ export default function ForgotPasswordModal({
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-neutral-800 mb-1 font-dm-sans">
                     Email Address <span className="text-red-500">*</span>
@@ -94,13 +112,15 @@ export default function ForgotPasswordModal({
                     />
                     <input
                       type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      {...register("email")}
                       placeholder="you@example.com"
-                      required
-                      className="w-full pl-11 pr-4 py-2.5 rounded-lg border border-neutral-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400"
+                      className={`w-full pl-11 pr-4 py-2.5 rounded-lg border focus:ring-1 outline-none transition-all font-dm-sans text-neutral-900 placeholder:text-neutral-400 ${errors.email ? "border-red-400 focus:border-red-500 focus:ring-red-500/20" : "border-neutral-200 focus:border-teal-700 focus:ring-teal-700"
+                        }`}
                     />
                   </div>
+                  {errors.email && (
+                    <p className="text-xs text-red-500 mt-1 font-dm-sans">{errors.email.message}</p>
+                  )}
                 </div>
 
                 <button

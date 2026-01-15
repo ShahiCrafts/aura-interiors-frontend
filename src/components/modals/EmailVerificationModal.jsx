@@ -170,7 +170,7 @@ export default function EmailVerificationModal({
             <button
               type="submit"
               disabled={isPending || !isCodeComplete}
-              className="w-full py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-dm-sans"
+              className="w-full py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 font-dm-sans"
             >
               {isPending ? <Loader className="animate-spin mx-auto" size={20} /> : "Verify Email"}
             </button>

@@ -1,4 +1,4 @@
-import { AlertTriangle, Trash2, LogOut, Info, X, Loader2 } from "lucide-react";
+import { AlertTriangle, Trash2, LogOut, Info, X, Loader2, CheckCircle } from "lucide-react";
 
 export default function ConfirmationDialog({
     isOpen,
@@ -13,87 +13,86 @@ export default function ConfirmationDialog({
 }) {
     if (!isOpen) return null;
 
-    const getIcon = () => {
-        switch (type) {
-            case "danger":
-                return <Trash2 className="w-6 h-6 text-red-600" />;
-            case "warning":
-                return <AlertTriangle className="w-6 h-6 text-amber-600" />;
-            case "logout":
-                return <LogOut className="w-6 h-6 text-red-600" />;
-            default:
-                return <Info className="w-6 h-6 text-teal-600" />;
-        }
+    const config = {
+        danger: {
+            icon: Trash2,
+            iconColor: "text-red-600",
+            iconBg: "bg-red-50",
+            buttonBg: "bg-red-600 hover:bg-red-700",
+        },
+        warning: {
+            icon: AlertTriangle,
+            iconColor: "text-amber-600",
+            iconBg: "bg-amber-50",
+            buttonBg: "bg-amber-600 hover:bg-amber-700",
+        },
+        logout: {
+            icon: LogOut,
+            iconColor: "text-red-600",
+            iconBg: "bg-red-50",
+            buttonBg: "bg-red-600 hover:bg-red-700",
+        },
+        info: {
+            icon: Info,
+            iconColor: "text-teal-600",
+            iconBg: "bg-teal-50",
+            buttonBg: "bg-teal-700 hover:bg-teal-800",
+        },
+        success: {
+            icon: CheckCircle,
+            iconColor: "text-emerald-600",
+            iconBg: "bg-emerald-50",
+            buttonBg: "bg-emerald-600 hover:bg-emerald-700",
+        },
     };
 
-    const getColors = () => {
-        switch (type) {
-            case "danger":
-                return "bg-red-600 hover:bg-red-700 shadow-red-100";
-            case "warning":
-                return "bg-amber-600 hover:bg-amber-700 shadow-amber-100";
-            case "logout":
-                return "bg-red-600 hover:bg-red-700 shadow-red-100";
-            default:
-                return "bg-teal-600 hover:bg-teal-700 shadow-teal-100";
-        }
-    };
-
-    const getIconBg = () => {
-        switch (type) {
-            case "danger":
-                return "bg-red-50";
-            case "warning":
-                return "bg-amber-50";
-            case "logout":
-                return "bg-red-50";
-            default:
-                return "bg-teal-50";
-        }
-    };
+    const { icon: Icon, iconColor, iconBg, buttonBg } = config[type] || config.info;
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            {/* Backdrop */}
             <div
                 onClick={onCancel}
-                className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
             />
 
-            <div
-                className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden border border-gray-100"
-            >
-                <div className="p-6">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className={`w-12 h-12 ${getIconBg()} rounded-xl flex items-center justify-center`}>
-                            {getIcon()}
-                        </div>
-                        <button
-                            onClick={onCancel}
-                            className="p-2 hover:bg-gray-100 rounded-lg text-gray-400 transition-colors"
-                        >
-                            <X size={20} />
-                        </button>
+            {/* Modal */}
+            <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden border border-neutral-100 animate-in fade-in zoom-in-95 duration-200">
+                {/* Close button */}
+                <button
+                    onClick={onCancel}
+                    className="absolute top-4 right-4 p-1.5 hover:bg-neutral-100 rounded-lg text-neutral-400 hover:text-neutral-600 transition-colors"
+                >
+                    <X size={18} />
+                </button>
+
+                {/* Content */}
+                <div className="p-6 pt-8 text-center">
+                    <div className={`w-14 h-14 ${iconBg} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
+                        <Icon className={`w-7 h-7 ${iconColor}`} />
                     </div>
 
-                    <h3 className="text-xl font-bold text-gray-900 mb-2 font-dm-sans">
+                    <h3 className="text-xl font-bold text-neutral-900 mb-2 font-playfair">
                         {title}
                     </h3>
-                    <p className="text-sm text-gray-500 leading-relaxed font-dm-sans">
+                    <p className="text-sm text-neutral-500 leading-relaxed font-dm-sans max-w-[280px] mx-auto">
                         {message}
                     </p>
                 </div>
 
-                <div className="px-6 py-4 bg-gray-50 flex gap-3">
+                {/* Actions */}
+                <div className="px-6 pb-6 flex gap-3">
                     <button
                         onClick={onCancel}
-                        className="flex-1 px-4 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-bold uppercase tracking-wider hover:bg-white transition-all active:scale-95"
+                        disabled={isLoading}
+                        className="flex-1 px-4 py-2.5 border border-neutral-200 bg-white text-neutral-700 rounded-xl text-sm font-semibold hover:bg-neutral-50 transition-all font-dm-sans disabled:opacity-50"
                     >
                         {cancelText}
                     </button>
                     <button
                         onClick={onConfirm}
                         disabled={isLoading}
-                        className={`flex-1 ${getColors()} text-white px-4 py-2.5 rounded-xl text-sm font-bold uppercase tracking-wider shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2`}
+                        className={`flex-1 ${buttonBg} text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-all font-dm-sans flex items-center justify-center gap-2 disabled:opacity-70`}
                     >
                         {isLoading ? (
                             <Loader2 size={16} className="animate-spin" />

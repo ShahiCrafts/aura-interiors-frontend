@@ -99,7 +99,7 @@ export default function ResetPasswordPage() {
           </p>
           <button
             onClick={() => navigate("/")}
-            className="w-full py-3 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-dm-sans"
+            className="w-full py-3 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-full transition-all duration-300 font-dm-sans"
           >
             Go to Homepage
           </button>
@@ -208,7 +208,7 @@ export default function ResetPasswordPage() {
           <button
             type="submit"
             disabled={isPending || !passwordsMatch}
-            className="w-full py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-dm-sans"
+            className="w-full py-3 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 font-dm-sans"
           >
             {isPending ? "Resetting..." : "Reset Password"}
           </button>

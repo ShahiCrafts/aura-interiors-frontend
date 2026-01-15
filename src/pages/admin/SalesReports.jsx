@@ -120,7 +120,7 @@ export default function SalesReports() {
                     </div>
                     <button
                         onClick={exportToExcel}
-                        className="flex items-center gap-2 px-4 py-2 bg-teal-700 text-white rounded-xl text-sm font-bold hover:bg-teal-800 transition-all shadow-md shadow-teal-900/10"
+                        className="flex items-center gap-2 px-4 py-2 bg-teal-700 text-white rounded-xl text-sm font-bold hover:bg-teal-800 transition-all"
                     >
                         <Download size={16} />
                         Export

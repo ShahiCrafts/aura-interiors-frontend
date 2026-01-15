@@ -86,7 +86,7 @@ const ChatWidget = () => {
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            className="mb-4 mr-2 pointer-events-auto"
+            className="mb-4 mr-2 pointer-events-auto hidden lg:block"
           >
             <div className="bg-white rounded-[20px] border border-stone-200/60 p-5 w-64 relative">
               {/* Close Button */}

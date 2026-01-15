@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import { toast } from "react-toastify";
 import { getProfile } from "../../api/profileApi";
-import { Loader } from "lucide-react";
 
 export default function AuthCallback() {
   const signIn = useAuthStore((state) => state.signIn);
@@ -46,7 +45,6 @@ export default function AuthCallback() {
           navigate("/", { replace: true });
         }
       } else {
-        // No token provided? redirect home
         navigate("/", { replace: true });
       }
     };
@@ -55,11 +53,26 @@ export default function AuthCallback() {
   }, [signIn, navigate, searchParams]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-neutral-50">
-      <div className="text-center space-y-4">
-        <Loader className="w-10 h-10 animate-spin text-teal-700 mx-auto" />
-        <h2 className="text-xl font-playfair text-neutral-900">Configuring your account...</h2>
-        <p className="text-neutral-500 font-dm-sans">Please wait while we log you in.</p>
+    <div className="min-h-screen flex items-center justify-center bg-[#FDFDFD]">
+      <div className="text-center">
+        {/* Logo/Brand */}
+        <div className="mb-8">
+          <h1 className="text-2xl font-playfair text-neutral-900">
+            <span className="font-medium">Aura</span>{" "}
+            <span className="italic text-teal-700">Interiors</span>
+          </h1>
+        </div>
+
+        {/* Spinner */}
+        <div className="relative w-12 h-12 mx-auto mb-6">
+          <div className="absolute inset-0 rounded-full border-2 border-neutral-200"></div>
+          <div className="absolute inset-0 rounded-full border-2 border-teal-600 border-t-transparent animate-spin"></div>
+        </div>
+
+        {/* Text */}
+        <p className="text-neutral-600 font-dm-sans text-sm">
+          Signing you in...
+        </p>
       </div>
     </div>
   );

@@ -27,8 +27,13 @@ export default function MobileFilterDrawer({
                         animate={{ y: 0 }}
                         exit={{ y: "100%" }}
                         transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                        className="fixed inset-x-0 bottom-0 bg-white rounded-t-[32px] z-[101] flex flex-col max-h-[92vh] font-dm-sans"
+                        className="fixed inset-x-0 bottom-0 bg-white rounded-t-[40px] z-[101] flex flex-col max-h-[96vh] font-dm-sans shadow-[0_-8px_40px_-10px_rgba(0,0,0,0.3)] pb-safe"
                     >
+                        {/* Drag Handle */}
+                        <div className="w-full pt-3 pb-1 flex justify-center shrink-0">
+                            <div className="w-12 h-1.5 bg-neutral-200 rounded-full" />
+                        </div>
+
                         {/* Header */}
                         <div className="shrink-0 px-6 py-5 border-b border-neutral-100 flex items-center justify-between">
                             <div className="flex items-center gap-3">

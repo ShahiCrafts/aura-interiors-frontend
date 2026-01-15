@@ -115,9 +115,9 @@ export default function SavedAddresses() {
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-6">
       {/* Header Section */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-6">
         <div>
           <h2 className="text-2xl font-playfair text-neutral-900">
             <span className="font-medium">Saved</span>{" "}
@@ -130,7 +130,7 @@ export default function SavedAddresses() {
 
         <button
           onClick={handleAddNew}
-          className="flex items-center justify-center gap-2 px-6 py-3 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-xl transition-all duration-300 font-dm-sans text-sm"
+          className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-xl transition-all duration-300 font-dm-sans text-sm"
         >
           <Plus size={18} />
           Add New Address
@@ -207,7 +207,7 @@ export default function SavedAddresses() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-3 border-t border-neutral-100">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-neutral-100">
                 {!address.isDefault && (
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
@@ -222,12 +222,12 @@ export default function SavedAddresses() {
                     </span>
                   </label>
                 )}
-                {address.isDefault && <div />}
+                {address.isDefault && <div className="hidden sm:block" />}
 
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleEdit(address)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-teal-700 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors font-dm-sans"
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1.5 text-sm font-medium text-teal-700 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors font-dm-sans"
                   >
                     <Pencil size={14} />
                     Edit
@@ -235,7 +235,7 @@ export default function SavedAddresses() {
                   <button
                     onClick={() => confirmDelete(address._id)}
                     disabled={isDeleting}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-neutral-600 border border-neutral-200 rounded-lg hover:bg-neutral-50 hover:text-red-600 hover:border-red-200 transition-colors font-dm-sans"
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1.5 text-sm font-medium text-neutral-600 border border-neutral-200 rounded-lg hover:bg-neutral-50 hover:text-red-600 hover:border-red-200 transition-colors font-dm-sans"
                   >
                     <Trash2 size={14} />
                     Delete

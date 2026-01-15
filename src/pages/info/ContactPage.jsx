@@ -89,50 +89,52 @@ export default function ContactPage() {
       <Navbar />
       <main className="min-h-screen bg-white font-dm-sans">
 
-        {/* Full Width Split Layout - Compact */}
-        <div className="flex flex-col lg:flex-row min-h-screen pt-16 items-center justify-center gap-12 lg:gap-8 xl:gap-16 max-w-7xl mx-auto px-4">
+        {/* Full Width Split Layout - Responsive */}
+        <div className="flex flex-col lg:flex-row min-h-screen pt-24 sm:pt-28 lg:pt-16 items-center justify-center gap-10 sm:gap-12 lg:gap-8 xl:gap-16 max-w-7xl mx-auto px-6 sm:px-8 lg:px-8 py-12 sm:py-14 lg:py-0">
 
           {/* Left Column: Info */}
           <div className="w-full lg:w-[45%] xl:w-[40%] flex flex-col justify-center text-center lg:text-left">
 
             <div className="max-w-md mx-auto lg:mx-0 lg:ml-auto w-full">
 
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-light text-zinc-900 mb-4 tracking-tight font-playfair">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-5xl font-light text-zinc-900 mb-3 sm:mb-4 tracking-tight font-playfair">
                 Get in <span className="italic text-teal-700">Touch.</span>
               </h1>
-              <p className="text-zinc-600 text-base md:text-lg max-w-sm mx-auto lg:mx-0 leading-relaxed font-dm-sans">
+              <p className="text-zinc-600 text-base sm:text-lg max-w-sm mx-auto lg:mx-0 leading-relaxed font-dm-sans">
                 We are here to help. Reach out using the form or via our direct channels.
               </p>
             </div>
 
-            <div className="mt-10 lg:mt-10 max-w-md mx-auto lg:mx-0 lg:ml-auto w-full space-y-5 lg:space-y-6">
-              <div className="flex items-center gap-5 justify-center lg:justify-start">
-                <div className="w-12 h-12 rounded-full bg-teal-50 border border-teal-200/30 flex items-center justify-center shrink-0 text-teal-700">
-                  <Mail size={22} />
+            <div className="mt-8 sm:mt-10 lg:mt-10 max-w-md mx-auto lg:mx-0 lg:ml-auto w-full">
+              <div className="space-y-5 sm:space-y-5 lg:space-y-6 inline-block mx-auto lg:mx-0">
+                <div className="flex items-center gap-4 sm:gap-5">
+                  <div className="w-12 h-12 sm:w-12 sm:h-12 rounded-full bg-teal-50 border border-teal-200/30 flex items-center justify-center shrink-0 text-teal-700">
+                    <Mail size={20} className="sm:w-[22px] sm:h-[22px]" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-xs text-zinc-500 uppercase tracking-wider font-bold mb-0.5">Email</p>
+                    <p className="text-base sm:text-lg font-medium text-gray-900">support@aurainteriors.live</p>
+                  </div>
                 </div>
-                <div className="text-left">
-                  <p className="text-xs text-zinc-500 uppercase tracking-wider font-bold mb-0.5">Email</p>
-                  <p className="text-lg font-medium text-gray-900">support@aurainteriors.live</p>
-                </div>
-              </div>
 
-              <div className="flex items-center gap-5 justify-center lg:justify-start">
-                <div className="w-12 h-12 rounded-full bg-teal-50 border border-teal-200/30 flex items-center justify-center shrink-0 text-teal-700">
-                  <Phone size={22} />
+                <div className="flex items-center gap-4 sm:gap-5">
+                  <div className="w-12 h-12 sm:w-12 sm:h-12 rounded-full bg-teal-50 border border-teal-200/30 flex items-center justify-center shrink-0 text-teal-700">
+                    <Phone size={20} className="sm:w-[22px] sm:h-[22px]" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-xs text-zinc-500 uppercase tracking-wider font-bold mb-0.5">Phone</p>
+                    <p className="text-base sm:text-lg font-medium text-gray-900">+977 9866291003</p>
+                  </div>
                 </div>
-                <div className="text-left">
-                  <p className="text-xs text-zinc-500 uppercase tracking-wider font-bold mb-0.5">Phone</p>
-                  <p className="text-lg font-medium text-gray-900">+977 9866291003</p>
-                </div>
-              </div>
 
-              <div className="flex items-center gap-5 justify-center lg:justify-start">
-                <div className="w-12 h-12 rounded-full bg-teal-50 border border-teal-200/30 flex items-center justify-center shrink-0 text-teal-700">
-                  <MapPin size={22} />
-                </div>
-                <div className="text-left">
-                  <p className="text-xs text-zinc-500 uppercase tracking-wider font-bold mb-0.5">Studio</p>
-                  <p className="text-lg font-medium text-gray-900">Lalitpur, Nepal</p>
+                <div className="flex items-center gap-4 sm:gap-5">
+                  <div className="w-12 h-12 sm:w-12 sm:h-12 rounded-full bg-teal-50 border border-teal-200/30 flex items-center justify-center shrink-0 text-teal-700">
+                    <MapPin size={20} className="sm:w-[22px] sm:h-[22px]" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-xs text-zinc-500 uppercase tracking-wider font-bold mb-0.5">Studio</p>
+                    <p className="text-base sm:text-lg font-medium text-gray-900">Lalitpur, Nepal</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -140,12 +142,12 @@ export default function ContactPage() {
 
           {/* Right Column: Form */}
           <div className="w-full lg:w-[45%] xl:w-[40%] flex flex-col justify-center">
-            <div className="max-w-lg mx-auto lg:mx-0 lg:mr-auto w-full bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-gray-100">
-              <h2 className="text-3xl font-playfair font-light text-gray-950 mb-8 text-center lg:text-left">Send a Message</h2>
+            <div className="max-w-lg mx-auto lg:mx-0 lg:mr-auto w-full bg-white p-6 sm:p-7 md:p-8 rounded-2xl shadow-sm border border-gray-100">
+              <h2 className="text-2xl sm:text-3xl font-playfair font-light text-gray-950 mb-6 sm:mb-8 text-center lg:text-left">Send a Message</h2>
 
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                   <div>
                     <label className="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wide">
                       Full Name <span className="text-red-500">*</span>
@@ -155,10 +157,11 @@ export default function ContactPage() {
                         type="text"
                         name="name"
                         required
+                        minLength={3}
                         value={formData.name}
                         onChange={handleChange}
                         placeholder="John Doe"
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-sm text-gray-900 placeholder:text-gray-400 bg-white"
+                        className="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-gray-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-sm text-gray-900 placeholder:text-gray-400 bg-white"
                       />
                     </div>
                   </div>
@@ -175,13 +178,13 @@ export default function ContactPage() {
                         value={formData.email}
                         onChange={handleChange}
                         placeholder="you@example.com"
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-sm text-gray-900 placeholder:text-gray-400 bg-white"
+                        className="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-gray-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-sm text-gray-900 placeholder:text-gray-400 bg-white"
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                   <div>
                     <label className="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wide">
                       Phone Number
@@ -193,7 +196,7 @@ export default function ContactPage() {
                         value={formData.phone}
                         onChange={handleChange}
                         placeholder="+1 (555) 000-0000"
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-sm text-gray-900 placeholder:text-gray-400 bg-white"
+                        className="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-gray-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-sm text-gray-900 placeholder:text-gray-400 bg-white"
                       />
                     </div>
                   </div>
@@ -207,10 +210,11 @@ export default function ContactPage() {
                         type="text"
                         name="subject"
                         required
+                        minLength={5}
                         value={formData.subject}
                         onChange={handleChange}
                         placeholder="Inquiry Topic"
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-sm text-gray-900 placeholder:text-gray-400 bg-white"
+                        className="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-gray-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-sm text-gray-900 placeholder:text-gray-400 bg-white"
                       />
                     </div>
                   </div>
@@ -224,11 +228,12 @@ export default function ContactPage() {
                     <textarea
                       name="message"
                       required
+                      minLength={10}
                       rows={4}
                       value={formData.message}
                       onChange={handleChange}
                       placeholder="How can we help you today?"
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-sm text-gray-900 placeholder:text-gray-400 resize-none bg-white"
+                      className="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-gray-200 focus:border-teal-700 focus:ring-1 focus:ring-teal-700 outline-none transition-all font-dm-sans text-sm text-gray-900 placeholder:text-gray-400 resize-none bg-white"
                     />
                   </div>
                 </div>
@@ -236,7 +241,7 @@ export default function ContactPage() {
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="w-full py-4 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-teal-700/25 font-dm-sans flex items-center justify-center gap-2 mt-4 text-base"
+                  className="w-full py-3 sm:py-4 bg-teal-700 hover:bg-teal-800 disabled:bg-teal-700/70 disabled:cursor-not-allowed text-white font-semibold rounded-full transition-all duration-300 font-dm-sans flex items-center justify-center gap-2 mt-2 sm:mt-4 text-sm sm:text-base"
                 >
                   {isPending ? (
                     <Loader2 size={20} className="animate-spin" />

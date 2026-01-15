@@ -146,7 +146,7 @@ export default function OrdersSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 mb-6 sm:mb-8">
           {[
             { label: "All Orders", count: stats.total, icon: Package, color: "teal" },
             { label: "Processing", count: stats.processing, icon: Clock, color: "orange" },
@@ -164,16 +164,16 @@ export default function OrdersSection() {
             return (
               <div
                 key={stat.label}
-                className={`flex items-center gap-4 p-5 rounded-2xl border bg-white transition-all border-neutral-200`}
+                className={`flex flex-row items-center gap-2.5 sm:gap-4 p-3 sm:p-5 rounded-xl sm:rounded-2xl border bg-white transition-all border-neutral-200`}
               >
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${colorClasses[stat.color]}`}>
-                  <Icon size={24} />
+                <div className={`w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0 ${colorClasses[stat.color]}`}>
+                  <Icon className="w-4 h-4 sm:w-6 sm:h-6" />
                 </div>
-                <div className="min-w-0">
-                  <p className="text-[14px] font-medium text-neutral-400 mb-0.5 font-dm-sans">
+                <div className="min-w-0 flex-1">
+                  <p className="text-[10px] sm:text-[14px] font-medium text-neutral-400 mb-0.5 font-dm-sans truncate">
                     {stat.label}
                   </p>
-                  <p className="text-xl font-bold text-neutral-900 leading-tight font-dm-sans">
+                  <p className="text-base sm:text-xl font-bold text-neutral-900 leading-tight font-dm-sans">
                     {stat.count}
                   </p>
                 </div>
@@ -183,27 +183,27 @@ export default function OrdersSection() {
         </div>
 
         {/* Search & Filter Bar */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
-          <div className="flex-1 relative">
+        <div className="flex flex-col sm:flex-row gap-3 mb-6">
+          <div className="relative flex-1">
             <Search
               size={18}
               className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400"
             />
             <input
               type="text"
-              placeholder="Search orders by ID or product..."
+              placeholder="Search orders by ID..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 rounded-xl border border-neutral-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition-all font-dm-sans text-sm placeholder:text-neutral-400"
+              className="w-full pl-11 pr-4 py-3 rounded-xl border border-neutral-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition-all font-dm-sans text-sm placeholder:text-neutral-400 bg-white"
             />
           </div>
 
-          <div className="flex gap-3">
-            <div className="relative min-w-[140px]">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 sm:flex sm:flex-row">
+            <div className="relative sm:min-w-[140px]">
               <select
                 value={statusFilter}
                 onChange={(e) => handleStatusFilterClick(e.target.value)}
-                className="w-full pl-4 pr-10 py-3 rounded-xl border border-neutral-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition-all font-dm-sans text-sm bg-white appearance-none cursor-pointer"
+                className="w-full pl-4 pr-10 py-3 rounded-xl border border-neutral-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition-all font-dm-sans text-sm bg-white appearance-none cursor-pointer text-neutral-600"
               >
                 {STATUS_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -214,11 +214,11 @@ export default function OrdersSection() {
               <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
             </div>
 
-            <div className="relative min-w-[140px]">
+            <div className="relative sm:min-w-[140px]">
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="w-full pl-4 pr-10 py-3 rounded-xl border border-neutral-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition-all font-dm-sans text-sm bg-white appearance-none cursor-pointer"
+                className="w-full pl-4 pr-10 py-3 rounded-xl border border-neutral-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition-all font-dm-sans text-sm bg-white appearance-none cursor-pointer text-neutral-600"
               >
                 {SORT_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -262,23 +262,23 @@ export default function OrdersSection() {
 
       {/* Pagination */}
       {pagination.pages > 1 && (
-        <div className="flex items-center justify-center gap-3 mt-8">
+        <div className="flex items-center justify-center gap-2 sm:gap-3 mt-8">
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="w-10 h-10 flex items-center justify-center rounded-xl border border-neutral-200 text-neutral-600 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg sm:rounded-xl border border-neutral-200 text-neutral-600 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            <ChevronLeft size={20} />
+            <ChevronLeft size={18} className="sm:w-5 sm:h-5" />
           </button>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto max-w-[200px] sm:max-w-none hide-scrollbar">
             {Array.from({ length: pagination.pages }, (_, i) => i + 1).map(
               (pageNum) => (
                 <button
                   key={pageNum}
                   onClick={() => setPage(pageNum)}
-                  className={`w-10 h-10 rounded-xl font-medium font-dm-sans transition-all duration-300 ${pageNum === page
-                    ? "bg-teal-700 text-white shadow-lg shadow-teal-700/20"
+                  className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl font-medium font-dm-sans transition-all duration-300 text-sm sm:text-base shrink-0 ${pageNum === page
+                    ? "bg-teal-700 text-white"
                     : "bg-white border border-neutral-200 text-neutral-600 hover:border-teal-200 hover:text-teal-700"
                     }`}
                 >
@@ -291,9 +291,9 @@ export default function OrdersSection() {
           <button
             onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))}
             disabled={page === pagination.pages}
-            className="w-10 h-10 flex items-center justify-center rounded-xl border border-neutral-200 text-neutral-600 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg sm:rounded-xl border border-neutral-200 text-neutral-600 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            <ChevronRight size={20} />
+            <ChevronRight size={18} className="sm:w-5 sm:h-5" />
           </button>
         </div>
       )}
